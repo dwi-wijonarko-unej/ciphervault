@@ -1,0 +1,127 @@
+const ShareUI = (() => {
+  async function openShareModal(fileId, fileName) {
+    UI.modal(
+      'Share File',
+      `
+        <p class="text-[#94a3b8] mb-4">Share <strong class="text-[#e2e8f0]">"${fileName}"</strong> with another user.</p>
+        <div>
+          <label class="block text-xs font-medium text-[#94a3b8] mb-1.5">Recipient Username</label>
+          <input class="w-full px-3.5 py-2.5 bg-[#0f1729] border border-border rounded-lg text-sm text-[#e2e8f0] placeholder-muted outline-none transition-all focus:border-[#3b82f6] focus:ring-[3px] focus:ring-[rgba(59,130,246,0.1)]" id="share-recipient" placeholder="Enter username..." autocomplete="off">
+        </div>
+        <div class="mt-3">
+          <label class="block text-xs font-medium text-[#94a3b8] mb-1.5">Expires in (hours) — optional</label>
+          <input class="w-full px-3.5 py-2.5 bg-[#0f1729] border border-border rounded-lg text-sm text-[#e2e8f0] placeholder-muted outline-none transition-all focus:border-[#3b82f6] focus:ring-[3px] focus:ring-[rgba(59,130,246,0.1)]" id="share-expires" type="number" placeholder="Leave empty for no expiry" min="1" max="720">
+        </div>
+        <div id="share-result" class="mt-3"></div>
+      `,
+      `<button class="px-4 py-2 rounded-lg text-sm font-medium text-[#94a3b8] hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">Cancel</button>
+       <button class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-blue-500/25 transition-all cursor-pointer border-none flex items-center gap-2" id="btn-share-confirm">
+         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+         Share
+       </button>`
+    );
+
+    setTimeout(() => {
+      const btn = document.getElementById('btn-share-confirm');
+      const input = document.getElementById('share-recipient');
+      const expires = document.getElementById('share-expires');
+      const result = document.getElementById('share-result');
+
+      if (btn && input) {
+        btn.addEventListener('click', async () => {
+          const recipient = input.value.trim();
+          if (!recipient) {
+            result.innerHTML = '<p class="text-xs text-red-400">Please enter a recipient username.</p>';
+            return;
+          }
+          btn.disabled = true;
+          btn.innerHTML = '<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Sharing...';
+          try {
+            const body = { recipient_username: recipient };
+            const hours = parseInt(expires?.value);
+            if (hours > 0) body.expires_in_hours = hours;
+            const res = await API.request('POST', `/files/${fileId}/share`, body);
+            result.innerHTML = `<p class="text-xs text-emerald-400">✓ Shared with <strong>${res.recipient.username}</strong>. Token: <code class="bg-surface px-1.5 py-0.5 rounded text-[10px]">${res.access_token.substring(0, 16)}...</code></p>`;
+            UI.toast(`File shared with ${res.recipient.username}`, 'success');
+          } catch (e) {
+            result.innerHTML = `<p class="text-xs text-red-400">✗ ${e.detail || 'Share failed'}</p>`;
+            btn.disabled = false;
+            btn.innerHTML = 'Share';
+          }
+        });
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') btn.click(); });
+        input.focus();
+      }
+    }, 100);
+  }
+
+  return { openShareModal };
+})();
+
+const SharedList = (() => {
+  async function render(container) {
+    container.innerHTML = '<div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border border-t-blue-500 rounded-full animate-[spin_0.6s_linear_infinite] mx-auto"></div></div>';
+    try {
+      const res = await API.request('GET', '/files/shared');
+
+      if (res.items.length === 0) {
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-16 text-center animate-[fadeIn_0.3s_ease]">
+            <svg class="w-16 h-16 opacity-40 mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h3 class="text-lg font-semibold">No shared files</h3>
+            <p class="text-sm text-muted mt-2">Files shared with you will appear here.</p>
+          </div>`;
+        return;
+      }
+
+      let html = `<div class="bg-surface-card border border-border rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-surface">
+                <th class="text-left px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">Name</th>
+                <th class="text-left px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">Shared By</th>
+                <th class="text-left px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider hidden sm:table-cell">Size</th>
+                <th class="text-left px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider hidden md:table-cell">Date</th>
+                <th class="text-right px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody>`;
+      res.items.forEach((file) => {
+        const icon = FileList.getFileIcon(file.filename_original);
+        html += `
+          <tr class="border-t border-border hover:bg-[rgba(59,130,246,0.02)] transition-colors file-list-enter">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2.5">
+                <span class="file-icon ${icon.cls} w-[36px] h-[36px]" style="width:36px;height:36px;">${icon.svg}</span>
+                <div class="min-w-0">
+                  <div class="text-sm font-medium truncate max-w-[200px]">${file.filename_original}</div>
+                  <div class="text-xs text-muted">ID: ${file.id}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-1.5">
+                <span class="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0">${(file.shared_by?.[0] || '?').toUpperCase()}</span>
+                <span class="text-sm">${file.shared_by || 'Unknown'}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-sm text-[#94a3b8] whitespace-nowrap hidden sm:table-cell">${file.file_size_formatted || '—'}</td>
+            <td class="px-4 py-3 text-sm text-muted whitespace-nowrap hidden md:table-cell">${new Date(file.created_at).toLocaleDateString('en-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+            <td class="px-4 py-3 text-right">
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-muted hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="Download.handle(${file.id}, '${file.filename_original}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download
+              </button>
+            </td>
+          </tr>`;
+      });
+      html += '</tbody></table></div></div>';
+      container.innerHTML = html;
+    } catch (e) {
+      container.innerHTML = `<div class="bg-surface-card border border-border rounded-xl p-10 text-center"><p class="text-red-400">${e.detail || 'Failed to load shared files'}</p></div>`;
+    }
+  }
+
+  return { render };
+})();

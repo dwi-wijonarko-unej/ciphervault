@@ -1,0 +1,27 @@
+const Search = (() => {
+  let debounceTimer = null;
+
+  function render(container, onSearch) {
+    container.innerHTML = `
+      <div class="mb-4">
+        <div class="relative flex items-center">
+          <svg class="absolute left-3.5 text-muted pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="w-full pl-10 pr-4 py-2.5 bg-surface border border-border rounded-lg text-sm text-[#e2e8f0] placeholder-muted outline-none transition-all focus:border-[#3b82f6] focus:ring-[3px] focus:ring-[rgba(59,130,246,0.1)]" type="text" id="search-input" placeholder="Search files by name..." autocomplete="off">
+        </div>
+      </div>
+    `;
+
+    const input = document.getElementById('search-input');
+    if (input) {
+      input.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          const query = input.value.trim();
+          if (onSearch) onSearch(query);
+        }, 350);
+      });
+    }
+  }
+
+  return { render };
+})();

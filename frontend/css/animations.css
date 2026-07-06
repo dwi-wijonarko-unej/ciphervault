@@ -1,0 +1,90 @@
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(100px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes uploadProgress {
+  0% { width: 0%; }
+  30% { width: 30%; }
+  60% { width: 60%; }
+  90% { width: 85%; }
+  100% { width: 100%; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.loading-spinner-lg {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+/* Page transition */
+.page-view {
+  animation: fadeIn 0.2s ease;
+}
+
+/* File list item enter animation */
+.file-list-item {
+  animation: slideUp 0.3s ease;
+}
+
+.file-list-item:nth-child(1) { animation-delay: 0s; }
+.file-list-item:nth-child(2) { animation-delay: 0.05s; }
+.file-list-item:nth-child(3) { animation-delay: 0.1s; }
+.file-list-item:nth-child(4) { animation-delay: 0.15s; }
+.file-list-item:nth-child(5) { animation-delay: 0.2s; }
+
+/* Upload progress animation */
+.upload-progress .progress-bar-fill {
+  animation: uploadProgress 2s ease forwards;
+}

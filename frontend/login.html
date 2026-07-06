@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherVault — Secure Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              surface: { DEFAULT: 'var(--surface)', card: 'var(--surface-card)', hover: 'var(--surface-hover)', input: 'var(--surface-input)' },
+              border: { DEFAULT: 'var(--border)', focus: '#3b82f6' },
+              muted: 'var(--muted)',
+              body: 'var(--bg-body)',
+              primary: 'var(--text-primary)',
+              secondary: 'var(--text-secondary)',
+            },
+            fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          }
+        }
+      }
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body class="bg-body text-primary min-h-screen">
+  <!-- Background gradient -->
+  <div class="fixed inset-0 pointer-events-none bg-gradient-to-t from-body via-transparent to-[rgba(59,130,246,0.06)]"></div>
+
+  <div class="min-h-screen flex items-center justify-center p-5 relative z-10">
+    <div class="w-full max-w-[420px] bg-surface-card border border-border rounded-xl p-10 shadow-2xl animate-[scaleIn_0.3s_ease]">
+      <!-- Logo -->
+      <div class="text-center mb-8">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" class="mx-auto mb-2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">CipherVault</h1>
+        <p class="text-muted text-sm mt-1">Zero-Knowledge Encrypted Cloud Storage</p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="flex mb-6 bg-surface rounded-lg p-1">
+        <button class="flex-1 py-2.5 text-center rounded-md text-sm font-medium transition-all tab-btn active" data-tab="login" onclick="switchTab('login')">Sign In</button>
+        <button class="flex-1 py-2.5 text-center rounded-md text-sm font-medium transition-all tab-btn" data-tab="register" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="flex flex-col gap-4" onsubmit="return handleLogin(event)">
+        <div>
+          <label class="block text-xs font-medium text-secondary mb-1.5">Username</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-lg text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#3b82f6] focus:ring-[3px] focus:ring-[rgba(59,130,246,0.1)]" id="login-username" placeholder="Enter your username" required autocomplete="username">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-secondary mb-1.5">Password</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-lg text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#3b82f6] focus:ring-[3px] focus:ring-[rgba(59,130,246,0.1)]" id="login-password" type="password" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="w-full py-3 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-blue-500/25 transition-all flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Sign In
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="flex flex-col gap-4 hidden" onsubmit="return handleRegister(event)">
+        <div>
+          <label class="block text-xs font-medium text-secondary mb-1.5">Username</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-lg text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#3b82f6] focus:ring-[3px] focus:ring-[rgba(59,130,246,0.1)]" id="reg-username" placeholder="Choose a username" required autocomplete="off">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-secondary mb-1.5">Email</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-lg text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#3b82f6] focus:ring-[3px] focus:ring-[rgba(59,130,246,0.1)]" id="reg-email" type="email" placeholder="Enter your email" required autocomplete="email">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-secondary mb-1.5">Password</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-lg text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#3b82f6] focus:ring-[3px] focus:ring-[rgba(59,130,246,0.1)]" id="reg-password" type="password" placeholder="Choose a strong password" required minlength="6" autocomplete="new-password">
+        </div>
+        <button type="submit" class="w-full py-3 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-blue-500/25 transition-all flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Create Account
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="flex items-center gap-3 my-5">
+        <div class="flex-1 h-px bg-border"></div>
+        <span class="text-xs text-muted">or</span>
+        <div class="flex-1 h-px bg-border"></div>
+      </div>
+
+      <!-- Demo Login -->
+      <button class="w-full py-3 rounded-lg border border-border bg-transparent text-muted hover:text-[#3b82f6] hover:border-[#3b82f6] hover:bg-[rgba(59,130,246,0.05)] transition-all text-sm cursor-pointer flex items-center justify-center gap-2" onclick="handleDemoLogin()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Demo Mode — Quick Login
+      </button>
+
+      <p class="text-center mt-6 text-[11px] text-muted">Secured with UHC + AES-256-CBC Double-Layer Encryption</p>
+    </div>
+  </div>
+
+  <!-- Theme toggle floating -->
+  <button class="fixed top-5 left-5 z-[9999] p-2.5 rounded-lg text-muted hover:text-primary hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+
+  <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2"></div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+        t.classList.toggle('bg-surface-card', t.dataset.tab === tab);
+        t.classList.toggle('text-primary', t.dataset.tab === tab);
+        t.classList.toggle('shadow-sm', t.dataset.tab === tab);
+        t.classList.toggle('text-secondary', t.dataset.tab !== tab);
+      });
+      document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      try { await Auth.login(username, password); } catch {}
+      return false;
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const username = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      try {
+        await Auth.register(username, email, password);
+        switchTab('login');
+        document.getElementById('login-username').value = username;
+      } catch {}
+      return false;
+    }
+
+    function handleDemoLogin() {
+      API.setToken('demo_token');
+      window.location.href = 'index.html';
+    }
+
+    if (API.getToken()) window.location.href = 'index.html';
+  </script>
+</body>
+</html>
