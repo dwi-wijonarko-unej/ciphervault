@@ -93,6 +93,10 @@ const Auth = (() => {
     return true;
   }
 
+  async function redirectIfNotLoggedIn() {
+    return ensureAuthenticated();
+  }
+
   return {
     isLoggedIn,
     login,
@@ -101,5 +105,6 @@ const Auth = (() => {
     logout,
     ensureAuthenticated,
     redirectIfLoggedIn,
+    redirectIfNotLoggedIn,
   };
 })();

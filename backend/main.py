@@ -7,8 +7,15 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from backend.config import get_settings
+from backend.crypto.rsa_engine import load_or_create_global_keypair
 from backend.database import engine, init_db
-from backend.routers import auth_router
+from backend.routers import (
+    activity_router,
+    auth_router,
+    files_router,
+    system_router,
+    upload_router,
+)
 
 settings = get_settings()
 
@@ -18,6 +25,7 @@ async def lifespan(_: FastAPI):
     Path(settings.storage_path).mkdir(parents=True, exist_ok=True)
     Path(settings.rsa_private_key_path).parent.mkdir(parents=True, exist_ok=True)
     init_db()
+    load_or_create_global_keypair()
     yield
 
 
@@ -32,6 +40,10 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(upload_router)
+app.include_router(files_router)
+app.include_router(system_router)
+app.include_router(activity_router)
 
 
 @app.get("/health/live")

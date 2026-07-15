@@ -15,31 +15,39 @@ const Upload = (() => {
   }
 
   function setupDropZone() {
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
+    const dropZone = document.getElementById("drop-zone");
+    const fileInput = document.getElementById("file-input");
     if (!dropZone || !fileInput) return;
 
-    dropZone.addEventListener('click', () => fileInput.click());
-    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', (e) => {
+    dropZone.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("dragover", (e) => {
       e.preventDefault();
-      dropZone.classList.remove('dragover');
+      dropZone.classList.add("dragover");
+    });
+    dropZone.addEventListener("dragleave", () =>
+      dropZone.classList.remove("dragover"),
+    );
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
       if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
     });
-    fileInput.addEventListener('change', () => { if (fileInput.files.length) handleFiles(fileInput.files); });
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length) handleFiles(fileInput.files);
+    });
   }
 
   function handleFiles(files) {
-    Array.from(files).forEach(file => uploadFile(file));
+    Array.from(files).forEach((file) => uploadFile(file));
   }
 
   async function uploadFile(file) {
-    const area = document.getElementById('upload-progress-area');
-    area.classList.remove('hidden');
+    const area = document.getElementById("upload-progress-area");
+    area.classList.remove("hidden");
 
-    const item = document.createElement('div');
-    item.className = 'flex items-center gap-3 p-3 bg-surface rounded-lg animate-[fadeIn_0.3s_ease] mb-2';
+    const item = document.createElement("div");
+    item.className =
+      "flex items-center gap-3 p-3 bg-surface rounded-lg animate-[fadeIn_0.3s_ease] mb-2";
     const icon = FileList.getFileIcon(file.name);
     item.innerHTML = `
       <span class="file-icon ${icon.cls} w-[36px] h-[36px]" style="width:36px;height:36px;">${icon.svg}</span>
@@ -48,55 +56,57 @@ const Upload = (() => {
         <div class="text-xs text-muted upload-status">${formatFileSize(file.size)} — Encrypting & uploading...</div>
       </div>
       <div class="w-[120px] h-1.5 bg-surface rounded-full overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all" id="progress-${file.name.replace(/[^a-zA-Z0-9]/g, '_')}" style="width:0%"></div>
+        <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all" id="progress-${file.name.replace(/[^a-zA-Z0-9]/g, "_")}" style="width:0%"></div>
       </div>
     `;
     area.appendChild(item);
 
-    const pid = `progress-${file.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
-    const statusEl = item.querySelector('.upload-status');
+    const pid = `progress-${file.name.replace(/[^a-zA-Z0-9]/g, "_")}`;
+    const statusEl = item.querySelector(".upload-status");
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        simulateProgress(pid);
-        await API.request('POST', '/files/upload', {
-          filename: file.name,
-          size: file.size,
-          type: file.type || 'application/octet-stream',
-        });
-        const bar = document.getElementById(pid);
-        if (bar) bar.style.width = '100%';
-        statusEl.textContent = `${formatFileSize(file.size)} — Encrypted & stored securely`;
-        item.style.borderColor = '#22c55e';
-        UI.toast(`"${file.name}" uploaded successfully`, 'success');
-        setTimeout(() => {
-          App.navigate('dashboard');
-          SecurityUI.renderFileAnalysis(res.id);
-        }, 1000);
-      } catch (err) {
-        statusEl.textContent = `Failed: ${err.detail || 'Unknown error'}`;
-        item.style.borderColor = '#ef4444';
-        UI.toast(`Upload failed: ${file.name}`, 'error');
-      }
-    };
-    reader.readAsArrayBuffer(file);
+    try {
+      simulateProgress(pid);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await API.request("POST", "/files/upload", formData, true);
+      const bar = document.getElementById(pid);
+      if (bar) bar.style.width = "100%";
+      statusEl.textContent = `${formatFileSize(file.size)} — Encrypted & stored securely`;
+      item.style.borderColor = "#22c55e";
+      UI.toast(`"${file.name}" uploaded successfully`, "success");
+
+      await FileList.render(document.getElementById("file-list-area"));
+      SecurityUI.renderUploadAnalysis(
+        file.name,
+        res.security_score,
+        res.security_metrics,
+      );
+    } catch (err) {
+      statusEl.textContent = `Failed: ${err.detail || "Unknown error"}`;
+      item.style.borderColor = "#ef4444";
+      UI.toast(`Upload failed: ${file.name}`, "error");
+    }
   }
 
   function simulateProgress(pid) {
     let p = 0;
     const int = setInterval(() => {
       p += Math.random() * 15;
-      if (p >= 90) { clearInterval(int); p = 90; }
+      if (p >= 90) {
+        clearInterval(int);
+        p = 90;
+      }
       const bar = document.getElementById(pid);
       if (bar) bar.style.width = `${Math.min(p, 90)}%`;
     }, 300);
   }
 
   function formatFileSize(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / 1048576).toFixed(1) + ' MB';
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / 1048576).toFixed(1) + " MB";
   }
 
   return { render };

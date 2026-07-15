@@ -1,6 +1,6 @@
 # Dokumen Rencana Pengembangan Aplikasi CipherVault
 
-**Versi Dokumen:** 3.0 **Tanggal:** 6 Juli 2026 **Versi Aplikasi:** 1.0.0 **Status:** Final — Siap Eksekusi
+**Versi Dokumen:** 4.0 **Tanggal:** 15 Juli 2026 **Versi Aplikasi:** 1.0.0 **Status:** Final — Siap Eksekusi
 
 ---
 
@@ -553,7 +553,7 @@ Owner Backend Recipient
 
 "iv\_uhc\_hex": "f1e2d3c4b5a697886950413223140516",
 
-"encryption\_order": \["UHC", "AES"\],
+"encryption_order": \["UHC", "AES"\],
 
 "algorithms": {
 
@@ -563,11 +563,31 @@ Owner Backend Recipient
 
 },
 
-"original\_size": 1048576,
+"ai_decision": {
 
-"encrypted\_size": 1048608,
+    "strategy": "multi_feature_adaptive",
 
-"encrypted\_at": "2026-07-06T10:30:00Z"
+    "file_class": "compressed",
+
+    "matrix_size": 24,
+
+    "adaptive_r": 3.90,
+
+    "base_index": 2,
+
+    "entropy_adjustment": 2,
+
+    "type_adjustment": 1,
+
+    "reasoning": "compressed (.png), entropy 7.62 → +2, type +1"
+
+},
+
+"original_size": 1048576,
+
+"encrypted_size": 1048608,
+
+"encrypted_at": "2026-07-06T10:30:00Z"
 
 }
 
@@ -657,16 +677,18 @@ Owner Backend Recipient
 
 ### 7.1 Konfigurasi Sistem (dari .env)
 
-| Parameter           | Default          | Opsi                                   | Fungsi                                  |
-| :------------------ | :--------------- | :------------------------------------- | :-------------------------------------- |
-| `AI_MODE`           | `adaptive_split` | `off`, `matrix_size`, `adaptive_split` | Mode pemilihan parameter enkripsi       |
-| `UHC_MATRIX_SIZE`   | `8`              | 4, 6, 8, 12, 16, 24, 32, 48            | Ukuran matriks tetap (jika AI_MODE=off) |
-| `UHC_MODULUS`       | `257`            | 256, 257                               | Modulus operasi matriks UHC             |
-| `UHC_LOGISTIC_R`    | `3.923`          | 3.5-4.0                                | Parameter r logistic map                |
-| `LAYER2_ALGORITHM`  | `hybrid`         | `none`, `aes`, `rsa`, `hybrid`         | Algoritma layer kedua                   |
-| `RSA_KEY_SIZE`      | `2048`           | 1024, 2048, 4096                       | Ukuran kunci RSA                        |
-| `SESSION_KEY_BYTES` | `32`             | 16, 32                                 | Panjang session key (bytes)             |
-| `PBKDF2_ITERATIONS` | `100000`         | —                                      | Iterasi PBKDF2                          |
+| Parameter            | Default          | Opsi                                   | Fungsi                                  |
+| :------------------- | :--------------- | :------------------------------------- | :-------------------------------------- |
+| `AI_MODE`            | `adaptive_split` | `off`, `matrix_size`, `adaptive_split` | Mode pemilihan parameter enkripsi       |
+| `UHC_MATRIX_SIZE`    | `8`              | 4, 6, 8, 12, 16, 24, 32, 48            | Ukuran matriks tetap (jika AI_MODE=off) |
+| `UHC_MODULUS`        | `257`            | 256, 257                               | Modulus operasi matriks UHC             |
+| `UHC_LOGISTIC_R`     | `3.923`          | 3.5-4.0                                | Parameter r logistic map                |
+| `LAYER2_ALGORITHM`   | `hybrid`         | `none`, `aes`, `rsa`, `hybrid`         | Algoritma layer kedua                   |
+| `RSA_KEY_SIZE`       | `2048`           | 1024, 2048, 4096                       | Ukuran kunci RSA                        |
+| `SESSION_KEY_BYTES`  | `32`             | 16, 32                                 | Panjang session key (bytes)             |
+| `PBKDF2_ITERATIONS`  | `100000`         | —                                      | Iterasi PBKDF2                          |
+| `AI_MATRIX_STRATEGY` | `multi_feature`  | `legacy`, `multi_feature`              | Strategi pemilihan matrix size AI       |
+| `AI_ADAPTIVE_R`      | `true`           | `true`, `false`                        | Adaptasi parameter r logistic map       |
 
 ### 7.2 Alur Secure Upload (Detail Teknis)
 
@@ -679,20 +701,22 @@ Langkah 1 ── Feature Extraction (AI)
     features = extract_features(file_bytes)
     # Returns: {size, entropy, mean, std, unique_bytes, extension}
 
-Langkah 2 ── AI Adaptive Split
-    split_ratio = adaptive_split(features)
-    # Returns rasio 0.90 - 0.999 berdasarkan aturan AI
+Langkah 2 ── AI Matrix Selection (Multi-Feature Adaptive)
+    IF AI_MATRIX_STRATEGY == multi_feature:
+        file_class = classify_file_type(extension, features)
+        # text | structured | compressed | binary | unknown
+        matrix_size, adaptive_r = adaptive_matrix(features, file_class)
+        # Kombinasi: size tier + entropy adjustment + type adjustment
+        # Output berbeda untuk file berbeda meski ukuran sama
+    ELSE IF AI_MATRIX_STRATEGY == legacy:
+        split_ratio = adaptive_split(features)
+        matrix_size = choose_matrix_size_by_split(len, split_ratio)
+        adaptive_r = UHC_LOGISTIC_R  # fixed
 
-Langkah 3 ── Tentukan Matrix Size
-    IF AI_MODE == adaptive_split:
-        # Pilih n berdasarkan total data & split_ratio
-        hill_len = int(len(file_bytes) * split_ratio)
-        n = floor(sqrt(hill_len))  # dibulatkan ke nilai yang didukung
-        # atau dari config UHC_MATRIX_SIZE jika AI_MODE=off
-    ELSE IF AI_MODE == matrix_size:
-        n = pilih_matriks_ai(file_bytes)  # Notebook 1
-    ELSE:
-        n = UHC_MATRIX_SIZE  # fixed dari .env
+Langkah 3 ── Tentukan Parameter UHC Final
+    n = matrix_size          # dari AI (4, 6, 8, 12, 16, 24, 32, 48)
+    r = adaptive_r           # dari AI (3.90 - 3.99) jika AI_ADAPTIVE_R=true
+    modulus = UHC_MODULUS    # 257 (fixed)
 
 Langkah 4 ── Hash Plaintext (untuk integritas)
     plaintext_hash = SHA-256(file_bytes)
@@ -739,8 +763,13 @@ Langkah 12 ── Generate Metadata JSON
         plaintext_sha256, iv_aes_hex, iv_uhc_hex,
         encryption_order: ["UHC", "AES"],
         algorithms: {inner: "UHC", outer: "AES", key_wrap: "RSA-OAEP"},
-        ai_mode: "adaptive_split", split_ratio, matrix_size: n,
-        modulus: UHC_MODULUS, logistic_r: UHC_LOGISTIC_R,
+        ai_mode: "multi_feature_adaptive", matrix_size: n, adaptive_r: r,
+        modulus: UHC_MODULUS,
+        ai_decision: {
+            strategy, file_class, features_snapshot,
+            base_index, entropy_adj, type_adj, final_index,
+            reasoning: "compressed file, entropy 7.62, +2 entropy, +1 type"
+        },
         original_size, encrypted_size, encrypted_at
     }
 
@@ -862,6 +891,229 @@ Session Key Disimpan:
   ├── RSA-OAEP encrypt(server_public) → untuk sharing & audit
   └── Tidak pernah plain di DB/disk
 ```
+
+### 7.6 Enhanced AI Selector — Adaptive Multi-Feature Matrix Selection
+
+**Status:** Rencana pengembangan untuk mengatasi keterbatasan implementasi AI Selector saat ini, agar menghasilkan **dampak nyata yang terlihat** pada file-file berbagai ekstensi saat testing.
+
+#### 7.6.1 Masalah Implementasi Saat Ini
+
+Implementasi AI Selector saat ini (`choose_matrix_size_by_split`) menggunakan rumus `√(data_length × split_ratio)` dengan `SUPPORTED_MATRIX_SIZES` dibatasi hingga 48. Akibatnya, **untuk file berukuran praktis (> 2.5 KB), output `matrix_size` hampir selalu 48**:
+
+| Ukuran File | split_ratio | √(hill_len) | matrix_size |
+| :---------- | :---------- | :---------- | :---------- |
+| 50 byte     | 0.90        | 6           | **4**       |
+| 160 byte    | 0.90        | 12          | **8**       |
+| 640 byte    | 0.90        | 24          | **16**      |
+| 2.5 KB      | 0.90        | 47          | **32**      |
+| 50 KB       | 0.90        | 212         | **48**      |
+| 500 KB      | 0.95        | 689         | **48**      |
+| 5 MB        | 0.99        | 2220        | **48**      |
+
+**Konsekuensi:** CSV, PNG, PDF, dan XLS berukuran sama (mis. 50 KB) semuanya mendapat `matrix_size = 48`. AI "berjalan" tapi outputnya tidak bervariasi — tidak ada dampak nyata yang dapat diverifikasi saat testing.
+
+#### 7.6.2 Arsitektur Baru: Multi-Feature Adaptive Matrix
+
+Mengganti formula `√(data_length × split_ratio)` dengan **decision tree berlapis tiga** yang menggabungkan tiga dimensi input: **ukuran file**, **entropi Shannon**, dan **tipe file**.
+
+```mermaid
+flowchart TD
+    A[File Bytes + Extension] --> B[extract_features
+size, entropy, std, unique_bytes, ext]
+    B --> C[classify_file_type
+text/structured/compressed/binary]
+    B --> D[Size Tier
+log-scaled base index]
+    B --> E[Entropy Band
+adjustment -1 to +2]
+    C --> F[Type Adjustment
+-1 to +1]
+    D --> G[final_index = clamp
+base + entropy_adj + type_adj]
+    E --> G
+    F --> G
+    G --> H{matrix_size
+4, 6, 8, 12, 16, 24, 32, 48}
+    B --> I[select_r
+3.90 - 3.99 by entropy]
+    H --> J[generate_key_matrix
+N x N, logistic map seed]
+    I --> J
+    J --> K[uhc_encrypt plaintext]
+```
+
+#### 7.6.3 Komponen Decision Tree
+
+**A. Klasifikasi Tipe File** (`classify_file_type`)
+
+| Kategori     | Ekstensi                                       | Karakteristik                     |
+| :----------- | :--------------------------------------------- | :-------------------------------- |
+| `text`       | .txt, .csv, .json, .xml, .log, .md             | Entropi rendah, prediktabel       |
+| `structured` | .pdf, .docx, .xlsx, .xls, .pptx                | Konten campuran, entropi menengah |
+| `compressed` | .zip, .gz, .rar, .7z, .png, .jpg, .jpeg, .webp | Sudah terkompresi, entropi tinggi |
+| `binary`     | .exe, .dll, .so, .bin, .dat                    | Biner mentah                      |
+| `unknown`    | (lainnya)                                      | Default                           |
+
+**B. Size Tiers (log-scaled)** — `SUPPORTED_MATRIX_SIZES = (4, 6, 8, 12, 16, 24, 32, 48)`, diindeks 0–7.
+
+| Index | matrix_size | Rentang Ukuran File | Label  |
+| :---- | :---------- | :------------------ | :----- |
+| 0     | 4           | < 4 KB              | nano   |
+| 1     | 6           | 4 – 32 KB           | tiny   |
+| 2     | 8           | 32 – 128 KB         | small  |
+| 3     | 12          | 128 KB – 1 MB       | medium |
+| 4     | 16          | 1 – 16 MB           | large  |
+| 5     | 24          | 16 – 256 MB         | huge   |
+| 6     | 32          | 256 MB – 1 GB       | giant  |
+| 7     | 48          | > 1 GB              | titan  |
+
+**C. Entropy Adjustment**
+
+| Entropi (bit) | Adjustment | Alasan                                 |
+| :------------ | :--------- | :------------------------------------- |
+| < 3.0         | -1 index   | Sangat prediktabel, matrix kecil cukup |
+| 3.0 – 5.0     | 0          | Entropi rendah-normal                  |
+| 5.0 – 6.5     | +1 index   | Entropi menengah                       |
+| 6.5 – 7.5     | +2 index   | Entropi tinggi, butuh difusi lebih     |
+| > 7.5         | +2 index   | Sudah acak, tetap butuh matrix besar   |
+
+**D. File Type Adjustment**
+
+| file_class   | Adjustment | Alasan                                     |
+| :----------- | :--------- | :----------------------------------------- |
+| `text`       | -1 index   | Teks prediktabel, matriks lebih kecil aman |
+| `structured` | 0          | Netral                                     |
+| `compressed` | +1 index   | Sudah terkompresi, butuh difusi ekstra     |
+| `binary`     | +1 index   | Biner mentah, tingkatkan keamanan          |
+| `unknown`    | 0          | Netral                                     |
+
+**E. Adaptive Logistic Parameter (r)**
+
+| Entropi (bit) | r value | Alasan                                |
+| :------------ | :------ | :------------------------------------ |
+| < 4.0         | 3.99    | File prediktabel → chaos maksimal     |
+| 4.0 – 6.0     | 3.96    | Chaos tinggi                          |
+| 6.0 – 7.5     | 3.923   | Default (dari config UHC_LOGISTIC_R)  |
+| > 7.5         | 3.90    | File sudah acak → chaos standar cukup |
+
+#### 7.6.4 Simulasi: 4 File Test Berukuran Sama (50 KB)
+
+Dengan arsitektur baru, 4 file berukuran identik mendapat parameter enkripsi **berbeda**:
+
+| File       | file_class | entropy | base (idx) | entropy_adj | type_adj | final_idx | matrix_size | r     |
+| :--------- | :--------- | :------ | :--------- | :---------- | :------- | :-------- | :---------- | :---- |
+| data.csv   | text       | 3.5     | 2 (8)      | 0           | -1       | **1**     | **6**       | 3.99  |
+| report.pdf | structured | 6.8     | 2 (8)      | +2          | 0        | **4**     | **16**      | 3.923 |
+| data.xls   | structured | 5.2     | 2 (8)      | +1          | 0        | **3**     | **12**      | 3.923 |
+| photo.png  | compressed | 7.6     | 2 (8)      | +2          | +1       | **5**     | **24**      | 3.90  |
+
+**Hasil:** matrix_size berbeda (6, 16, 12, 24) dan r berbeda (3.99, 3.923, 3.923, 3.90). AI Selector memberikan **dampak nyata yang dapat diverifikasi**.
+
+#### 7.6.5 Decision Trace Metadata
+
+Setiap enkripsi menyimpan jejak keputusan AI lengkap di `metadata_json` untuk audit dan transparansi:
+
+```json
+{
+  "ai_decision": {
+    "strategy": "multi_feature_adaptive",
+    "file_class": "compressed",
+    "features_snapshot": {
+      "size": 51200,
+      "entropy": 7.62,
+      "mean": 127.3,
+      "std": 74.5,
+      "unique_bytes": 256,
+      "extension": ".png"
+    },
+    "decision": {
+      "base_index": 2,
+      "base_size": 8,
+      "entropy_adjustment": 2,
+      "type_adjustment": 1,
+      "final_index": 5,
+      "matrix_size": 24,
+      "adaptive_r": 3.9
+    },
+    "reasoning": "compressed file (.png), entropy 7.62 (>7.5 → +2), type compressed (+1), base small (50KB → index 2)"
+  }
+}
+```
+
+#### 7.6.6 Pseudocode Implementasi
+
+```python
+SUPPORTED_MATRIX_SIZES = (4, 6, 8, 12, 16, 24, 32, 48)
+
+SIZE_TIERS = [
+    (4 * 1024, 0),            # < 4 KB    → index 0 (matrix 4)
+    (32 * 1024, 1),           # < 32 KB   → index 1 (matrix 6)
+    (128 * 1024, 2),          # < 128 KB  → index 2 (matrix 8)
+    (1024 * 1024, 3),         # < 1 MB    → index 3 (matrix 12)
+    (16 * 1024 * 1024, 4),    # < 16 MB   → index 4 (matrix 16)
+    (256 * 1024 * 1024, 5),   # < 256 MB  → index 5 (matrix 24)
+    (1024 * 1024 * 1024, 6),  # < 1 GB    → index 6 (matrix 32)
+    (float('inf'), 7),        # else      → index 7 (matrix 48)
+]
+
+ENTROPY_BANDS = [(3.0, -1), (5.0, 0), (6.5, 1), (7.5, 2), (float('inf'), 2)]
+
+TYPE_ADJUSTMENT = {"text": -1, "structured": 0, "compressed": 1, "binary": 1, "unknown": 0}
+
+EXTENSION_MAP = {
+    "text": {".txt", ".csv", ".json", ".xml", ".log", ".md"},
+    "structured": {".pdf", ".docx", ".xlsx", ".xls", ".pptx"},
+    "compressed": {".zip", ".gz", ".rar", ".7z", ".png", ".jpg", ".jpeg", ".webp"},
+    "binary": {".exe", ".dll", ".so", ".bin", ".dat"},
+}
+
+R_BANDS = [(4.0, 3.99), (6.0, 3.96), (7.5, 3.923), (float('inf'), 3.90)]
+
+
+def classify_file_type(extension: str, features: dict) -> str:
+    ext = extension.lower()
+    for file_class, exts in EXTENSION_MAP.items():
+        if ext in exts:
+            return file_class
+    return "unknown"
+
+
+def adaptive_matrix(features: dict, file_class: str) -> tuple[int, float, dict]:
+    size = int(features["size"])
+    entropy = float(features["entropy"])
+
+    base_index = next(idx for threshold, idx in SIZE_TIERS if size < threshold)
+    entropy_adj = next(adj for threshold, adj in ENTROPY_BANDS if entropy < threshold)
+    type_adj = TYPE_ADJUSTMENT.get(file_class, 0)
+
+    final_index = max(0, min(base_index + entropy_adj + type_adj, 7))
+    matrix_size = SUPPORTED_MATRIX_SIZES[final_index]
+    r = next(r_val for threshold, r_val in R_BANDS if entropy < threshold)
+
+    trace = {
+        "strategy": "multi_feature_adaptive",
+        "file_class": file_class,
+        "base_index": base_index,
+        "entropy_adjustment": entropy_adj,
+        "type_adjustment": type_adj,
+        "final_index": final_index,
+        "matrix_size": matrix_size,
+        "adaptive_r": r,
+    }
+    return matrix_size, r, trace
+```
+
+#### 7.6.7 File yang Berubah Saat Implementasi
+
+| File                                 | Perubahan                                                                                                       |
+| :----------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
+| `backend/crypto/ai_selector.py`      | Tambah `classify_file_type()`, `adaptive_matrix()`, `select_r()`; pertahankan fungsi lama untuk backward compat |
+| `backend/services/upload_service.py` | Ganti pemanggilan ke `adaptive_matrix()`; simpan `ai_decision` trace ke metadata                                |
+| `backend/config.py`                  | Tambah `ai_matrix_strategy`, `ai_adaptive_r`                                                                    |
+| `backend/schemas/file.py`            | Ekspos `ai_decision` di `FileDetailResponse` untuk ditampilkan di modal UI                                      |
+| `backend/crypto/__init__.py`         | Export fungsi baru: `classify_file_type`, `adaptive_matrix`                                                     |
+
+**Backward compatibility:** `adaptive_split()` dan `choose_matrix_size_by_split()` tetap dipertahankan. Mode lama dapat dipilih via `AI_MATRIX_STRATEGY=legacy`.
 
 ---
 
@@ -1396,6 +1648,8 @@ share_service.share(file_id, owner, recipient_username)
 | Unit — UHC Engine              | 10+         | `test_crypto_uhc.py`         | Fase 0 (M1) |
 | Unit — RSA Engine              | 4+          | `test_crypto_rsa.py`         | Fase 0 (M1) |
 | Unit — AI Selector             | 4+          | `test_ai_selector.py`        | Fase 0 (M1) |
+| Unit — AI Multi-Feature        | 6+          | `test_ai_multi_feature.py`   | Fase 4 (M4) |
+| E2E — AI Variation (4 ext)     | 4+          | `test_ai_variation.py`       | Fase 4 (M4) |
 | Unit — Key Manager             | 4+          | `test_crypto_key_manager.py` | Fase 2 (M2) |
 | Unit — Integrity               | 3+          | `test_integrity.py`          | Fase 2 (M2) |
 | Unit — Security Analyzer       | 5+          | `test_security_analyzer.py`  | Fase 2 (M2) |
@@ -1405,7 +1659,7 @@ share_service.share(file_id, owner, recipient_username)
 | E2E — Share Flow               | 5+          | `test_share_flow.py`         | Fase 3 (M3) |
 | Integration — File Management  | 5+          | `test_file_management.py`    | Fase 4 (M4) |
 | Security — Unauthorized Access | 6+          | `test_security.py`           | Fase 4 (M4) |
-| **Total**                      | **67+**     |                              |             |
+| **Total**                      | **77+**     |                              |             |
 
 ### 10.2 Skenario Pengujian Kritis
 
@@ -1478,6 +1732,35 @@ share_service.share(file_id, owner, recipient_username)
 4\. Kirim request tanpa token
 
 5\. ASSERT: response 403
+
+#### Test 6: AI Selector Variation — 4 Tipe File Berukuran Sama
+
+**Tujuan:** Memverifikasi bahwa AI Selector menghasilkan `matrix_size` dan `adaptive_r` yang **berbeda** untuk file berbeda meski ukurannya sama.
+
+**Setup:** Buat 4 file dummy berukuran ±50 KB:
+
+- `data.csv` — isi angka random terurut (entropy rendah)
+- `report.pdf` — PDF dengan teks (entropy menengah)
+- `data.xls` — spreadsheet binary (entropy menengah)
+- `photo.png` — gambar PNG terkompresi (entropy tinggi)
+
+**Langkah:**
+
+1. Login sebagai user test
+2. Upload keempat file
+3. Query `GET /files/{id}` untuk setiap file
+4. Ekstrak `metadata.ai_decision.matrix_size` dan `metadata.ai_decision.adaptive_r`
+
+**Assertions:**
+
+- ✅ Keempat file mendapat setidaknya **3 nilai matrix_size berbeda**
+- ✅ `data.csv` (text) mendapat matrix_size **lebih kecil** dari `photo.png` (compressed)
+- ✅ `photo.png` mendapat `adaptive_r ≤ 3.90` (entropy tinggi)
+- ✅ `data.csv` mendapat `adaptive_r ≥ 3.99` (entropy rendah)
+- ✅ `ai_decision.reasoning` terisi dan menjelaskan keputusan
+- ✅ Roundtrip download-decrypt berhasil untuk keempat file (integritas SHA-256 match)
+
+**File test:** `tests/test_ai_variation.py`
 
 ### 10.3 Perintah Menjalankan Test
 
@@ -1749,11 +2032,12 @@ curl \-X POST http://localhost:8000/files/1/share \\
 
 ### 14.4 Changelog Dokumen
 
-| Versi | Tanggal     | Perubahan                                                                                                                                                                                                                                                                                                              |
-| :---- | :---------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.0   | Juli 2026   | Dokumen awal, rencana lengkap 6 fase                                                                                                                                                                                                                                                                                   |
-| 2.0   | 6 Juli 2026 | Sinkronisasi Plan.md + Notebook UHC mod 257. Kompresi timeline 6→4 minggu. Server Wrapping Key untuk sharing.                                                                                                                                                                                                          |
-| 3.0   | 6 Juli 2026 | **Final.** AI_MODE=adaptive_split, LAYER2=hybrid (AES+RSA), UHC_MODULUS=257. Tambah RSA engine, AI selector + feature extraction, security analyzer (entropi, korrelasi, avalanche, NPCR, UACI, score). Semua parameter via .env. Frontend: System Info page, Security Score modal, File Detail panel. Total test 67+. |
+| Versi | Tanggal      | Perubahan                                                                                                                                                                                                                                                                                                                                                                          |
+| :---- | :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0   | Juli 2026    | Dokumen awal, rencana lengkap 6 fase                                                                                                                                                                                                                                                                                                                                               |
+| 2.0   | 6 Juli 2026  | Sinkronisasi Plan.md + Notebook UHC mod 257. Kompresi timeline 6→4 minggu. Server Wrapping Key untuk sharing.                                                                                                                                                                                                                                                                      |
+| 3.0   | 6 Juli 2026  | **Final.** AI_MODE=adaptive_split, LAYER2=hybrid (AES+RSA), UHC_MODULUS=257. Tambah RSA engine, AI selector + feature extraction, security analyzer (entropi, korrelasi, avalanche, NPCR, UACI, score). Semua parameter via .env. Frontend: System Info page, Security Score modal, File Detail panel. Total test 67+.                                                             |
+| 4.0   | 15 Juli 2026 | **Enhanced AI Selector.** Tambah section 7.6 Multi-Feature Adaptive Matrix: klasifikasi tipe file (text/structured/compressed/binary), size tier log-scaled, entropy adjustment (±2 index), type adjustment (±1 index), adaptive logistic parameter r (3.90–3.99). Simulasi 4 file 50KB → 4 matrix_size berbeda. Decision trace di metadata. Test 6: AI Variation. Total test 77+. |
 
 ---
 

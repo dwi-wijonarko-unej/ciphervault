@@ -6,6 +6,13 @@ from backend.schemas.auth import (
     UserResponse,
 )
 from backend.schemas.common import ErrorResponse, SuccessResponse
+from backend.schemas.file import (
+    FileDetailResponse,
+    FileListItem,
+    FileListResponse,
+    FileUploadResponse,
+    SecurityAnalysisResponse,
+)
 
 __all__ = [
     "LoginRequest",
@@ -15,4 +22,9 @@ __all__ = [
     "UserResponse",
     "ErrorResponse",
     "SuccessResponse",
+    "FileUploadResponse",
+    "FileListItem",
+    "FileListResponse",
+    "FileDetailResponse",
+    "SecurityAnalysisResponse",
 ]

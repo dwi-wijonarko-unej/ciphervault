@@ -28,6 +28,6 @@ def init_db() -> None:
         db_rel = settings.database_url.replace("sqlite:///./", "")
         Path(db_rel).parent.mkdir(parents=True, exist_ok=True)
 
-    from backend.models import user  # noqa: F401
+    import backend.models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

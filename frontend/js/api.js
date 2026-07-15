@@ -1,7 +1,11 @@
 const API = (() => {
+  const storedBaseUrl = localStorage.getItem("cv_api_base_url");
   const BASE_URL =
-    localStorage.getItem("cv_api_base_url") || "http://127.0.0.1:8000";
-  let useMock = true;
+    storedBaseUrl && /^https?:\/\//.test(storedBaseUrl)
+      ? storedBaseUrl
+      : window.location.origin;
+  const REQUEST_TIMEOUT_MS = 15000;
+  let useMock = localStorage.getItem("cv_use_mock") === "1";
 
   function getToken() {
     return localStorage.getItem("cv_token");
@@ -33,11 +37,29 @@ const API = (() => {
       return mockHandler(method, path, body);
     }
 
-    const res = await fetch(`${BASE_URL}${path}`, {
-      method,
-      headers: getHeaders(isFormData),
-      body: body ? (isFormData ? body : JSON.stringify(body)) : null,
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    let res;
+    try {
+      res = await fetch(`${BASE_URL}${path}`, {
+        method,
+        headers: getHeaders(isFormData),
+        body: body ? (isFormData ? body : JSON.stringify(body)) : null,
+        signal: controller.signal,
+      });
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw {
+        detail:
+          error?.name === "AbortError"
+            ? `Request timeout after ${REQUEST_TIMEOUT_MS / 1000}s`
+            : `Cannot connect to API at ${BASE_URL}`,
+        statusCode: 0,
+      };
+    }
+
+    clearTimeout(timeoutId);
 
     const contentType = res.headers.get("content-type") || "";
     const payload = contentType.includes("application/json")
@@ -49,6 +71,14 @@ const API = (() => {
         ...payload,
         statusCode: res.status,
       };
+
+      if (res.status === 401 && !isAuthPath) {
+        clearToken();
+        if (!window.location.pathname.endsWith("/login.html")) {
+          window.location.href = "login.html";
+        }
+      }
+
       throw errorPayload;
     }
     return payload;
@@ -75,6 +105,7 @@ const API = (() => {
     setToken,
     clearToken,
     request,
+    getBaseUrl: () => BASE_URL,
     setUseMock: (v) => {
       useMock = v;
     },
