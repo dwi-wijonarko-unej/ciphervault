@@ -44,7 +44,13 @@ const API = (() => {
       ? await res.json()
       : { detail: await res.text() };
 
-    if (!res.ok) throw payload;
+    if (!res.ok) {
+      const errorPayload = {
+        ...payload,
+        statusCode: res.status,
+      };
+      throw errorPayload;
+    }
     return payload;
   }
 

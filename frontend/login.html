@@ -115,6 +115,7 @@
   <script src="js/theme.js"></script>
   <script src="js/api.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
   <script>
     function switchTab(tab) {
       document.querySelectorAll('.tab-btn').forEach(t => {
@@ -150,11 +151,12 @@
     }
 
     function handleDemoLogin() {
-      API.setToken('demo_token');
-      window.location.href = 'index.html';
+      UI.toast('Demo auto-login dinonaktifkan. Silakan login dengan akun yang valid.', 'info');
     }
 
-    if (API.getToken()) window.location.href = 'index.html';
+    document.addEventListener('DOMContentLoaded', () => {
+      Auth.redirectIfLoggedIn();
+    });
   </script>
 </body>
 </html>
