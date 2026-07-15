@@ -19,8 +19,10 @@ class FileUploadResponse(BaseModel):
     file_size_encrypted: int
     mime_type: str
     created_at: datetime
+    encryption_type: str = "UHC+AES+RSA"
     security_score: int
     security_metrics: dict[str, float]
+    ai_decision: dict[str, Any] | None = None
 
 
 class FileListItem(BaseModel):
@@ -34,6 +36,7 @@ class FileListItem(BaseModel):
     file_size_encrypted: int
     file_size_formatted: str | None = None
     mime_type: str
+    encryption_type: str = "UHC+AES+RSA"
     created_at: datetime
 
 

@@ -115,14 +115,20 @@ def _score(metrics: dict[str, float]) -> int:
     return int(round(min(max(score, 0), 100)))
 
 
-def analyze_file(ciphertext: bytes) -> dict[str, Any]:
+def analyze_file(
+    ciphertext: bytes, flipped_ciphertext: bytes | None = None
+) -> dict[str, Any]:
     arr = np.frombuffer(ciphertext, dtype=np.uint8)
 
-    flipped = _flip_one_bit(ciphertext)
-    flipped_arr = np.frombuffer(flipped, dtype=np.uint8)
-
-    npcr, uaci = _npcr_uaci(arr, flipped_arr)
-    bit_change = _bit_change_ratio(ciphertext, flipped)
+    if flipped_ciphertext is not None:
+        flipped_arr = np.frombuffer(flipped_ciphertext, dtype=np.uint8)
+        npcr, uaci = _npcr_uaci(arr, flipped_arr)
+        bit_change = _bit_change_ratio(ciphertext, flipped_ciphertext)
+    else:
+        flipped = _flip_one_bit(ciphertext)
+        flipped_arr = np.frombuffer(flipped, dtype=np.uint8)
+        npcr, uaci = _npcr_uaci(arr, flipped_arr)
+        bit_change = _bit_change_ratio(ciphertext, flipped)
 
     metrics: dict[str, float] = {
         "entropy": round(_entropy(arr), 4),

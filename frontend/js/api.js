@@ -268,7 +268,7 @@ const MockRouter = (() => {
       file_id: 5,
       file_name: "README.md",
       timestamp: "2026-07-05T11:20:00Z",
-      details: "File uploaded — encrypted with UHC + hybrid AES/RSA",
+      details: "File uploaded — encrypted with UHC + AES-256-CBC + RSA-OAEP",
     },
     {
       id: 2,
@@ -780,8 +780,9 @@ const MockRouter = (() => {
       // System
       if (path === "/system/config" && method === "GET") {
         return {
-          ai_mode: "adaptive_split",
-          layer2_algorithm: "hybrid",
+          ai_mode: "multi_feature_adaptive",
+          ai_adaptive_r: true,
+          layer2_algorithm: "AES-256-CBC + RSA-OAEP",
           uhc_modulus: 257,
           uhc_matrix_size: "auto (4 or 8)",
           uhc_logistic_r: 3.99,

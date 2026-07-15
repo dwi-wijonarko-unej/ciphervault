@@ -131,9 +131,16 @@ const UI = (() => {
           <div class="bg-surface border border-border rounded-lg p-4">
             <h4 class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">Encryption Details</h4>
             <div class="space-y-2.5">
-              <div class="flex justify-between"><span class="text-sm text-muted">Layer 1</span><span class="text-sm font-medium">UHC (mod 257)</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Layer 2</span><span class="text-sm font-medium">AES-256-CBC</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Key Wrap</span><span class="text-sm font-medium">RSA-OAEP</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted">Layer 1</span><span class="text-sm font-medium">UHC (mod ${modulus})</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted">Layer 2</span><span class="text-sm font-medium">${
+                file.encryption_type
+                  ? file.encryption_type
+                      .split("+")
+                      .filter((p) => p !== "UHC")
+                      .join(" + ")
+                  : "AES-256-CBC + RSA-OAEP"
+              }</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted">Key Wrap</span><span class="text-sm font-medium">RSA-OAEP (SHA-256)</span></div>
               <div class="flex justify-between"><span class="text-sm text-muted">AI Mode</span><span class="text-sm font-medium">${aiMode}</span></div>
               <div class="flex justify-between"><span class="text-sm text-muted">Matrix Size</span><span class="text-sm font-medium">${matrixSize}</span></div>
               <div class="flex justify-between"><span class="text-sm text-muted">Modulus</span><span class="text-sm font-medium">${modulus}</span></div>

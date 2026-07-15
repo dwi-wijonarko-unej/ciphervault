@@ -69,11 +69,11 @@ const SystemPage = (() => {
               <div class="space-y-3">
                 <div class="flex items-center justify-between py-2 border-b border-border">
                   <span class="text-sm text-muted">Encryption Layers</span>
-                  <span class="text-sm">UHC + AES + RSA</span>
+                  <span class="text-sm">UHC + ${config.layer2_algorithm || "AES + RSA"}</span>
                 </div>
                 <div class="flex items-center justify-between py-2 border-b border-border">
-                  <span class="text-sm text-muted">AI Split</span>
-                  <span class="text-sm">Adaptive (6 features)</span>
+                  <span class="text-sm text-muted">AI Mode</span>
+                  <span class="text-sm">${config.ai_mode || "multi_feature_adaptive"}${config.ai_adaptive_r ? " (adaptive-r)" : ""}</span>
                 </div>
                 <div class="flex items-center justify-between py-2 border-b border-border">
                   <span class="text-sm text-muted">Integrity</span>

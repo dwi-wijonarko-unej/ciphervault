@@ -1,10 +1,17 @@
 const App = (() => {
   let currentView = "dashboard";
   let currentUser = null;
+  let systemConfig = null;
 
   async function init() {
     currentUser = await Auth.ensureAuthenticated();
     if (!currentUser) return;
+
+    try {
+      systemConfig = await API.request("GET", "/system/config");
+    } catch {
+      systemConfig = null;
+    }
 
     hydrateUserUI(currentUser);
     setupNavbar();
@@ -72,13 +79,24 @@ const App = (() => {
     }
   }
 
+  function buildEncryptionSummary() {
+    const aiMode = systemConfig?.ai_mode || "multi_feature_adaptive";
+    const adaptiveR =
+      systemConfig?.ai_adaptive_r === true ? "adaptive-r" : "fixed-r";
+    const layer2 = systemConfig?.layer2_algorithm || "AES-256-CBC + RSA-OAEP";
+
+    return `UHC + ${layer2} (${aiMode}, ${adaptiveR})`;
+  }
+
   async function renderDashboard(container) {
+    const encryptionSummary = buildEncryptionSummary();
+
     container.innerHTML = `
       <div class="page-enter">
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
             <h1 class="text-2xl font-bold">My Files</h1>
-            <p class="text-sm text-muted mt-1">Securely encrypted with <span class="text-emerald-400 font-medium">UHC + Hybrid AES/RSA</span></p>
+            <p class="text-sm text-muted mt-1">Securely encrypted with <span class="text-emerald-400 font-medium">${encryptionSummary}</span></p>
           </div>
           <button class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-blue-500/25 transition-all cursor-pointer border-none" onclick="document.getElementById('file-input').click()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -187,7 +205,7 @@ const App = (() => {
     }
   }
 
-  return { init, navigate };
+  return { init, navigate, getSystemConfig: () => systemConfig };
 })();
 
 document.addEventListener("DOMContentLoaded", () => App.init());

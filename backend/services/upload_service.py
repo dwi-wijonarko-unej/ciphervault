@@ -82,6 +82,14 @@ class UploadService:
         )
         cipher_aes, iv_aes = aes_encrypt(cipher_u, session_key)
 
+        # Encrypt flipped plaintext for avalanche analysis
+        flipped_pt = bytearray(plaintext)
+        flipped_pt[0] ^= 0b00000001
+        flipped_u, _, _ = uhc_encrypt(
+            bytes(flipped_pt), key_matrix, modulus=settings.uhc_modulus
+        )
+        flipped_aes, _ = aes_encrypt(flipped_u, session_key)
+
         user_key = derive_user_key(user.derived_key_hash, user.salt)
         wrapped_key = wrap_key(session_key, user_key)
         rsa_wrapped_key = rsa_wrap_key(session_key)
@@ -110,7 +118,7 @@ class UploadService:
             mime_type=mime_type,
             file_size_original=len(plaintext),
             file_size_encrypted=len(cipher_aes),
-            encryption_type="UHC+AES+RSA",
+            encryption_type=f"UHC(mod{settings.uhc_modulus},M{matrix_size},R{logistic_r})+AES+RSA",
         )
         db.add(stored_file)
         db.flush()
@@ -126,7 +134,7 @@ class UploadService:
         )
         db.add(file_key)
 
-        analysis = analyze_file(cipher_aes)
+        analysis = analyze_file(cipher_aes, flipped_aes)
 
         db.add(
             ActivityLog(
@@ -148,6 +156,8 @@ class UploadService:
             file_size_encrypted=stored_file.file_size_encrypted,
             mime_type=stored_file.mime_type,
             created_at=stored_file.created_at,
+            encryption_type=stored_file.encryption_type,
             security_score=analysis["score"],
             security_metrics=analysis["metrics"],
+            ai_decision=ai_decision,
         )

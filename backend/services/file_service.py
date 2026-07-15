@@ -50,6 +50,7 @@ class FileService:
                 "file_size_encrypted": item.file_size_encrypted,
                 "file_size_formatted": _format_size(item.file_size_original),
                 "mime_type": item.mime_type,
+                "encryption_type": item.encryption_type,
                 "created_at": item.created_at,
             }
             for item in items
@@ -96,6 +97,7 @@ class FileService:
                 "file_size_encrypted": item.file_size_encrypted,
                 "file_size_formatted": _format_size(item.file_size_original),
                 "mime_type": item.mime_type,
+                "encryption_type": item.encryption_type,
                 "created_at": item.created_at,
             }
             for item in items

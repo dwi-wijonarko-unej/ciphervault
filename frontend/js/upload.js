@@ -73,7 +73,7 @@ const Upload = (() => {
       const res = await API.request("POST", "/files/upload", formData, true);
       const bar = document.getElementById(pid);
       if (bar) bar.style.width = "100%";
-      statusEl.textContent = `${formatFileSize(file.size)} — Encrypted & stored securely`;
+      statusEl.textContent = `${formatFileSize(file.size)} — Encrypted with ${res.encryption_type || "UHC+AES+RSA"} ✓`;
       item.style.borderColor = "#22c55e";
       UI.toast(`"${file.name}" uploaded successfully`, "success");
 
