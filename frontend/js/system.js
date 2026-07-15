@@ -1,9 +1,10 @@
 const SystemPage = (() => {
   async function render(container) {
-    container.innerHTML = '<div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border border-t-blue-500 rounded-full animate-spin mx-auto"></div></div>';
+    container.innerHTML =
+      '<div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border border-t-blue-500 rounded-full animate-spin mx-auto"></div></div>';
     try {
-      const config = await API.request('GET', '/system/config');
-      const status = await API.request('GET', '/system/status');
+      const config = await API.request("GET", "/system/config");
+      const status = await API.request("GET", "/system/status");
 
       container.innerHTML = `
         <div class="page-enter">
@@ -20,13 +21,14 @@ const SystemPage = (() => {
                 Encryption Engine
               </h3>
               <div class="space-y-3">
-                ${renderConfigRow('AI Mode', config.ai_mode, 'adaptive_split, matrix_size, or off')}
-                ${renderConfigRow('Layer 2', config.layer2_algorithm, 'hybrid = AES data + RSA key wrap')}
-                ${renderConfigRow('UHC Modulus', config.uhc_modulus, '257 (prime) or 256')}
-                ${renderConfigRow('Matrix Size', config.uhc_matrix_size, 'Auto-selected or fixed')}
-                ${renderConfigRow('Logistic R', config.uhc_logistic_r, 'Chaos parameter 3.5-4.0')}
-                ${renderConfigRow('Session Key', config.session_key_bytes + ' bytes', 'Random per file')}
-                ${renderConfigRow('PBKDF2', config.pbkdf2_iterations + ' iterations', 'Key derivation')}
+                ${renderConfigRow("AI Mode", config.ai_mode, "multi_feature_adaptive atau legacy")}
+                ${renderConfigRow("Adaptive R", String(config.ai_adaptive_r), "true = entropy-based logistic r")}
+                ${renderConfigRow("Layer 2", config.layer2_algorithm, "hybrid = AES data + RSA key wrap")}
+                ${renderConfigRow("UHC Modulus", config.uhc_modulus, "257 (prime) or 256")}
+                ${renderConfigRow("Matrix Size", config.uhc_matrix_size, "Auto-selected or fixed")}
+                ${renderConfigRow("Logistic R", config.uhc_logistic_r, "Chaos parameter 3.5-4.0")}
+                ${renderConfigRow("Session Key", config.session_key_bytes + " bytes", "Random per file")}
+                ${renderConfigRow("PBKDF2", config.pbkdf2_iterations + " iterations", "Key derivation")}
               </div>
             </div>
 
@@ -37,10 +39,10 @@ const SystemPage = (() => {
                 RSA Keys (Global Server)
               </h3>
               <div class="space-y-3">
-                ${renderConfigRow('Status', status.rsa_status === 'ready' ? '✅ Generated' : '❌ Not Generated', '')}
-                ${renderConfigRow('Key Size', status.rsa_key_size + '-bit', '')}
-                ${renderConfigRow('Fingerprint', status.rsa_fingerprint || '—', 'SHA-256 of public key')}
-                ${renderConfigRow('Generated', status.rsa_generated_at || '—', '')}
+                ${renderConfigRow("Status", status.rsa_status === "ready" ? "✅ Generated" : "❌ Not Generated", "")}
+                ${renderConfigRow("Key Size", status.rsa_key_size + "-bit", "")}
+                ${renderConfigRow("Fingerprint", status.rsa_fingerprint || "—", "SHA-256 of public key")}
+                ${renderConfigRow("Generated", status.rsa_generated_at || "—", "")}
               </div>
             </div>
 
@@ -51,10 +53,10 @@ const SystemPage = (() => {
                 Storage
               </h3>
               <div class="space-y-3">
-                ${renderConfigRow('Files', status.storage_files || '0', '')}
-                ${renderConfigRow('Used', status.storage_used || '0 MB', '')}
-                ${renderConfigRow('Limit', status.storage_limit || '—', '')}
-                ${renderConfigRow('Database', status.database || 'SQLite', '')}
+                ${renderConfigRow("Files", status.storage_files || "0", "")}
+                ${renderConfigRow("Used", status.storage_used || "0 MB", "")}
+                ${renderConfigRow("Limit", status.storage_limit || "—", "")}
+                ${renderConfigRow("Database", status.database || "SQLite", "")}
               </div>
             </div>
 
@@ -87,7 +89,8 @@ const SystemPage = (() => {
         </div>
       `;
     } catch {
-      container.innerHTML = '<div class="bg-surface-card border border-border rounded-xl p-10 text-center"><p class="text-red-400">Failed to load system configuration.</p></div>';
+      container.innerHTML =
+        '<div class="bg-surface-card border border-border rounded-xl p-10 text-center"><p class="text-red-400">Failed to load system configuration.</p></div>';
     }
   }
 
@@ -96,7 +99,7 @@ const SystemPage = (() => {
       <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
         <div>
           <span class="text-sm text-muted">${label}</span>
-          ${hint ? `<p class="text-[10px] text-muted/60">${hint}</p>` : ''}
+          ${hint ? `<p class="text-[10px] text-muted/60">${hint}</p>` : ""}
         </div>
         <span class="text-sm font-medium">${value}</span>
       </div>

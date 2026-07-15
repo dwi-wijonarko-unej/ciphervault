@@ -143,6 +143,7 @@ class FileService:
             created_at=file.created_at,
             encryption_type=file.encryption_type,
             logistic_r=metadata.get("logistic_r"),
+            ai_decision=metadata.get("ai_decision"),
             metadata=metadata,
         )
 

@@ -7,10 +7,12 @@ from sqlalchemy.orm import Session
 
 from backend.config import get_settings
 from backend.crypto import (
+    adaptive_matrix,
     adaptive_split,
     aes_encrypt,
     analyze_file,
     choose_matrix_size_by_split,
+    classify_file_type,
     compute_sha256,
     derive_user_key,
     extract_features,
@@ -45,16 +47,32 @@ class UploadService:
             plaintext, extension=Path(filename_original).suffix.lower()
         )
         split_ratio = adaptive_split(features)
-        matrix_size = choose_matrix_size_by_split(
-            data_length=len(plaintext),
-            split_ratio=split_ratio,
-            fallback=settings.uhc_matrix_size,
-        )
+
+        ai_strategy = settings.ai_matrix_strategy.lower().strip()
+        ai_decision: dict[str, object] | None = None
+
+        if ai_strategy == "legacy":
+            matrix_size = choose_matrix_size_by_split(
+                data_length=len(plaintext),
+                split_ratio=split_ratio,
+                fallback=settings.uhc_matrix_size,
+            )
+            logistic_r = settings.uhc_logistic_r
+        else:
+            file_class = classify_file_type(
+                str(features.get("extension", "")),
+                features,
+            )
+            matrix_size, selected_r, ai_decision = adaptive_matrix(features, file_class)
+            logistic_r = (
+                selected_r if settings.ai_adaptive_r else settings.uhc_logistic_r
+            )
+
         key_matrix = generate_key_matrix(
             matrix_size=matrix_size,
             seed_source=session_key,
             modulus=settings.uhc_modulus,
-            r=settings.uhc_logistic_r,
+            r=logistic_r,
         )
 
         cipher_u, iv_uhc, uhc_meta = uhc_encrypt(
@@ -73,12 +91,15 @@ class UploadService:
 
         metadata_json = generate_metadata(
             {
-                "ai_mode": "adaptive_split",
+                "ai_mode": (
+                    "legacy" if ai_strategy == "legacy" else "multi_feature_adaptive"
+                ),
                 "split_ratio": split_ratio,
                 "matrix_size": matrix_size,
                 "modulus": settings.uhc_modulus,
-                "logistic_r": settings.uhc_logistic_r,
+                "logistic_r": logistic_r,
                 "uhc": uhc_meta,
+                "ai_decision": ai_decision,
             }
         )
 

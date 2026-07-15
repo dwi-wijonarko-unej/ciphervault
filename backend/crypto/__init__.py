@@ -1,9 +1,12 @@
 from backend.crypto.aes_engine import aes_decrypt, aes_encrypt
 from backend.crypto.ai_selector import (
+    adaptive_matrix,
     adaptive_split,
     choose_matrix_size_by_split,
+    classify_file_type,
     extract_features,
     pilih_matriks_ai,
+    select_r,
 )
 from backend.crypto.integrity import verify_integrity
 from backend.crypto.key_manager import (
@@ -37,8 +40,10 @@ from backend.crypto.uhc_engine import (
 __all__ = [
     "aes_decrypt",
     "aes_encrypt",
+    "adaptive_matrix",
     "adaptive_split",
     "choose_matrix_size_by_split",
+    "classify_file_type",
     "extract_features",
     "generate_key_matrix",
     "analyze_file",
@@ -56,6 +61,7 @@ __all__ = [
     "rsa_encrypt",
     "rsa_unwrap_key",
     "rsa_wrap_key",
+    "select_r",
     "uhc_decrypt",
     "uhc_encrypt",
     "unwrap_key",

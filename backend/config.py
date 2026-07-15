@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     uhc_modulus: int = 257
     uhc_matrix_size: int = 8
 
+    ai_matrix_strategy: str = "multi_feature_adaptive"
+    ai_adaptive_r: bool = True
+
     rsa_key_size: int = 2048
     rsa_private_key_path: str = "./data/keys/private.pem"
     rsa_public_key_path: str = "./data/keys/public.pem"

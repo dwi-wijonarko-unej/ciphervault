@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
+from backend.crypto import parse_metadata
 from backend.database import SessionLocal
 from backend.main import app
 from backend.models import FileKey, StoredFile
@@ -72,11 +73,17 @@ def test_upload_stores_ciphertext_and_metadata():
 
         key = db.query(FileKey).filter(FileKey.file_id == stored.id).first()
         assert key is not None
-        assert '"ai_mode":"adaptive_split"' in key.metadata_json
-        assert '"split_ratio":' in key.metadata_json
-        assert '"matrix_size":' in key.metadata_json
-        assert '"modulus":' in key.metadata_json
-        assert '"logistic_r":' in key.metadata_json
+
+        metadata = parse_metadata(key.metadata_json)
+        assert metadata["ai_mode"] in {"multi_feature_adaptive", "legacy"}
+        assert "split_ratio" in metadata
+        assert "matrix_size" in metadata
+        assert "modulus" in metadata
+        assert "logistic_r" in metadata
+        assert "ai_decision" in metadata
+        if metadata["ai_mode"] == "multi_feature_adaptive":
+            assert metadata["ai_decision"] is not None
+            assert metadata["ai_decision"]["strategy"] == "multi_feature_adaptive"
     finally:
         db.close()
 

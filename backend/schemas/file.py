@@ -48,4 +48,5 @@ class FileListResponse(BaseModel):
 class FileDetailResponse(FileListItem):
     encryption_type: str
     logistic_r: float | None = None
+    ai_decision: dict[str, Any] | None = None
     metadata: dict[str, Any]

@@ -28,7 +28,8 @@ def _format_bytes(n: int) -> str:
 @router.get("/config")
 def system_config(_: User = Depends(get_current_user)) -> dict[str, object]:
     return {
-        "ai_mode": "adaptive_split",
+        "ai_mode": settings.ai_matrix_strategy,
+        "ai_adaptive_r": settings.ai_adaptive_r,
         "layer2_algorithm": "AES-256-CBC + RSA-OAEP",
         "uhc_modulus": settings.uhc_modulus,
         "uhc_matrix_size": settings.uhc_matrix_size,
