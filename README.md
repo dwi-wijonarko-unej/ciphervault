@@ -48,32 +48,37 @@ uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 
 ## Endpoint penting
 
-| Endpoint               | Method | Deskripsi                                        | Auth Required |
-| ---------------------- | ------ | ------------------------------------------------ | :-----------: |
-| `/`                    | GET    | Frontend dashboard                               |    ✅ JWT     |
-| `/login.html`          | GET    | Halaman login/register                           |      ❌       |
-| `/docs`                | GET    | Swagger UI dokumentasi API                       |      ❌       |
-| `/health/live`         | GET    | Liveness probe — proses API hidup                |      ❌       |
-| `/health/ready`        | GET    | Readiness probe — database siap                  |      ❌       |
-| `/health`              | GET    | Alias ke readiness                               |      ❌       |
-| `/auth/register`       | POST   | Registrasi user baru                             |      ❌       |
-| `/auth/login`          | POST   | Login, terima JWT token                          |      ❌       |
-| `/auth/me`             | GET    | Ambil profil user saat ini                       |      ✅       |
-| `/auth/reset-password` | POST   | Reset password (verifikasi username + email)     |      ❌       |
-| `/files`               | GET    | List file milik sendiri (pagination)             |      ✅       |
-| `/files/search?q=`     | GET    | Cari file berdasarkan nama                       |      ✅       |
-| `/files/shared`        | GET    | List file yang dibagikan ke user ini             |      ✅       |
-| `/files/{id}`          | GET    | Detail file + metadata + ai_decision             |      ✅       |
-| `/files/{id}`          | DELETE | Hapus file (owner only)                          |      ✅       |
-| `/files/{id}/download` | GET    | Download + dekripsi file (owner/recipient)       |      ✅       |
-| `/files/{id}/share`    | POST   | Bagikan file ke user lain                        |      ✅       |
-| `/files/{id}/shares`   | GET    | List semua share untuk file ini (owner only)     |      ✅       |
-| `/files/shares/{id}`   | DELETE | Cabut akses share (owner only)                   |      ✅       |
-| `/files/{id}/analyze`  | POST   | Analisis keamanan ciphertext (owner/recipient)   |      ✅       |
-| `/files/upload`        | POST   | Upload file (multipart/form-data, field: `file`) |      ✅       |
-| `/system/config`       | GET    | Konfigurasi sistem runtime                       |      ✅       |
-| `/system/status`       | GET    | Status sistem (RSA, storage, database)           |      ✅       |
-| `/activities`          | GET    | Log aktivitas user                               |      ✅       |
+| Endpoint                  | Method | Deskripsi                                        | Auth Required |
+| ------------------------- | ------ | ------------------------------------------------ | :-----------: |
+| `/`                       | GET    | Frontend dashboard                               |    ✅ JWT     |
+| `/login.html`             | GET    | Halaman login/register                           |      ❌       |
+| `/docs`                   | GET    | Swagger UI dokumentasi API                       |      ❌       |
+| `/health/live`            | GET    | Liveness probe — proses API hidup                |      ❌       |
+| `/health/ready`           | GET    | Readiness probe — database siap                  |      ❌       |
+| `/health`                 | GET    | Alias ke readiness                               |      ❌       |
+| `/auth/register`          | POST   | Registrasi user baru                             |      ❌       |
+| `/auth/login`             | POST   | Login, terima JWT token                          |      ❌       |
+| `/auth/me`                | GET    | Ambil profil user saat ini                       |      ✅       |
+| `/auth/reset-password`    | POST   | Reset password (verifikasi username + email)     |      ❌       |
+| `/files`                  | GET    | List file milik sendiri (pagination)             |      ✅       |
+| `/files/search?q=`        | GET    | Cari file berdasarkan nama                       |      ✅       |
+| `/files/shared`           | GET    | List file yang dibagikan ke user ini             |      ✅       |
+| `/files/{id}`             | GET    | Detail file + metadata + ai_decision             |      ✅       |
+| `/files/{id}`             | DELETE | Hapus file (owner only)                          |      ✅       |
+| `/files/{id}/download`    | GET    | Download + dekripsi file (owner/recipient)       |      ✅       |
+| `/files/{id}/share`       | POST   | Bagikan file ke user lain                        |      ✅       |
+| `/files/{id}/shares`      | GET    | List semua share untuk file ini (owner only)     |      ✅       |
+| `/files/shares/{id}`      | DELETE | Cabut akses share (owner only)                   |      ✅       |
+| `/files/{id}/analyze`     | POST   | Analisis keamanan ciphertext (owner/recipient)   |      ✅       |
+| `/files/upload`           | POST   | Upload file (multipart/form-data, field: `file`) |      ✅       |
+| `/files/directories`      | POST   | Buat folder baru                                 |      ✅       |
+| `/files/directories`      | GET    | Isi folder (root jika tanpa parent_id)           |      ✅       |
+| `/files/directories/{id}` | GET    | Detail folder                                    |      ✅       |
+| `/files/{id}/move`        | PATCH  | Pindahkan file/folder ke folder lain             |      ✅       |
+| `/files/directories/{id}` | DELETE | Hapus folder (rekursif)                          |      ✅       |
+| `/system/config`          | GET    | Konfigurasi sistem runtime                       |      ✅       |
+| `/system/status`          | GET    | Status sistem (RSA, storage, database)           |      ✅       |
+| `/activities`             | GET    | Log aktivitas user                               |      ✅       |
 
 ### Keterangan health endpoint
 
@@ -136,6 +141,16 @@ Variabel yang umum dipakai:
 - **Shared with Me** — tab terpisah menampilkan file yang dibagikan ke user
 - Recipient bisa mendownload file identik byte-per-byte
 - Setelah revoke, recipient mendapat 403 saat akses
+
+### Tahap 4 — Directory Management
+
+- **Folder hirarkis** seperti Google Drive / Dropbox
+- Buat folder root dan subfolder via `POST /files/directories`
+- Navigasi folder dengan breadcrumb di dashboard
+- Pindahkan file antar folder via `PATCH /files/{id}/move`
+- Hapus folder via `DELETE /files/directories/{id}`
+- List konten folder via `GET /files/directories` (file + subfolder)
+- Integrasi penuh dengan upload, download, dan sharing
 
 ## Alur Download (9 Langkah)
 

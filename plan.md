@@ -1,6 +1,6 @@
 # Dokumen Rencana Pengembangan Aplikasi CipherVault
 
-**Versi Dokumen:** 4.0 **Tanggal:** 15 Juli 2026 **Versi Aplikasi:** 1.0.0 **Status:** Final — Siap Eksekusi
+**Versi Dokumen:** 5.0 **Tanggal:** 20 Juli 2026 **Versi Aplikasi:** 1.0.0 **Status:** Final — Siap Eksekusi
 
 ---
 
@@ -132,6 +132,16 @@ CipherVault
 └── Manajemen File
 
     ├── Daftar File
+
+    ├── Direktori / Folder
+
+    │   ├── Buat Folder
+
+    │   ├── Hapus Folder
+
+    │   ├── Pindahkan File / Folder
+
+    │   └── Navigasi Folder (Breadcrumb)
 
     ├── Update File (re-upload)
 
@@ -496,16 +506,18 @@ Owner Backend Recipient
 
 #### `stored_files`
 
-| Kolom                 | Tipe         | Constraint               | Deskripsi                    |
-| :-------------------- | :----------- | :----------------------- | :--------------------------- |
-| `id`                  | INTEGER      | PK, AUTO INCREMENT       | ID unik file                 |
-| `owner_id`            | INTEGER      | FK → users.id, NOT NULL  | Pemilik file                 |
-| `filename_original`   | VARCHAR(255) | NOT NULL                 | Nama file asli dari user     |
-| `filename_stored`     | VARCHAR(255) | NOT NULL                 | Nama file ciphertext di disk |
-| `file_size_original`  | INTEGER      | NOT NULL                 | Ukuran plaintext (bytes)     |
-| `file_size_encrypted` | INTEGER      | NOT NULL                 | Ukuran ciphertext (bytes)    |
-| `created_at`          | DATETIME     | DEFAULT NOW()            | Waktu upload                 |
-| `updated_at`          | DATETIME     | DEFAULT NOW(), ON UPDATE | Waktu update terakhir        |
+| Kolom                 | Tipe         | Constraint                     | Deskripsi                     |
+| :-------------------- | :----------- | :----------------------------- | :---------------------------- |
+| `id`                  | INTEGER      | PK, AUTO INCREMENT             | ID unik file                  |
+| `owner_id`            | INTEGER      | FK → users.id, NOT NULL        | Pemilik file                  |
+| `filename_original`   | VARCHAR(255) | NOT NULL                       | Nama file asli dari user      |
+| `filename_stored`     | VARCHAR(255) | NOT NULL                       | Nama file ciphertext di disk  |
+| `file_size_original`  | INTEGER      | NOT NULL                       | Ukuran plaintext (bytes)      |
+| `file_size_encrypted` | INTEGER      | NOT NULL                       | Ukuran ciphertext (bytes)     |
+| `parent_id`           | INTEGER      | FK → stored_files.id, NULLABLE | ID folder induk (NULL = root) |
+| `is_directory`        | BOOLEAN      | DEFAULT FALSE                  | True jika ini folder          |
+| `created_at`          | DATETIME     | DEFAULT NOW()                  | Waktu upload                  |
+| `updated_at`          | DATETIME     | DEFAULT NOW(), ON UPDATE       | Waktu update terakhir         |
 
 #### `file_keys`
 
@@ -657,7 +669,7 @@ Owner Backend Recipient
 
 }
 
-### 6.7 Kode Status HTTP yang Digunakan
+### 6.9 Kode Status HTTP yang Digunakan
 
 | Kode  | Makna                                                |
 | :---- | :--------------------------------------------------- |
@@ -670,6 +682,16 @@ Owner Backend Recipient
 | `409` | Konflik (username/email sudah ada, sudah di-share)   |
 | `413` | File terlalu besar                                   |
 | `500` | Error server internal                                |
+
+### 6.10 Manajemen Direktori
+
+| Method   | Path                          | Auth | Request Body         | Response              | Deskripsi                            |
+| :------- | :---------------------------- | :--- | :------------------- | :-------------------- | :----------------------------------- |
+| `POST`   | `/files/directories`          | ✅   | `{name, parent_id?}` | `DirectoryResponse`   | Buat folder baru                     |
+| `GET`    | `/files/directories`          | ✅   | `parent_id?`         | `DirectoryListResp`   | Isi folder (file + subfolder)        |
+| `GET`    | `/files/directories/{dir_id}` | ✅   | —                    | `DirectoryDetailResp` | Detail folder                        |
+| `PATCH`  | `/files/{file_id}/move`       | ✅   | `{target_parent_id}` | `SuccessResponse`     | Pindahkan file/folder ke folder lain |
+| `DELETE` | `/files/directories/{dir_id}` | ✅   | —                    | `SuccessResponse`     | Hapus folder (rekursif jika kosong)  |
 
 ---
 
@@ -1597,35 +1619,44 @@ share_service.share(file_id, owner, recipient_username)
 
 **File yang dibuat/dikerjakan:**
 
-| File                                 | Aksi   | Detail                                                |
-| :----------------------------------- | :----- | :---------------------------------------------------- |
-| `backend/services/search_service.py` | Buat   | Pencarian file case-insensitive                       |
-| `backend/services/file_service.py`   | Update | Tambah delete\_file, search\_files, verify\_integrity |
-| `backend/routers/files.py`           | Update | GET /search, DELETE, POST verify                      |
-| `frontend/js/search.js`              | Buat   | Live search dengan debounce, pagination               |
-| `frontend/css/animations.css`        | Buat   | Transisi, skeleton loading, fade-in                   |
-| `frontend/js/ui.js`                  | Update | Confirm dialog, loading spinner, side panel           |
-| `frontend/js/security.js`            | Update | Integrasi dengan halaman detail file                  |
-| `frontend/js/system.js`              | Update | Final polish System Info page                         |
-| `tests/conftest.py`                  | Buat   | Fixtures pytest: test client, test db, auth headers   |
-| `tests/test_file_management.py`      | Buat   | 5+ test: delete, search, verify                       |
-| `tests/test_security.py`             | Buat   | 6+ test: token expired, akses lintas user, dll        |
-| `tests/test_auth.py`                 | Buat   | 6+ test: register, login, me, invalid token           |
-| `README.md`                          | Buat   | Panduan instalasi & penggunaan                        |
+| File                                    | Aksi   | Detail                                                            |
+| :-------------------------------------- | :----- | :---------------------------------------------------------------- |
+| `backend/services/search_service.py`    | Buat   | Pencarian file case-insensitive                                   |
+| `backend/services/file_service.py`      | Update | Tambah delete_file, search_files, verify_integrity, directory ops |
+| `backend/routers/files.py`              | Update | GET /search, DELETE, POST verify, directory endpoints             |
+| `backend/models/stored_file.py`         | Update | Tambah parent_id, is_directory column                             |
+| `backend/services/directory_service.py` | Buat   | CRUD folder, pindahkan file, breadcrumb path                      |
+| `frontend/js/search.js`                 | Buat   | Live search dengan debounce, pagination                           |
+| `frontend/css/animations.css`           | Buat   | Transisi, skeleton loading, fade-in                               |
+| `frontend/js/files.js`                  | Update | Breadcrumb navigasi, folder tree, drag ke folder                  |
+| `frontend/js/ui.js`                     | Update | Confirm dialog, loading spinner, side panel                       |
+| `frontend/js/security.js`               | Update | Integrasi dengan halaman detail file                              |
+| `frontend/js/system.js`                 | Update | Final polish System Info page                                     |
+| `tests/conftest.py`                     | Buat   | Fixtures pytest: test client, test db, auth headers               |
+| `tests/test_file_management.py`         | Buat   | 5+ test: delete, search, verify                                   |
+| `tests/test_directory.py`               | Buat   | 6+ test: buat folder, hapus, pindah, navigasi                     |
+| `tests/test_security.py`                | Buat   | 6+ test: token expired, akses lintas user, dll                    |
+| `tests/test_auth.py`                    | Buat   | 6+ test: register, login, me, invalid token                       |
+| `README.md`                             | Update | Tambah endpoint direktori, API usage                              |
 
 **Acceptance Criteria:**
 
 - [ ] DELETE /files/{id} hapus ciphertext + record
 - [ ] GET /files/search?q= cari by nama (case-insensitive)
 - [ ] POST /files/{id}/verify verifikasi integritas tanpa download
+- [ ] POST /files/directories buat folder baru
+- [ ] GET /files/directories?parent_id= navigasi folder
+- [ ] PATCH /files/{id}/move pindahkan file antar folder
+- [ ] DELETE /files/directories/{id} hapus folder (rekursif jika perlu)
+- [ ] Breadcrumb path di frontend untuk navigasi folder
 - [ ] Pagination berfungsi
 - [ ] Activity log mencatat setiap aksi
 - [ ] Frontend: live search, confirm delete, skeleton loading
 - [ ] Security analysis dapat dilihat dari file detail panel
 - [ ] System Info page menampilkan semua konfigurasi aktif
 - [ ] POST /files/{id}/analyze mengembalikan metrics lengkap
-- [ ] Semua 67+ test pass
-- [ ] README lengkap
+- [ ] Semua 77+ test pass
+- [ ] README lengkap dengan endpoint direktori
 
 **Integrasi Frontend (Wajib di Fase 4):**
 
@@ -2005,15 +2036,63 @@ curl http://localhost:8000/files/1/download \\
 
 \-o dokumen\_decrypted.pdf
 
-\# Share file
+# Share file
 
-curl \-X POST http://localhost:8000/files/1/share \\
+curl -X POST http://localhost:8000/files/1/share \
 
-\-H "Authorization: Bearer \<TOKEN\>" \\
+-H "Authorization: Bearer <TOKEN>" \
 
-\-H "Content-Type: application/json" \\
+-H "Content-Type: application/json" \
 
-\-d '{"recipient\_username":"bob","expires\_in\_hours":48}'
+-d '{"recipient_username":"bob","expires_in_hours":48}'
+
+# Buat folder (root)
+
+curl -X POST http://localhost:8000/files/directories \
+
+-H "Authorization: Bearer <TOKEN>" \
+
+-H "Content-Type: application/json" \
+
+-d '{"name":"Dokumen Kerja"}'
+
+# Buat subfolder
+
+curl -X POST http://localhost:8000/files/directories \
+
+-H "Authorization: Bearer <TOKEN>" \
+
+-H "Content-Type: application/json" \
+
+-d '{"name":"Proyek A","parent_id":1}'
+
+# Lihat isi folder root
+
+curl http://localhost:8000/files/directories \
+
+-H "Authorization: Bearer <TOKEN>"
+
+# Lihat isi subfolder
+
+curl http://localhost:8000/files/directories?parent_id=1 \
+
+-H "Authorization: Bearer <TOKEN>"
+
+# Pindahkan file ke folder
+
+curl -X PATCH http://localhost:8000/files/1/move \
+
+-H "Authorization: Bearer <TOKEN>" \
+
+-H "Content-Type: application/json" \
+
+-d '{"target_parent_id":1}'
+
+# Hapus folder
+
+curl -X DELETE http://localhost:8000/files/directories/1 \
+
+-H "Authorization: Bearer <TOKEN>"
 
 ### 14.3 Konvensi Penamaan
 
@@ -2038,6 +2117,7 @@ curl \-X POST http://localhost:8000/files/1/share \\
 | 2.0   | 6 Juli 2026  | Sinkronisasi Plan.md + Notebook UHC mod 257. Kompresi timeline 6→4 minggu. Server Wrapping Key untuk sharing.                                                                                                                                                                                                                                                                      |
 | 3.0   | 6 Juli 2026  | **Final.** AI_MODE=adaptive_split, LAYER2=hybrid (AES+RSA), UHC_MODULUS=257. Tambah RSA engine, AI selector + feature extraction, security analyzer (entropi, korrelasi, avalanche, NPCR, UACI, score). Semua parameter via .env. Frontend: System Info page, Security Score modal, File Detail panel. Total test 67+.                                                             |
 | 4.0   | 15 Juli 2026 | **Enhanced AI Selector.** Tambah section 7.6 Multi-Feature Adaptive Matrix: klasifikasi tipe file (text/structured/compressed/binary), size tier log-scaled, entropy adjustment (±2 index), type adjustment (±1 index), adaptive logistic parameter r (3.90–3.99). Simulasi 4 file 50KB → 4 matrix_size berbeda. Decision trace di metadata. Test 6: AI Variation. Total test 77+. |
+| 5.0   | 20 Juli 2026 | **Manajemen Direktori.** Tambah fitur folder hirarkis di Manajemen File. Tambah parent_id & is_directory di stored_files. Tambah section 6.10 endpoint direktori. Tambah file backend/services/directory_service.py + frontend breadcrumb navigasi. Update Fase 4 dengan task direktori. Total test 83+.                                                                           |
 
 ---
 
