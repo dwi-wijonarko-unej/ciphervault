@@ -15,16 +15,21 @@ const UI = (() => {
   function toast(message, type = "info", duration = 4000) {
     init();
     const colors = {
-      success: "border-l-[3px] border-l-emerald-500",
-      error: "border-l-[3px] border-l-red-500",
-      info: "border-l-[3px] border-l-blue-500",
+      success: "border-l-[3px] border-l-success",
+      error: "border-l-[3px] border-l-error",
+      info: "border-l-[3px] border-l-info",
+    };
+    const borderColors = {
+      success: "var(--success)",
+      error: "var(--error)",
+      info: "var(--info)",
     };
     const icons = {
       success:
-        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
       error:
-        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
-      info: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+      info: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
     };
 
     const el = document.createElement("div");
@@ -32,7 +37,7 @@ const UI = (() => {
     el.innerHTML = `
       <span class="flex-shrink-0">${icons[type] || icons.info}</span>
       <span class="flex-1 text-sm">${message}</span>
-      <button class="flex-shrink-0 text-muted hover:text-[#e2e8f0] transition-colors cursor-pointer bg-transparent border-none p-1" onclick="this.parentElement.remove()">
+      <button class="flex-shrink-0 text-muted hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-1 rounded-md hover:bg-surface-hover" onclick="this.parentElement.remove()">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     `;
@@ -50,12 +55,12 @@ const UI = (() => {
     init();
     const overlay = document.createElement("div");
     overlay.className =
-      "fixed inset-0 bg-black/60 backdrop-blur-sm z-[8000] flex items-center justify-center p-5 modal-enter";
+      "fixed inset-0 bg-black/50 backdrop-blur-sm z-[8000] flex items-center justify-center p-5 modal-enter";
     overlay.innerHTML = `
       <div class="bg-surface-card border border-border rounded-xl shadow-2xl w-full max-w-[480px] max-h-[80vh] overflow-y-auto modal-enter">
-        <div class="flex items-center justify-between px-6 pt-5">
-          <h3 class="text-lg font-semibold">${title}</h3>
-          <button class="p-2 rounded-lg text-muted hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
+        <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-border">
+          <h3 class="text-lg font-bold">${title}</h3>
+          <button class="p-2 rounded-md text-muted hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -74,9 +79,9 @@ const UI = (() => {
     return new Promise((resolve) => {
       const overlay = modal(
         "Confirm",
-        `<p class="text-[#94a3b8]">${message}</p>`,
-        `<button class="px-4 py-2 rounded-lg text-sm font-medium text-[#94a3b8] hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(false)">Cancel</button>
-         <button class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-all cursor-pointer border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(true)">Delete</button>`,
+        `<p class="text-secondary">${message}</p>`,
+        `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(false)">Cancel</button>
+         <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(true)" style="background: var(--error);">Delete</button>`,
       );
       window.__confirmResolve = resolve;
     });
@@ -91,7 +96,7 @@ const UI = (() => {
         el.className =
           "fixed inset-0 bg-black/30 z-[9999] flex items-center justify-center";
         el.innerHTML =
-          '<div class="w-10 h-10 border-2 border-border border-t-blue-500 rounded-full animate-[spin_0.6s_linear_infinite]"></div>';
+          '<div class="w-10 h-10 rounded-full border-2 border-border animate-spin" style="border-top-color: var(--primary);"></div>';
         document.body.appendChild(el);
       }
     } else {
@@ -118,11 +123,11 @@ const UI = (() => {
           <div class="flex items-center gap-2.5">
             <span class="file-icon" style="width:36px;height:36px;">${icon.svg}</span>
             <div>
-              <h3 class="text-base font-semibold truncate max-w-[280px]">${file.filename_original}</h3>
-              <span class="text-xs text-emerald-400">Encrypted</span>
+              <h3 class="text-base font-semibold font-heading truncate max-w-[280px]">${file.filename_original}</h3>
+              <span class="text-xs" style="color: var(--success);">Encrypted</span>
             </div>
           </div>
-          <button class="p-2 rounded-lg text-muted hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
+          <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -155,15 +160,15 @@ const UI = (() => {
               <div class="flex justify-between"><span class="text-sm text-muted">Encrypted Size</span><span class="text-sm font-medium">${formatBytes(file.file_size_encrypted)}</span></div>
               <div class="flex justify-between"><span class="text-sm text-muted">Type</span><span class="text-sm font-medium">${file.mime_type || "—"}</span></div>
               <div class="flex justify-between"><span class="text-sm text-muted">Created</span><span class="text-sm font-medium">${formatDate(file.created_at)}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">File ID</span><span class="text-sm font-mono text-blue-400">${file.id}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted">File ID</span><span class="text-sm font-mono" style="color: var(--primary);">${file.id}</span></div>
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button class="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-blue-500/25 transition-all cursor-pointer border-none" onclick="Download.handle(${file.id}, '${file.filename_original}');this.closest('.fixed.inset-0').remove()">
+            <button class="flex-1 px-4 py-2.5 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" style="background: var(--primary);" onclick="Download.handle(${file.id}, '${file.filename_original}');this.closest('.fixed.inset-0').remove()">
               Download
             </button>
-            <button class="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium text-[#e2e8f0] bg-[rgba(59,130,246,0.1)] hover:bg-[rgba(59,130,246,0.18)] transition-all cursor-pointer border-none" onclick="SecurityUI.renderFileAnalysis(${file.id})">
+            <button class="flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 cursor-pointer border-none hover:bg-surface-hover" style="background: var(--surface); color: var(--text-primary);" onclick="SecurityUI.renderFileAnalysis(${file.id})">
               Analyze Security
             </button>
           </div>

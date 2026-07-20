@@ -61,7 +61,7 @@ const FileList = (() => {
 
   async function render(container, searchQuery = "") {
     container.innerHTML =
-      '<div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border border-t-blue-500 rounded-full animate-[spin_0.6s_linear_infinite] mx-auto"></div></div>';
+      '<div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border animate-spin mx-auto" style="border-top-color: var(--primary); border-radius: 50%;"></div></div>';
     try {
       const path = searchQuery
         ? `/files/search?q=${encodeURIComponent(searchQuery)}`
@@ -73,22 +73,22 @@ const FileList = (() => {
         container.innerHTML = `
           <div class="flex flex-col items-center justify-center py-16 text-center animate-[fadeIn_0.3s_ease]">
             <svg class="w-16 h-16 opacity-40 mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-            <h3 class="text-lg font-semibold">${searchQuery ? "No files found" : "No files yet"}</h3>
+            <h3 class="text-lg font-bold font-heading">${searchQuery ? "No files found" : "No files yet"}</h3>
             <p class="text-sm text-muted mt-2">${searchQuery ? "Try a different search term." : "Upload your first file to get started."}</p>
           </div>`;
         return;
       }
 
-      let html = `<div class="bg-surface-card border border-border rounded-xl overflow-hidden">
+      let html = `<div class="bg-surface-card border border-border rounded-lg overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="bg-surface">
-                <th class="text-left px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">Name</th>
-                <th class="text-left px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">Size</th>
-                <th class="text-left px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider hidden sm:table-cell">Type</th>
-                <th class="text-left px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider hidden md:table-cell">Date</th>
-                <th class="text-right px-4 py-3 text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">Actions</th>
+              <tr class="bg-surface border-b border-border">
+                <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Name</th>
+                <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Size</th>
+                <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider hidden sm:table-cell">Type</th>
+                <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider hidden md:table-cell">Date</th>
+                <th class="text-right px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody>`;
@@ -96,7 +96,7 @@ const FileList = (() => {
         const icon = getFileIcon(file.filename_original);
         const ext = file.mime_type?.split("/")[1]?.toUpperCase() || "FILE";
         html += `
-          <tr class="border-t border-border hover:bg-[rgba(59,130,246,0.02)] transition-colors file-list-enter">
+          <tr class="border-b border-border last:border-0 hover:bg-surface-hover transition-colors duration-150 file-list-enter">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2.5 cursor-pointer" onclick="FileList.showDetail(${file.id})">
                   <span class="file-icon ${icon.cls}">${icon.svg}</span>
@@ -104,7 +104,7 @@ const FileList = (() => {
                     <div class="text-sm font-medium truncate max-w-[200px] sm:max-w-[300px]">${file.filename_original}</div>
                     <div class="text-xs text-muted flex items-center gap-2">
                       <span>ID: ${file.id}</span>
-                      <span class="inline-flex items-center gap-0.5 text-emerald-400 text-[10px]">
+                      <span class="inline-flex items-center gap-0.5 text-[10px]" style="color: var(--success);">
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         ${file.encryption_type || "UHC+AES+RSA"}
                       </span>
@@ -112,24 +112,24 @@ const FileList = (() => {
                   </div>
                 </div>
               </td>
-            <td class="px-4 py-3 text-sm text-[#94a3b8] whitespace-nowrap">${file.file_size_formatted || "—"}</td>
-            <td class="px-4 py-3 hidden sm:table-cell"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ext === "PDF" ? "text-amber-400 bg-[rgba(234,179,8,0.1)]" : "text-emerald-400 bg-[rgba(34,197,94,0.1)]"}">${ext}</span></td>
+            <td class="px-4 py-3 text-sm text-muted whitespace-nowrap">${file.file_size_formatted || "—"}</td>
+            <td class="px-4 py-3 hidden sm:table-cell"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background: color-mix(in srgb, var(--primary) 15%, transparent); color: var(--primary);">${ext}</span></td>
             <td class="px-4 py-3 text-sm text-muted whitespace-nowrap hidden md:table-cell">${formatDate(file.created_at)}</td>
             <td class="px-4 py-3 text-right">
               <div class="flex items-center justify-end gap-1">
-                <button class="p-2 rounded-lg text-muted hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="Download.handle(${file.id}, '${file.filename_original}')" title="Download">
+                <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="Download.handle(${file.id}, '${file.filename_original}')" title="Download">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 </button>
-                <button class="p-2 rounded-lg text-muted hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="UI.openShareModal(${file.id}, '${file.filename_original}')" title="Share">
+                <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="UI.openShareModal(${file.id}, '${file.filename_original}')" title="Share">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                 </button>
-                <button class="p-2 rounded-lg text-muted hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="FileList.verifyIntegrity(${file.id})" title="Verify">
+                <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="FileList.verifyIntegrity(${file.id})" title="Verify">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
                 </button>
-                <button class="p-2 rounded-lg text-muted hover:text-[#e2e8f0] hover:bg-[rgba(59,130,246,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="SecurityUI.renderFileAnalysis(${file.id})" title="Analyze Security">
+                <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="SecurityUI.renderFileAnalysis(${file.id})" title="Analyze Security">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 </button>
-                <button class="p-2 rounded-lg text-muted hover:text-red-500 hover:bg-[rgba(239,68,68,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="FileList.deleteFile(${file.id})" title="Delete">
+                <button class="p-2 rounded-md text-muted hover:text-error hover:bg-[rgba(196,69,69,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="FileList.deleteFile(${file.id})" title="Delete">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                 </button>
               </div>
@@ -139,7 +139,7 @@ const FileList = (() => {
       html += "</tbody></table></div></div>";
       container.innerHTML = html;
     } catch (e) {
-      container.innerHTML = `<div class="bg-surface-card border border-border rounded-xl p-10 text-center"><p class="text-red-400">${e.detail || "Failed to load files"}</p></div>`;
+      container.innerHTML = `<div class="bg-surface-card border border-border rounded-lg p-10 text-center"><p class="text-error">${e.detail || "Failed to load files"}</p></div>`;
     }
   }
 
@@ -151,22 +151,22 @@ const FileList = (() => {
       ? `UHC + ${cfg.layer2_algorithm || "AES-256-CBC + RSA-OAEP"}`
       : "UHC + AES + RSA";
     area.innerHTML = `
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <div class="bg-surface-card border border-border rounded-xl p-5">
-          <div class="text-xs font-medium text-muted">Total Files</div>
-          <div class="text-2xl font-bold mt-1">${total}</div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div class="bg-surface-card border border-border rounded-lg p-4">
+          <div class="meta">Total Files</div>
+          <div style="font-size: 1.75rem; font-weight: 900; letter-spacing: -0.025em; color: var(--primary);">${total}</div>
         </div>
-        <div class="bg-surface-card border border-border rounded-xl p-5">
-          <div class="text-xs font-medium text-muted">Encryption</div>
-          <div class="mt-2"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-emerald-400 bg-[rgba(34,197,94,0.1)]">${encLabel}</span></div>
+        <div class="bg-surface-card border border-border rounded-lg p-4">
+          <div class="meta">Encryption</div>
+          <div class="mt-2"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style="background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success);">${encLabel}</span></div>
         </div>
-        <div class="bg-surface-card border border-border rounded-xl p-5">
-          <div class="text-xs font-medium text-muted">Storage</div>
-          <div class="mt-2"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-emerald-400 bg-[rgba(34,197,94,0.1)]">Zero-Knowledge</span></div>
+        <div class="bg-surface-card border border-border rounded-lg p-4">
+          <div class="meta">Storage</div>
+          <div class="mt-2"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style="background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success);">Zero-Knowledge</span></div>
         </div>
-        <div class="bg-surface-card border border-border rounded-xl p-5">
-          <div class="text-xs font-medium text-muted">Status</div>
-          <div class="mt-2"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-emerald-400 bg-[rgba(34,197,94,0.1)]">Protected</span></div>
+        <div class="bg-surface-card border border-border rounded-lg p-4">
+          <div class="meta">Status</div>
+          <div class="mt-2"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style="background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success);">Protected</span></div>
         </div>
       </div>`;
   }

@@ -1,10 +1,10 @@
 const Upload = (() => {
   function render(container) {
     container.innerHTML = `
-      <div class="bg-surface-card border border-border rounded-xl p-6 mb-6">
-        <div class="border-2 border-dashed border-border rounded-xl p-10 text-center transition-all cursor-pointer drop-zone" id="drop-zone">
-          <svg class="w-12 h-12 mx-auto mb-3 text-muted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <h3 class="text-base font-medium mb-1">Drag & drop files here</h3>
+      <div class="bg-surface-card border border-border rounded-lg p-6 mb-6">
+        <div class="border-2 border-dashed border-border rounded-lg p-10 text-center transition-all duration-200 cursor-pointer drop-zone" id="drop-zone">
+          <svg class="w-12 h-12 mx-auto mb-3" style="color: var(--muted);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <h3 class="text-base font-semibold mb-1">Drag & drop files here</h3>
           <p class="text-sm text-muted">or click to browse — files up to 100MB</p>
           <input type="file" id="file-input" class="hidden" multiple>
         </div>
@@ -56,7 +56,7 @@ const Upload = (() => {
         <div class="text-xs text-muted upload-status">${formatFileSize(file.size)} — Encrypting & uploading...</div>
       </div>
       <div class="w-[120px] h-1.5 bg-surface rounded-full overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all" id="progress-${file.name.replace(/[^a-zA-Z0-9]/g, "_")}" style="width:0%"></div>
+        <div class="h-full rounded-full transition-all" style="background: var(--primary); width: 0%;" id="progress-${file.name.replace(/[^a-zA-Z0-9]/g, "_")}"></div>
       </div>
     `;
     area.appendChild(item);
@@ -74,7 +74,7 @@ const Upload = (() => {
       const bar = document.getElementById(pid);
       if (bar) bar.style.width = "100%";
       statusEl.textContent = `${formatFileSize(file.size)} — Encrypted with ${res.encryption_type || "UHC+AES+RSA"} ✓`;
-      item.style.borderColor = "#22c55e";
+      item.style.borderColor = "var(--success)";
       UI.toast(`"${file.name}" uploaded successfully`, "success");
 
       await FileList.render(document.getElementById("file-list-area"));
@@ -85,7 +85,7 @@ const Upload = (() => {
       );
     } catch (err) {
       statusEl.textContent = `Failed: ${err.detail || "Unknown error"}`;
-      item.style.borderColor = "#ef4444";
+      item.style.borderColor = "var(--error)";
       UI.toast(`Upload failed: ${file.name}`, "error");
     }
   }

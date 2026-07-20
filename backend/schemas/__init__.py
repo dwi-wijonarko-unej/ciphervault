@@ -2,6 +2,7 @@ from backend.schemas.auth import (
     LoginRequest,
     RegisterRequest,
     RegisterResponse,
+    ResetPasswordRequest,
     TokenResponse,
     UserResponse,
 )
@@ -13,11 +14,20 @@ from backend.schemas.file import (
     FileUploadResponse,
     SecurityAnalysisResponse,
 )
+from backend.schemas.share import (
+    SharedFileItem,
+    SharedFileListResponse,
+    ShareInfo,
+    ShareRecipient,
+    ShareRequest,
+    ShareResponse,
+)
 
 __all__ = [
     "LoginRequest",
     "RegisterRequest",
     "RegisterResponse",
+    "ResetPasswordRequest",
     "TokenResponse",
     "UserResponse",
     "ErrorResponse",
@@ -27,4 +37,10 @@ __all__ = [
     "FileListResponse",
     "FileDetailResponse",
     "SecurityAnalysisResponse",
+    "ShareRequest",
+    "ShareResponse",
+    "ShareRecipient",
+    "ShareInfo",
+    "SharedFileItem",
+    "SharedFileListResponse",
 ]

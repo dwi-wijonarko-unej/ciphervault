@@ -1,17 +1,18 @@
-from backend.middleware.auth_middleware import get_current_user
-from backend.services.auth_service import AuthService
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
+from backend.middleware.auth_middleware import get_current_user
 from backend.models import User
 from backend.schemas.auth import (
     LoginRequest,
     RegisterRequest,
     RegisterResponse,
+    ResetPasswordRequest,
     TokenResponse,
     UserResponse,
 )
+from backend.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -34,6 +35,15 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse
     token = AuthService.create_token(user)
     return TokenResponse(
         access_token=token, token_type="bearer", user=AuthService.to_user_response(user)
+    )
+
+
+@router.post("/reset-password")
+def reset_password(
+    payload: ResetPasswordRequest, db: Session = Depends(get_db)
+) -> dict[str, str]:
+    return AuthService.reset_password(
+        db, payload.username, payload.email, payload.new_password
     )
 
 

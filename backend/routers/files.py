@@ -9,6 +9,7 @@ from backend.schemas.file import (
     FileListResponse,
     SecurityAnalysisResponse,
 )
+from backend.schemas.share import SharedFileListResponse
 from backend.services.file_service import FileService
 
 router = APIRouter(prefix="/files", tags=["files"])
@@ -22,6 +23,16 @@ def list_files(
     current_user: User = Depends(get_current_user),
 ) -> FileListResponse:
     return FileService.get_user_files(db, current_user, page, per_page)
+
+
+@router.get("/shared", response_model=SharedFileListResponse)
+def list_shared_files(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> SharedFileListResponse:
+    return FileService.get_shared_with_me(db, current_user, page, per_page)
 
 
 @router.get("/search", response_model=FileListResponse)
@@ -42,6 +53,15 @@ def get_file_detail(
     current_user: User = Depends(get_current_user),
 ) -> FileDetailResponse:
     return FileService.get_file_detail(db, file_id, current_user)
+
+
+@router.delete("/{file_id}")
+def delete_file(
+    file_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> dict[str, str]:
+    return FileService.delete_user_file(db, file_id, current_user)
 
 
 @router.post("/{file_id}/analyze", response_model=SecurityAnalysisResponse)

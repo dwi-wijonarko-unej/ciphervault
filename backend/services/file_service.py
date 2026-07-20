@@ -6,12 +6,13 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from backend.crypto import analyze_file, parse_metadata
-from backend.models import ActivityLog, FileKey, StoredFile, User
+from backend.models import ActivityLog, FileKey, Share, StoredFile, User
 from backend.schemas.file import (
     FileDetailResponse,
     FileListResponse,
     SecurityAnalysisResponse,
 )
+from backend.schemas.share import SharedFileItem, SharedFileListResponse
 from backend.storage import storage
 
 
@@ -112,13 +113,30 @@ class FileService:
         )
 
     @staticmethod
-    def get_file_detail(db: Session, file_id: int, user: User) -> FileDetailResponse:
-        file = (
-            db.query(StoredFile)
-            .filter(StoredFile.id == file_id, StoredFile.owner_id == user.id)
+    @staticmethod
+    def _check_share_access(db: Session, file_id: int, user: User) -> bool:
+        share = (
+            db.query(Share)
+            .filter(
+                Share.file_id == file_id,
+                Share.recipient_id == user.id,
+                Share.revoked == False,
+            )
             .first()
         )
+        return share is not None
+
+    @staticmethod
+    def get_file_detail(db: Session, file_id: int, user: User) -> FileDetailResponse:
+        file = db.query(StoredFile).filter(StoredFile.id == file_id).first()
         if not file:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="File not found",
+            )
+        if file.owner_id != user.id and not FileService._check_share_access(
+            db, file_id, user
+        ):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="File not found",
@@ -179,12 +197,15 @@ class FileService:
     def analyze_stored_file(
         db: Session, file_id: int, user: User
     ) -> SecurityAnalysisResponse:
-        file = (
-            db.query(StoredFile)
-            .filter(StoredFile.id == file_id, StoredFile.owner_id == user.id)
-            .first()
-        )
+        file = db.query(StoredFile).filter(StoredFile.id == file_id).first()
         if not file:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="File not found",
+            )
+        if file.owner_id != user.id and not FileService._check_share_access(
+            db, file_id, user
+        ):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="File not found",
@@ -203,3 +224,85 @@ class FileService:
             score=analysis["score"],
             metrics=analysis["metrics"],
         )
+
+    @staticmethod
+    def get_shared_with_me(
+        db: Session, user: User, page: int = 1, per_page: int = 20
+    ) -> SharedFileListResponse:
+        page = max(page, 1)
+        per_page = max(min(per_page, 100), 1)
+
+        query = (
+            db.query(StoredFile, Share.access_token, User.username)
+            .join(Share, Share.file_id == StoredFile.id)
+            .join(User, User.id == StoredFile.owner_id)
+            .filter(
+                Share.recipient_id == user.id,
+                Share.revoked == False,
+            )
+            .order_by(Share.created_at.desc())
+        )
+
+        total = query.count()
+        rows = query.offset((page - 1) * per_page).limit(per_page).all()
+
+        items = [
+            SharedFileItem(
+                id=row.StoredFile.id,
+                owner_id=row.StoredFile.owner_id,
+                filename_original=row.StoredFile.filename_original,
+                filename_stored=row.StoredFile.filename_stored,
+                file_size_original=row.StoredFile.file_size_original,
+                file_size_encrypted=row.StoredFile.file_size_encrypted,
+                file_size_formatted=_format_size(row.StoredFile.file_size_original),
+                mime_type=row.StoredFile.mime_type,
+                encryption_type=row.StoredFile.encryption_type,
+                created_at=row.StoredFile.created_at,
+                shared_by=row.username,
+                access_token=row.access_token,
+            )
+            for row in rows
+        ]
+
+        return SharedFileListResponse(
+            items=items,
+            total=total,
+        )
+
+    @staticmethod
+    def delete_user_file(db: Session, file_id: int, user: User) -> dict[str, str]:
+        file = (
+            db.query(StoredFile)
+            .filter(StoredFile.id == file_id, StoredFile.owner_id == user.id)
+            .first()
+        )
+        if not file:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="File not found",
+            )
+
+        filename_stored = file.filename_stored
+
+        # Delete dependent records
+        db.query(FileKey).filter(FileKey.file_id == file.id).delete()
+        db.query(Share).filter(Share.file_id == file.id).delete()
+
+        # Delete file from storage
+        if storage.exists(filename_stored):
+            storage.delete(filename_stored)
+
+        # Log activity
+        db.add(
+            ActivityLog(
+                user_id=user.id,
+                file_id=file.id,
+                action="delete",
+                details=f"Deleted {file.filename_original}",
+            )
+        )
+
+        db.delete(file)
+        db.commit()
+
+        return {"message": "File deleted successfully"}

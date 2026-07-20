@@ -12,7 +12,9 @@ from backend.database import engine, init_db
 from backend.routers import (
     activity_router,
     auth_router,
+    download_router,
     files_router,
+    share_router,
     system_router,
     upload_router,
 )
@@ -42,6 +44,8 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(upload_router)
 app.include_router(files_router)
+app.include_router(download_router)
+app.include_router(share_router)
 app.include_router(system_router)
 app.include_router(activity_router)
 

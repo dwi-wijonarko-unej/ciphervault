@@ -48,11 +48,32 @@ uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 
 ## Endpoint penting
 
-- Frontend: `http://127.0.0.1:8000/`
-- Swagger UI: `http://127.0.0.1:8000/docs`
-- Health (legacy alias): `http://127.0.0.1:8000/health`
-- Liveness probe: `http://127.0.0.1:8000/health/live`
-- Readiness probe: `http://127.0.0.1:8000/health/ready`
+| Endpoint               | Method | Deskripsi                                        | Auth Required |
+| ---------------------- | ------ | ------------------------------------------------ | :-----------: |
+| `/`                    | GET    | Frontend dashboard                               |    ✅ JWT     |
+| `/login.html`          | GET    | Halaman login/register                           |      ❌       |
+| `/docs`                | GET    | Swagger UI dokumentasi API                       |      ❌       |
+| `/health/live`         | GET    | Liveness probe — proses API hidup                |      ❌       |
+| `/health/ready`        | GET    | Readiness probe — database siap                  |      ❌       |
+| `/health`              | GET    | Alias ke readiness                               |      ❌       |
+| `/auth/register`       | POST   | Registrasi user baru                             |      ❌       |
+| `/auth/login`          | POST   | Login, terima JWT token                          |      ❌       |
+| `/auth/me`             | GET    | Ambil profil user saat ini                       |      ✅       |
+| `/auth/reset-password` | POST   | Reset password (verifikasi username + email)     |      ❌       |
+| `/files`               | GET    | List file milik sendiri (pagination)             |      ✅       |
+| `/files/search?q=`     | GET    | Cari file berdasarkan nama                       |      ✅       |
+| `/files/shared`        | GET    | List file yang dibagikan ke user ini             |      ✅       |
+| `/files/{id}`          | GET    | Detail file + metadata + ai_decision             |      ✅       |
+| `/files/{id}`          | DELETE | Hapus file (owner only)                          |      ✅       |
+| `/files/{id}/download` | GET    | Download + dekripsi file (owner/recipient)       |      ✅       |
+| `/files/{id}/share`    | POST   | Bagikan file ke user lain                        |      ✅       |
+| `/files/{id}/shares`   | GET    | List semua share untuk file ini (owner only)     |      ✅       |
+| `/files/shares/{id}`   | DELETE | Cabut akses share (owner only)                   |      ✅       |
+| `/files/{id}/analyze`  | POST   | Analisis keamanan ciphertext (owner/recipient)   |      ✅       |
+| `/files/upload`        | POST   | Upload file (multipart/form-data, field: `file`) |      ✅       |
+| `/system/config`       | GET    | Konfigurasi sistem runtime                       |      ✅       |
+| `/system/status`       | GET    | Status sistem (RSA, storage, database)           |      ✅       |
+| `/activities`          | GET    | Log aktivitas user                               |      ✅       |
 
 ### Keterangan health endpoint
 
@@ -85,24 +106,80 @@ Variabel yang umum dipakai:
 - `AI_MATRIX_STRATEGY` (default: `multi_feature_adaptive`, opsi: `legacy`)
 - `AI_ADAPTIVE_R` (default: `true`, jika `false` pakai `UHC_LOGISTIC_R` statis)
 
-## Upload file dari frontend
+## Fitur Frontend per Fase
 
-Ya, upload dari frontend sudah didukung.
+### Tahap 1 — Registrasi, Login, Dashboard
 
-Langkah uji cepat:
+- Register akun baru (`/auth/register`)
+- Login dengan JWT (`/auth/login`)
+- **Reset password** via `POST /auth/reset-password` (verifikasi username + email terdaftar)
+- Link "Forgot Password?" pada halaman login membuka modal reset
+- Dashboard menampilkan file list, stats, dan tombol upload
+- Toggle tema gelap/terang
 
-1. Jalankan aplikasi (Docker atau lokal).
-2. Buka `http://127.0.0.1:8000/login.html`.
-3. Register user baru, lalu login.
-4. Setelah masuk dashboard (`/`), upload file lewat drag-drop zone atau klik area upload.
-5. Pastikan progress berjalan, muncul toast sukses, file muncul di list, dan modal security analysis tampil.
+### Tahap 2 — Upload + Security Analysis
 
-Request yang dipakai frontend:
+- Upload via drag-drop atau klik area upload
+- Progress bar upload real-time
+- Modal hasil upload dengan security score dan AI decision trace
+- File muncul di list dengan encryption type dinamis dari AI Selector
+- Detail file (side panel) menampilkan metadata enkripsi
+- Analisis keamanan: entropi, korelasi, avalanche, NPCR, UACI, chi-square
 
-- `POST /files/upload` dengan `multipart/form-data`
-- field file: `file`
+### Tahap 3 — Download + Sharing
 
-Troubleshooting umum:
+- **Download real** via `GET /files/{id}/download` → mendapatkan file asli hasil dekripsi
+- **Share file** ke user lain (server wrapping key):
+  - `POST /files/{id}/share` dengan `recipient_username`
+  - Cek duplikat → 409, share diri sendiri → 400, user tidak ada → 404
+- **Revoke share** — `DELETE /files/shares/{id}` (owner only)
+- **Shared with Me** — tab terpisah menampilkan file yang dibagikan ke user
+- Recipient bisa mendownload file identik byte-per-byte
+- Setelah revoke, recipient mendapat 403 saat akses
+
+## Alur Download (9 Langkah)
+
+```
+GET /files/{id}/download
+  ├── 1. Verify ownership (owner atau recipient)
+  ├── 2. Read cipher_aes dari storage
+  ├── 3. Derive user_key dari derived_key_hash + salt
+  ├── 4. Unwrap session_key dari wrapped_key
+  ├── 5. AES decrypt → cipher_u
+  ├── 6. Generate key_matrix dari logistic map
+  ├── 7. UHC decrypt → plaintext
+  ├── 8. Verify integrity (SHA-256 hash)
+  │     ├── FAIL → 403, log incident
+  │     └── PASS → return plaintext
+  └── 9. Log activity
+```
+
+## Alur Sharing (Server Wrapping Key)
+
+```
+POST /files/{id}/share
+  ├── 1. Verify owner → 403
+  ├── 2. Find recipient → 404
+  ├── 3. Owner ≠ recipient → 400
+  ├── 4. Cek duplikat → 409
+  ├── 5. Decrypt owner's wrapped_key → session_key
+  ├── 6. Encrypt session_key dengan recipient's user_key → re-wrapped
+  ├── 7. Generate access_token (random hex 64)
+  ├── 8. INSERT shares record
+  └── 9. Log activity
+```
+
+## Menjalankan integration test end-to-end
+
+```bash
+# Jalankan semua test
+pytest -q
+
+# Test spesifik fase 3
+pytest tests/test_download_flow.py tests/test_share_flow.py -v
+```
+
+## Troubleshooting umum
 
 - `401 Unauthorized`: token tidak valid/expired → login ulang.
 - `422 Unprocessable Entity`: format request upload salah (pastikan field bernama `file`).
@@ -111,6 +188,7 @@ Troubleshooting umum:
   1. Jalankan ulang container: `docker compose up --build -d`
   2. Hard refresh browser (`Ctrl+F5`) atau aktifkan `Disable cache` di DevTools.
   3. Logout dan login ulang agar token tersinkron.
+- Download gagal dengan `500`: periksa log container (`docker compose logs api`). File key mismatch atau metadata korupsi mungkin penyebabnya.
 
 ## Arsitektur AI Selector Hybrid Encryption (UHC + AES)
 

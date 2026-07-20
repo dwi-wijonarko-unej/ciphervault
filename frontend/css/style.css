@@ -1,28 +1,51 @@
+/* ============================================
+   CipherVault — Design System
+   Based on UI/UX Design Guide
+   Primary: #2d6a4f (light) / #40916c (dark)
+   Accent:  #d4a72c (light) / #e0b94a (dark)
+   ============================================ */
+
+/* Light mode */
 :root {
-  --surface: #f1f5f9;
+  --bg-body: #f5f3ef;
   --surface-card: #ffffff;
-  --surface-hover: #e2e8f0;
-  --surface-input: #f8fafc;
-  --border: #cbd5e1;
-  --muted: #94a3b8;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --bg-body: #f8fafc;
+  --surface: #ebe7e1;
+  --surface-hover: #e3dfd7;
+  --surface-input: #f0ede8;
+  --border: #d6d0c6;
+  --text-primary: #1f2226;
+  --text-secondary: #5c6b73;
+  --muted: #8f968e;
+  --accent: #d4a72c;
+  --primary: #2d6a4f;
+  --error: #c44545;
+  --success: #2d6a4f;
+  --warning: #d4a72c;
+  --info: #4a9eff;
 }
 
+/* Dark mode */
 .dark {
-  --surface: #111827;
-  --surface-card: #1a2332;
-  --surface-hover: #1f2a3d;
-  --surface-input: #0f1729;
-  --border: #2a3a52;
-  --muted: #64748b;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --bg-body: #0a0e17;
+  --bg-body: #13151a;
+  --surface-card: #1a1d24;
+  --surface: #1b1d21;
+  --surface-hover: #262a33;
+  --surface-input: #1e2128;
+  --border: #262a33;
+  --text-primary: #d6d8dd;
+  --text-secondary: #7a8b94;
+  --muted: #545a64;
+  --accent: #e0b94a;
+  --primary: #40916c;
+  --error: #d15151;
+  --success: #40916c;
+  --warning: #e0b94a;
+  --info: #4a9eff;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -33,7 +56,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   background-color: var(--bg-body);
@@ -41,41 +64,161 @@ body {
 }
 
 ::selection {
-  background: rgba(59, 130, 246, 0.4);
-  color: white;
+  background: rgba(45, 106, 79, 0.35);
+  color: #ffffff;
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #111827; }
-::-webkit-scrollbar-thumb { background: #2a3a52; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #64748b; }
+.dark ::selection {
+  background: rgba(64, 145, 108, 0.4);
+  color: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1b1d21;
+}
+::-webkit-scrollbar-thumb {
+  background: #262a33;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #545a64;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1b1d21;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #262a33;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #545a64;
+}
+
+/* ========== Animations ========== */
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(100px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.toast-enter { animation: slideIn 0.3s ease; }
-.modal-enter { animation: scaleIn 0.2s ease; }
-.page-enter { animation: fadeIn 0.2s ease; }
-.list-enter { animation: slideUp 0.3s ease; }
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation utility classes */
+.toast-enter {
+  animation: slideInRight 0.3s ease;
+}
+.modal-enter {
+  animation: scaleIn 0.2s ease;
+}
+.page-enter {
+  animation: pageEnter 0.3s ease;
+}
+.list-enter {
+  animation: slideUp 0.3s ease;
+}
+
+/* ========== Typography Utilities ========== */
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+}
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+p {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.625;
+}
+label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.meta {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+.code {
+  font-size: 0.75rem;
+  font-family: "JetBrains Mono", monospace;
+}
