@@ -94,7 +94,9 @@ const FileList = (() => {
             <tbody>`;
       res.items.forEach((file) => {
         const icon = getFileIcon(file.filename_original);
-        const ext = file.mime_type?.split("/")[1]?.toUpperCase() || "FILE";
+        const ext = (
+          file.filename_original?.split(".").pop() || "FILE"
+        ).toUpperCase();
         html += `
           <tr class="border-b border-border last:border-0 hover:bg-surface-hover transition-colors duration-150 file-list-enter">
               <td class="px-4 py-3">

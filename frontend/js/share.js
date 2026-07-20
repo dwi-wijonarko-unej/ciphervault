@@ -86,18 +86,18 @@ const SharedList = (() => {
       }
 
       let html = `<div class="bg-surface-card border border-border rounded-lg overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="bg-surface border-b border-border">
-                <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Name</th>
-                <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Shared By</th>
-                <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider hidden sm:table-cell">Size</th>
-                <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider hidden md:table-cell">Date</th>
-                <th class="text-right px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody>`;
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="bg-surface border-b border-border">
+                      <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Name</th>
+                      <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Shared By</th>
+                      <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider hidden sm:table-cell">Size</th>
+                      <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider hidden md:table-cell">Date</th>
+                      <th class="text-right px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
       res.items.forEach((file) => {
         const icon = FileList.getFileIcon(file.filename_original);
         html += `
