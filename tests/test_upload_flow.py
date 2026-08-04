@@ -162,13 +162,12 @@ def test_files_listing_is_user_scoped_and_system_endpoints_available():
         assert up.json()["id"] in ids_a
         assert up.json()["id"] not in ids_b
 
+        # System endpoints are admin-only (RBAC)
         cfg = client.get(
             "/system/config", headers={"Authorization": f"Bearer {token_a}"}
         )
         stat = client.get(
             "/system/status", headers={"Authorization": f"Bearer {token_a}"}
         )
-        assert cfg.status_code == 200
-        assert stat.status_code == 200
-        assert "uhc_modulus" in cfg.json()
-        assert "rsa_status" in stat.json()
+        assert cfg.status_code == 403
+        assert stat.status_code == 403

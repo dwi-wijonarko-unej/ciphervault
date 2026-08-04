@@ -11,13 +11,17 @@ from backend.crypto.rsa_engine import load_or_create_global_keypair
 from backend.database import engine, init_db
 from backend.routers import (
     activity_router,
+    admin_router,
+    api_key_router,
     auth_router,
     download_router,
     files_router,
+    public_link_router,
     share_router,
     system_router,
     upload_router,
 )
+from backend.seeders import run_seeders
 
 settings = get_settings()
 
@@ -27,6 +31,7 @@ async def lifespan(_: FastAPI):
     Path(settings.storage_path).mkdir(parents=True, exist_ok=True)
     Path(settings.rsa_private_key_path).parent.mkdir(parents=True, exist_ok=True)
     init_db()
+    run_seeders()
     load_or_create_global_keypair()
     yield
 
@@ -42,6 +47,9 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(admin_router)
+app.include_router(api_key_router)
+app.include_router(public_link_router)
 app.include_router(upload_router)
 app.include_router(files_router)
 app.include_router(download_router)

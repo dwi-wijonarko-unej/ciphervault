@@ -11,6 +11,7 @@ from backend.config import get_settings
 from backend.crypto.rsa_engine import load_or_create_global_keypair
 from backend.database import get_db
 from backend.middleware.auth_middleware import get_current_user
+from backend.middleware.role_guard import require_admin
 from backend.models import StoredFile, User
 
 router = APIRouter(prefix="/system", tags=["system"])
@@ -26,7 +27,7 @@ def _format_bytes(n: int) -> str:
 
 
 @router.get("/config")
-def system_config(_: User = Depends(get_current_user)) -> dict[str, object]:
+def system_config(_: User = Depends(require_admin)) -> dict[str, object]:
     return {
         "ai_mode": settings.ai_matrix_strategy,
         "ai_adaptive_r": settings.ai_adaptive_r,
@@ -44,7 +45,7 @@ def system_config(_: User = Depends(get_current_user)) -> dict[str, object]:
 @router.get("/status")
 def system_status(
     db: Session = Depends(get_db),
-    _: User = Depends(get_current_user),
+    _: User = Depends(require_admin),
 ) -> dict[str, object]:
     private_key, public_key = load_or_create_global_keypair()
     storage_root = Path(settings.storage_path)

@@ -39,6 +39,8 @@ class AuthService:
             derived_key_hash=derive_key_hash(
                 password, salt, settings.pbkdf2_iterations
             ),
+            role="user",
+            is_active=True,
         )
         db.add(user)
         db.commit()
@@ -52,6 +54,11 @@ class AuthService:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid username or password",
+            )
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account is deactivated. Contact an administrator.",
             )
         return user
 

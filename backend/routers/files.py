@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from backend.database import get_db
 from backend.middleware.auth_middleware import get_current_user
+from backend.middleware.role_guard import require_admin
 from backend.models import User
 from backend.schemas.file import (
     FileDetailResponse,
@@ -68,6 +69,6 @@ def delete_file(
 def analyze_file(
     file_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin),
 ) -> SecurityAnalysisResponse:
     return FileService.analyze_stored_file(db, file_id, current_user)

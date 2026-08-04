@@ -20,6 +20,8 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: str
+    role: str = "user"
+    is_active: bool = True
     created_at: datetime
 
 
