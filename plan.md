@@ -1,6 +1,6 @@
 # Dokumen Rencana Pengembangan Aplikasi CipherVault
 
-**Versi Dokumen:** 5.0 **Tanggal:** 20 Juli 2026 **Versi Aplikasi:** 1.0.0 **Status:** Final — Siap Eksekusi
+**Versi Dokumen:** 6.0 **Tanggal:** 4 Agustus 2026 **Versi Aplikasi:** 1.0.0 **Status:** Active Development — Production Target
 
 ---
 
@@ -33,29 +33,40 @@ CipherVault hadir sebagai solusi penyimpanan cloud yang menerapkan prinsip **Zer
 
 ### 1.2 Tujuan Proyek
 
-Membangun aplikasi web full-stack dengan kemampuan:
+Membangun aplikasi cloud storage terenkripsi siap deploy dan siap jual dengan kemampuan:
 
+- **Two-tier RBAC** — role `admin` (akses penuh + security dashboard teknis) dan `user` (pengguna akhir)
 - AI Adaptive Split — rasio enkripsi dinamis berdasarkan fitur file (size, entropy, mean, std, unique bytes, extension)
 - Enkripsi berlapis tiga: **UHC** mod 257 (inner) → **AES-256-CBC** (middle) → **RSA-OAEP** wrap session key
 - Manajemen kunci sesi (_session key_) yang aman per file
-- Pengunggahan file aman (_secure upload_)
+- Pengunggahan file aman (_secure upload_) dengan return URL ciphertext & plaintext
 - Pengunduhan file aman dengan verifikasi integritas (_secure download_)
-- Pembagian file aman melalui mekanisme _re-encryption key_ (_secure sharing_)
-- Security Analysis Engine — entropi, korelasi, avalanche effect, NPCR, UACI, security score (0-100)
-- Operasi CRUD file, pencarian, dan pencatatan aktivitas
+- Pembagian file aman — user-to-user (re-encryption) dan **public link** (token HMAC-SHA256)
+- Manajemen direktori hirarkis (folder, sub-folder, breadcrumb) seperti Google Drive / Dropbox
+- **API Key** per user — autentikasi alternatif JWT untuk integrasi eksternal
+- Security Analysis Engine — hanya tampil ke role `admin` (entropi, korelasi, avalanche, NPCR, UACI, score 0-100)
+- Operasi CRUD file, pencarian, direktori, dan pencatatan aktivitas
+- Seeder default: 1 akun admin + 1 akun user untuk kemudahan onboarding
+- Siap deploy production: email verification, rate limiting, HTTPS enforcement, quota storage per user (direncanakan)
 
 ### 1.3 Ruang Lingkup
 
-| Termasuk                                                                        | Tidak Termasuk                               |
-| :------------------------------------------------------------------------------ | :------------------------------------------- |
-| Enkripsi UHC + Hybrid AES/RSA + AI Adaptive Split                               | Enkripsi end-to-end di browser (client-side) |
-| Autentikasi JWT                                                                 | OAuth/SSO pihak ketiga                       |
-| Sharing dengan re-encryption key (RSA + AES wrap)                               | Collaborative editing                        |
-| Security Analysis Engine (entropi, korrelasi, avalanche, NPCR, UACI)            | Analisis kriptanalisis lanjutan              |
-| Penyimpanan lokal (abstraksi cloud-ready)                                       | Integrasi S3/GCS langsung (hanya abstraksi)  |
-| Verifikasi integritas SHA-256                                                   | Digital signature / PKI                      |
-| Pencarian file berdasarkan nama                                                 | Full-text search dalam isi file              |
-| Semua parameter enkripsi via .env (modulus, matrix size, r logistic, algoritma) | —                                            |
+| Termasuk (V1)                                                  | Tidak Termasuk / Future                      |
+| :------------------------------------------------------------- | :------------------------------------------- |
+| Enkripsi UHC + Hybrid AES/RSA + AI Adaptive Split              | Enkripsi end-to-end di browser (client-side) |
+| Autentikasi JWT + API Key                                      | OAuth/SSO pihak ketiga                       |
+| RBAC dua peran: `admin` dan `user`                             | Multi-tenant (satu instance per organisasi)  |
+| Sharing user-to-user + public link (HMAC token)                | Collaborative editing                        |
+| Security Analysis Engine — hanya untuk `admin`                 | Analisis kriptanalisis lanjutan              |
+| Manajemen direktori hirarkis (folder, breadcrumb, pindah file) | Google Drive-style real-time sync            |
+| Penyimpanan lokal (abstraksi cloud-ready)                      | Integrasi S3/GCS langsung (hanya abstraksi)  |
+| Verifikasi integritas SHA-256                                  | Digital signature / PKI                      |
+| Pencarian file berdasarkan nama                                | Full-text search dalam isi file              |
+| Seeder: akun admin + user default                              | —                                            |
+| Return URL ciphertext & plaintext setelah upload               | —                                            |
+| Semua parameter enkripsi via .env                              | —                                            |
+| Email verification (planned — Fase 5)                          | —                                            |
+| Rate limiting, quota storage per user (planned — Fase 5)       | —                                            |
 
 ---
 
@@ -67,13 +78,17 @@ Berdasarkan analisis diagram alur yang telah dirancang, sistem CipherVault memil
 
 CipherVault
 
-├── Autentikasi
+├── Autentikasi & Otorisasi
 
 │ ├── Registrasi User
 
-│ ├── Login
+│ ├── Login (JWT)
 
-│ └── Verifikasi Sesi (JWT)
+│ ├── Reset Password
+
+│ ├── Verifikasi Sesi (JWT / API Key)
+
+│ └── RBAC (role: admin / user)
 
 │
 
@@ -115,17 +130,29 @@ CipherVault
 
 ├── Secure File Sharing
 
-│ ├── Pilih File
+│ ├── Share ke User Terdaftar (Re-encrypt Session Key)
 
-│ ├── Pilih Recipient
+│ └── Public Link (HMAC-SHA256 token, optional expiry)
 
-│ ├── Generate Shared Key
+│
 
-│ ├── Re-encrypt Session Key
+├── API Key Management
 
-│ ├── Send Access Token
+│ ├── Generate API Key
 
-│ └── Recipient Download & Decrypt
+│ ├── List API Key
+
+│ └── Revoke API Key
+
+│
+
+├── Admin Dashboard
+
+│ ├── List & Manage Users (CRUD role)
+
+│ ├── System Statistics
+
+│ └── Security Analysis Global
 
 │
 
@@ -153,12 +180,13 @@ CipherVault
 
 ### 2.2 Aktor Sistem
 
-| Aktor                | Deskripsi                                                         |
-| :------------------- | :---------------------------------------------------------------- |
-| **User (Owner)**     | Pengguna terdaftar yang mengupload dan memiliki file              |
-| **User (Recipient)** | Pengguna terdaftar yang menerima akses file dari owner            |
-| **Sistem**           | Backend yang menangani enkripsi, penyimpanan, dan manajemen kunci |
-| **Storage**          | Komponen penyimpanan ciphertext (lokal / cloud)                   |
+| Aktor       | Role DB | Deskripsi                                                                             |
+| :---------- | :------ | :------------------------------------------------------------------------------------ |
+| **Admin**   | `admin` | Akses penuh: lihat security dashboard teknis, manage user (CRUD role), system stats   |
+| **User**    | `user`  | Upload, download, share, public link, direktori. Tidak melihat detail teknis enkripsi |
+| **Public**  | —       | Akses file via public link token tanpa login (hanya download plaintext)               |
+| **Sistem**  | —       | Backend: enkripsi, penyimpanan, manajemen kunci                                       |
+| **Storage** | —       | Komponen penyimpanan ciphertext (lokal / cloud-abstracted)                            |
 
 ---
 
@@ -494,15 +522,17 @@ Owner Backend Recipient
 
 #### `users`
 
-| Kolom           | Tipe         | Constraint               | Deskripsi                         |
-| :-------------- | :----------- | :----------------------- | :-------------------------------- |
-| `id`            | INTEGER      | PK, AUTO INCREMENT       | ID unik user                      |
-| `username`      | VARCHAR(50)  | UNIQUE, NOT NULL         | Nama pengguna                     |
-| `email`         | VARCHAR(120) | UNIQUE, NOT NULL         | Email pengguna                    |
-| `password_hash` | VARCHAR(255) | NOT NULL                 | Hash bcrypt dari password         |
-| `salt`          | VARCHAR(64)  | NOT NULL                 | Salt PBKDF2 untuk derive user key |
-| `created_at`    | DATETIME     | DEFAULT NOW()            | Waktu registrasi                  |
-| `updated_at`    | DATETIME     | DEFAULT NOW(), ON UPDATE | Waktu update terakhir             |
+| Kolom           | Tipe         | Constraint               | Deskripsi                           |
+| :-------------- | :----------- | :----------------------- | :---------------------------------- |
+| `id`            | INTEGER      | PK, AUTO INCREMENT       | ID unik user                        |
+| `username`      | VARCHAR(50)  | UNIQUE, NOT NULL         | Nama pengguna                       |
+| `email`         | VARCHAR(120) | UNIQUE, NOT NULL         | Email pengguna                      |
+| `password_hash` | VARCHAR(255) | NOT NULL                 | Hash bcrypt dari password           |
+| `salt`          | VARCHAR(64)  | NOT NULL                 | Salt PBKDF2 untuk derive user key   |
+| `role`          | VARCHAR(10)  | DEFAULT 'user', NOT NULL | Role: `admin` atau `user`           |
+| `is_active`     | BOOLEAN      | DEFAULT TRUE             | Akun aktif (admin bisa nonaktifkan) |
+| `created_at`    | DATETIME     | DEFAULT NOW()            | Waktu registrasi                    |
+| `updated_at`    | DATETIME     | DEFAULT NOW(), ON UPDATE | Waktu update terakhir               |
 
 #### `stored_files`
 
@@ -554,6 +584,35 @@ Owner Backend Recipient
 | `detail`     | TEXT        | NULLABLE                        | Detail tambahan (format JSON)                               |
 | `ip_address` | VARCHAR(45) | NULLABLE                        | Alamat IP pengguna                                          |
 | `timestamp`  | DATETIME    | DEFAULT NOW()                   | Waktu aksi terjadi                                          |
+
+#### `api_keys`
+
+| Kolom        | Tipe         | Constraint              | Deskripsi                                          |
+| :----------- | :----------- | :---------------------- | :------------------------------------------------- |
+| `id`         | INTEGER      | PK, AUTO INCREMENT      | ID unik API key                                    |
+| `user_id`    | INTEGER      | FK → users.id, NOT NULL | Pemilik API key                                    |
+| `key_hash`   | VARCHAR(255) | NOT NULL                | HMAC-SHA256 hash dari API key (tidak simpan plain) |
+| `key_prefix` | VARCHAR(8)   | NOT NULL                | 8 karakter pertama key untuk identifikasi di UI    |
+| `label`      | VARCHAR(100) | NULLABLE                | Label deskriptif (misal: "Integrasi Aplikasi X")   |
+| `is_active`  | BOOLEAN      | DEFAULT TRUE            | Key aktif atau sudah direvoke                      |
+| `last_used`  | DATETIME     | NULLABLE                | Waktu terakhir key digunakan                       |
+| `created_at` | DATETIME     | DEFAULT NOW()           | Waktu dibuat                                       |
+| `expires_at` | DATETIME     | NULLABLE                | Waktu kedaluwarsa (NULL = tidak pernah expired)    |
+
+#### `public_links`
+
+| Kolom           | Tipe         | Constraint                     | Deskripsi                                                   |
+| :-------------- | :----------- | :----------------------------- | :---------------------------------------------------------- |
+| `id`            | INTEGER      | PK, AUTO INCREMENT             | ID unik link                                                |
+| `file_id`       | INTEGER      | FK → stored_files.id, NOT NULL | File yang dibagikan                                         |
+| `owner_id`      | INTEGER      | FK → users.id, NOT NULL        | Pemilik file                                                |
+| `token`         | VARCHAR(64)  | UNIQUE, NOT NULL               | HMAC-SHA256(file_id + owner_id + timestamp, SECRET_KEY) hex |
+| `password_hash` | VARCHAR(255) | NULLABLE                       | Optional password protection (bcrypt), NULL = no password   |
+| `download_type` | VARCHAR(10)  | DEFAULT 'plaintext'            | `plaintext` atau `ciphertext`                               |
+| `access_count`  | INTEGER      | DEFAULT 0                      | Jumlah akses                                                |
+| `max_access`    | INTEGER      | NULLABLE                       | Batas maksimum akses (NULL = unlimited)                     |
+| `expires_at`    | DATETIME     | NULLABLE                       | Waktu kedaluwarsa (NULL = tidak pernah)                     |
+| `created_at`    | DATETIME     | DEFAULT NOW()                  | Waktu dibuat                                                |
 
 ### 5.3 Struktur Metadata JSON (di `file_keys.metadata_json`)
 
@@ -609,23 +668,26 @@ Owner Backend Recipient
 
 ### 6.1 Autentikasi
 
-| Method | Path             | Auth | Request Body                  | Response             | Deskripsi                   |
-| :----- | :--------------- | :--- | :---------------------------- | :------------------- | :-------------------------- |
-| `POST` | `/auth/register` | ❌   | `{username, email, password}` | `UserResponse` (201) | Registrasi user baru        |
-| `POST` | `/auth/login`    | ❌   | `{username, password}`        | `TokenResponse`      | Login, dapatkan JWT         |
-| `GET`  | `/auth/me`       | ✅   | —                             | `UserResponse`       | Data user yang sedang login |
+| Method | Path                   | Auth       | Request Body                      | Response             | Deskripsi                           |
+| :----- | :--------------------- | :--------- | :-------------------------------- | :------------------- | :---------------------------------- |
+| `POST` | `/auth/register`       | ❌         | `{username, email, password}`     | `UserResponse` (201) | Registrasi user baru (role: user)   |
+| `POST` | `/auth/login`          | ❌         | `{username, password}`            | `TokenResponse`      | Login, dapatkan JWT                 |
+| `GET`  | `/auth/me`             | ✅ JWT/Key | —                                 | `UserResponse`       | Data user yang sedang login         |
+| `POST` | `/auth/reset-password` | ❌         | `{username, email, new_password}` | `SuccessResponse`    | Reset password via verifikasi email |
 
 ### 6.2 Upload
 
-| Method | Path            | Auth | Request Body                 | Response          | Deskripsi                    |
-| :----- | :-------------- | :--- | :--------------------------- | :---------------- | :--------------------------- |
-| `POST` | `/files/upload` | ✅   | `multipart/form-data` (file) | `SuccessResponse` | Upload & enkripsi ganda file |
+| Method | Path            | Auth       | Request Body                             | Response         | Deskripsi                                                    |
+| :----- | :-------------- | :--------- | :--------------------------------------- | :--------------- | :----------------------------------------------------------- |
+| `POST` | `/files/upload` | ✅ JWT/Key | `multipart/form-data` (file, parent_id?) | `UploadResponse` | Upload & enkripsi. Return: file_id, download_url, cipher_url |
 
 ### 6.3 Download
 
-| Method | Path                        | Auth | Response                                 | Deskripsi                      |
-| :----- | :-------------------------- | :--- | :--------------------------------------- | :----------------------------- |
-| `GET`  | `/files/{file_id}/download` | ✅   | `application/octet-stream` (file binary) | Download & dekripsi ganda file |
+| Method | Path                               | Auth        | Response                      | Deskripsi                                 |
+| :----- | :--------------------------------- | :---------- | :---------------------------- | :---------------------------------------- |
+| `GET`  | `/files/{file_id}/download`        | ✅ JWT/Key  | `octet-stream` plaintext      | Download + dekripsi. Integrity check dulu |
+| `GET`  | `/files/{file_id}/download/cipher` | ✅ JWT/Key  | `octet-stream` ciphertext     | Download file ciphertext mentah           |
+| `GET`  | `/public/{token}`                  | ❌ (publik) | `octet-stream` (plain/cipher) | Akses file via public link token          |
 
 ### 6.4 Manajemen File
 
@@ -655,9 +717,10 @@ Owner Backend Recipient
 
 ### 6.7 Security Analysis
 
-| Method | Path                       | Auth | Response                   | Deskripsi                          |
-| :----- | :------------------------- | :--- | :------------------------- | :--------------------------------- |
-| `POST` | `/files/{file_id}/analyze` | ✅   | `SecurityAnalysisResponse` | Analisis keamanan file terenkripsi |
+| Method | Path                       | Auth          | Response                   | Deskripsi                                           |
+| :----- | :------------------------- | :------------ | :------------------------- | :-------------------------------------------------- |
+| `POST` | `/files/{file_id}/analyze` | ✅ Admin only | `SecurityAnalysisResponse` | Analisis teknis: entropy, NPCR, UACI, matrix, score |
+| `GET`  | `/admin/security/stats`    | ✅ Admin only | `GlobalSecurityStats`      | Statistik keamanan global semua file di sistem      |
 
 ### 6.8 Format Response Error
 
@@ -685,13 +748,34 @@ Owner Backend Recipient
 
 ### 6.10 Manajemen Direktori
 
-| Method   | Path                          | Auth | Request Body         | Response              | Deskripsi                            |
-| :------- | :---------------------------- | :--- | :------------------- | :-------------------- | :----------------------------------- |
-| `POST`   | `/files/directories`          | ✅   | `{name, parent_id?}` | `DirectoryResponse`   | Buat folder baru                     |
-| `GET`    | `/files/directories`          | ✅   | `parent_id?`         | `DirectoryListResp`   | Isi folder (file + subfolder)        |
-| `GET`    | `/files/directories/{dir_id}` | ✅   | —                    | `DirectoryDetailResp` | Detail folder                        |
-| `PATCH`  | `/files/{file_id}/move`       | ✅   | `{target_parent_id}` | `SuccessResponse`     | Pindahkan file/folder ke folder lain |
-| `DELETE` | `/files/directories/{dir_id}` | ✅   | —                    | `SuccessResponse`     | Hapus folder (rekursif jika kosong)  |
+| Method   | Path                          | Auth       | Request Body         | Response              | Deskripsi                            |
+| :------- | :---------------------------- | :--------- | :------------------- | :-------------------- | :----------------------------------- |
+| `POST`   | `/files/directories`          | ✅ JWT/Key | `{name, parent_id?}` | `DirectoryResponse`   | Buat folder baru                     |
+| `GET`    | `/files/directories`          | ✅ JWT/Key | `parent_id?`         | `DirectoryListResp`   | Isi folder (file + subfolder)        |
+| `GET`    | `/files/directories/{dir_id}` | ✅ JWT/Key | —                    | `DirectoryDetailResp` | Detail folder                        |
+| `PATCH`  | `/files/{file_id}/move`       | ✅ JWT/Key | `{target_parent_id}` | `SuccessResponse`     | Pindahkan file/folder ke folder lain |
+| `DELETE` | `/files/directories/{dir_id}` | ✅ JWT/Key | —                    | `SuccessResponse`     | Hapus folder (rekursif jika kosong)  |
+
+### 6.11 API Key Management
+
+| Method   | Path                 | Auth        | Request Body                 | Response          | Deskripsi                             |
+| :------- | :------------------- | :---------- | :--------------------------- | :---------------- | :------------------------------------ |
+| `POST`   | `/api-keys`          | ✅ JWT only | `{label?, expires_in_days?}` | `ApiKeyResponse`  | Generate API key baru (return sekali) |
+| `GET`    | `/api-keys`          | ✅ JWT/Key  | —                            | `ApiKeyListResp`  | List API key milik user (tanpa value) |
+| `DELETE` | `/api-keys/{key_id}` | ✅ JWT/Key  | —                            | `SuccessResponse` | Revoke API key                        |
+
+> **Catatan:** Nilai API key (`cv_...`) hanya dikembalikan sekali saat generate. Server hanya menyimpan hash-nya.
+> Format header: `X-API-Key: cv_<key_value>` atau `Authorization: Bearer <key_value>`
+
+### 6.12 Admin Panel
+
+| Method   | Path                     | Auth          | Request Body          | Response           | Deskripsi                                  |
+| :------- | :----------------------- | :------------ | :-------------------- | :----------------- | :----------------------------------------- |
+| `GET`    | `/admin/users`           | ✅ Admin only | —                     | `UserListResponse` | List semua user + role + status            |
+| `GET`    | `/admin/users/{user_id}` | ✅ Admin only | —                     | `UserResponse`     | Detail user                                |
+| `PATCH`  | `/admin/users/{user_id}` | ✅ Admin only | `{role?, is_active?}` | `UserResponse`     | Update role / aktifkan / nonaktifkan user  |
+| `DELETE` | `/admin/users/{user_id}` | ✅ Admin only | —                     | `SuccessResponse`  | Hapus user + semua file-nya                |
+| `GET`    | `/admin/stats`           | ✅ Admin only | —                     | `SystemStatsResp`  | Statistik: total user, file, storage usage |
 
 ---
 
@@ -1434,16 +1518,20 @@ ciphervault/
 | `frontend/css/style.css`                | Buat | Dark theme, variabel CSS                                                                                      |
 | `frontend/js/api.js`                    | Buat | Fetch wrapper + auth header                                                                                   |
 | `frontend/js/auth.js`                   | Buat | Login, register, simpan JWT di localStorage                                                                   |
-| `frontend/js/ui.js`                     | Buat | Toast notification                                                                                            |
+| `backend/js/ui.js`                      | Buat | Toast notification                                                                                            |
+| `backend/middleware/role_guard.py`      | Buat | Dependency `require_admin` — raise 403 jika bukan role admin                                                  |
+| `backend/seeders/seed.py`               | Buat | Seed default: 1 admin (admin@ciphervault.io / Admin123!) + 1 user (user@ciphervault.io / User123!)            |
 
 **Acceptance Criteria:**
 
-- [ ] POST /auth/register menyimpan user baru (password di-hash bcrypt)
+- [ ] POST /auth/register menyimpan user baru (role: user, is_active: true)
 - [ ] POST /auth/login mengembalikan JWT valid
-- [ ] GET /auth/me mengembalikan data user dari token
+- [ ] GET /auth/me mengembalikan data user + role dari token
 - [ ] Route protected tanpa token → 401
+- [ ] Route admin-only tanpa role admin → 403
 - [ ] Frontend login/register form berfungsi
 - [ ] UHC engine + AES engine selesai & teruji
+- [ ] Seed berhasil: `python -m backend.seeders.seed` → buat 2 akun default
 
 **Integrasi Frontend (Wajib di Fase 1):**
 
@@ -1541,24 +1629,28 @@ upload_service.upload(file_bytes, user)
 
 **File yang dibuat/dikerjakan:**
 
-| File                                   | Aksi   | Detail                                                                |
-| :------------------------------------- | :----- | :-------------------------------------------------------------------- |
-| `backend/services/download_service.py` | Buat   | Orkestrasi 9 langkah download                                         |
-| `backend/services/file_service.py`     | Update | Tambah verify\_ownership, get\_shared\_with\_me                       |
-| `backend/routers/download.py`          | Buat   | GET /files/{id}/download                                              |
-| `backend/models/share.py`              | Buat   | Tabel shares                                                          |
-| `backend/schemas/share.py`             | Buat   | ShareRequest, ShareResponse                                           |
-| `backend/services/share_service.py`    | Buat   | Orkestrasi share: unwrap→re-wrap dengan server wrapping key           |
-| `backend/routers/share.py`             | Buat   | POST /files/{id}/share, DELETE /shares/{id}                           |
-| `backend/routers/files.py`             | Update | GET /files/shared                                                     |
-| `backend/main.py`                      | Update | Mount download & share router                                         |
-| `frontend/js/download.js`              | Buat   | Download progress, save file                                          |
-| `frontend/js/share.js`                 | Buat   | Modal share, pilih recipient, list shared                             |
-| `frontend/js/files.js`                 | Update | Tombol download, tab "Shared", tombol share, click row → detail panel |
-| `frontend/js/ui.js`                    | Update | Side panel component untuk file detail                                |
-| `backend/config.py`                    | Update | Tambah RSA\_KEY\_PATH, RSA\_KEY\_SIZE                                 |
-| `tests/test_download_flow.py`          | Buat   | 5+ test roundtrip, unauthorized, wrong user                           |
-| `tests/test_share_flow.py`             | Buat   | 5+ test share, revoke, recipient download                             |
+| File                                      | Aksi   | Detail                                                                       |
+| :---------------------------------------- | :----- | :--------------------------------------------------------------------------- |
+| `backend/services/download_service.py`    | Buat   | Orkestrasi 9 langkah download                                                |
+| `backend/services/file_service.py`        | Update | Tambah verify\_ownership, get\_shared\_with\_me                              |
+| `backend/routers/download.py`             | Buat   | GET /files/{id}/download                                                     |
+| `backend/models/share.py`                 | Buat   | Tabel shares                                                                 |
+| `backend/schemas/share.py`                | Buat   | ShareRequest, ShareResponse                                                  |
+| `backend/services/share_service.py`       | Buat   | Orkestrasi share: unwrap→re-wrap dengan server wrapping key                  |
+| `backend/routers/share.py`                | Buat   | POST /files/{id}/share, DELETE /shares/{id}                                  |
+| `backend/routers/files.py`                | Update | GET /files/shared                                                            |
+| `backend/main.py`                         | Update | Mount download & share router                                                |
+| `frontend/js/download.js`                 | Buat   | Download progress, save file                                                 |
+| `frontend/js/share.js`                    | Buat   | Modal share, pilih recipient, list shared                                    |
+| `frontend/js/files.js`                    | Update | Tombol download, tab "Shared", tombol share, click row → detail panel        |
+| `frontend/js/ui.js`                       | Update | Side panel component untuk file detail                                       |
+| `backend/config.py`                       | Update | Tambah RSA\_KEY\_PATH, RSA\_KEY\_SIZE                                        |
+| `backend/models/public_link.py`           | Buat   | Tabel public_links                                                           |
+| `backend/schemas/public_link.py`          | Buat   | PublicLinkRequest, PublicLinkResponse, PublicLinkListResponse                |
+| `backend/services/public_link_service.py` | Buat   | Generate HMAC token, verify, optional password check, access_count           |
+| `backend/routers/public_link.py`          | Buat   | POST /files/{id}/public-link, GET /public/{token}, DELETE /public-links/{id} |
+| `tests/test_download_flow.py`             | Buat   | 5+ test roundtrip, unauthorized, wrong user                                  |
+| `tests/test_share_flow.py`                | Buat   | 5+ test share, revoke, recipient download                                    |
 
 **Alur Download Final:**
 
@@ -1601,6 +1693,10 @@ share_service.share(file_id, owner, recipient_username)
 - [ ] DELETE /shares/{id} mencabut akses
 - [ ] Share ke diri sendiri → 400, user tidak ada → 404, duplikat → 409
 - [ ] Frontend: modal share, tombol download, tab shared
+- [ ] POST /files/{id}/public-link membuat token HMAC-SHA256
+- [ ] GET /public/{token} mengakses file tanpa login
+- [ ] Token expired atau max_access terlampaui → 410 Gone
+- [ ] Optional password pada public link diverifikasi server-side
 
 **Integrasi Frontend (Wajib di Fase 3):**
 
@@ -1619,25 +1715,40 @@ share_service.share(file_id, owner, recipient_username)
 
 **File yang dibuat/dikerjakan:**
 
-| File                                    | Aksi   | Detail                                                            |
-| :-------------------------------------- | :----- | :---------------------------------------------------------------- |
-| `backend/services/search_service.py`    | Buat   | Pencarian file case-insensitive                                   |
-| `backend/services/file_service.py`      | Update | Tambah delete_file, search_files, verify_integrity, directory ops |
-| `backend/routers/files.py`              | Update | GET /search, DELETE, POST verify, directory endpoints             |
-| `backend/models/stored_file.py`         | Update | Tambah parent_id, is_directory column                             |
-| `backend/services/directory_service.py` | Buat   | CRUD folder, pindahkan file, breadcrumb path                      |
-| `frontend/js/search.js`                 | Buat   | Live search dengan debounce, pagination                           |
-| `frontend/css/animations.css`           | Buat   | Transisi, skeleton loading, fade-in                               |
-| `frontend/js/files.js`                  | Update | Breadcrumb navigasi, folder tree, drag ke folder                  |
-| `frontend/js/ui.js`                     | Update | Confirm dialog, loading spinner, side panel                       |
-| `frontend/js/security.js`               | Update | Integrasi dengan halaman detail file                              |
-| `frontend/js/system.js`                 | Update | Final polish System Info page                                     |
-| `tests/conftest.py`                     | Buat   | Fixtures pytest: test client, test db, auth headers               |
-| `tests/test_file_management.py`         | Buat   | 5+ test: delete, search, verify                                   |
-| `tests/test_directory.py`               | Buat   | 6+ test: buat folder, hapus, pindah, navigasi                     |
-| `tests/test_security.py`                | Buat   | 6+ test: token expired, akses lintas user, dll                    |
-| `tests/test_auth.py`                    | Buat   | 6+ test: register, login, me, invalid token                       |
-| `README.md`                             | Update | Tambah endpoint direktori, API usage                              |
+| File                                    | Aksi   | Detail                                                                     |
+| :-------------------------------------- | :----- | :------------------------------------------------------------------------- |
+| `backend/services/search_service.py`    | Buat   | Pencarian file case-insensitive                                            |
+| `backend/services/file_service.py`      | Update | Tambah delete_file, search_files, verify_integrity, directory ops          |
+| `backend/routers/files.py`              | Update | GET /search, DELETE, POST verify, directory endpoints                      |
+| `backend/models/stored_file.py`         | Update | Tambah parent_id, is_directory column                                      |
+| `backend/services/directory_service.py` | Buat   | CRUD folder, pindahkan file, breadcrumb path                               |
+| `frontend/js/search.js`                 | Buat   | Live search dengan debounce, pagination                                    |
+| `frontend/css/animations.css`           | Buat   | Transisi, skeleton loading, fade-in                                        |
+| `frontend/js/files.js`                  | Update | Breadcrumb navigasi, folder tree, drag ke folder                           |
+| `frontend/js/ui.js`                     | Update | Confirm dialog, loading spinner, side panel                                |
+| `frontend/js/security.js`               | Update | Integrasi dengan halaman detail file                                       |
+| `frontend/js/system.js`                 | Update | Final polish System Info page                                              |
+| `backend/models/api_key.py`             | Buat   | Tabel api_keys                                                             |
+| `backend/schemas/api_key.py`            | Buat   | ApiKeyCreate, ApiKeyResponse, ApiKeyListResponse                           |
+| `backend/services/api_key_service.py`   | Buat   | Generate key (prefix cv_), hash, verify, last_used update                  |
+| `backend/routers/api_key.py`            | Buat   | POST/GET/DELETE /api-keys                                                  |
+| `backend/middleware/auth_middleware.py` | Update | Support JWT + API Key header (X-API-Key)                                   |
+| `backend/routers/admin.py`              | Buat   | GET/PATCH/DELETE /admin/users, GET /admin/stats, GET /admin/security/stats |
+| `backend/services/admin_service.py`     | Buat   | list_users, update_user_role, deactivate_user, get_system_stats            |
+| `frontend/admin.html`                   | Buat   | Halaman admin: user management table, system stats, security metrics       |
+| `frontend/js/admin.js`                  | Buat   | Render admin panel: user list, role toggle, stats chart                    |
+| `frontend/profile.html`                 | Buat   | Profil user: ganti password, manage API key, API usage guide               |
+| `frontend/js/profile.js`                | Buat   | Generate/revoke API key, tampilkan key sekali, panduan curl/fetch          |
+| `tests/conftest.py`                     | Buat   | Fixtures pytest: test client, test db, auth headers                        |
+| `tests/test_file_management.py`         | Buat   | 5+ test: delete, search, verify                                            |
+| `tests/test_directory.py`               | Buat   | 6+ test: buat folder, hapus, pindah, navigasi                              |
+| `tests/test_api_key.py`                 | Buat   | 6+ test: generate, list, revoke, auth via key                              |
+| `tests/test_public_link.py`             | Buat   | 6+ test: buat link, akses publik, expired, password, revoke                |
+| `tests/test_admin.py`                   | Buat   | 5+ test: list user, update role, stats, unauthorized non-admin             |
+| `tests/test_rbac.py`                    | Buat   | 4+ test: admin endpoint akses, user blocked, role guard                    |
+| `tests/test_security.py`                | Buat   | 6+ test: token expired, akses lintas user, dll                             |
+| `tests/test_auth.py`                    | Buat   | 6+ test: register, login, me, invalid token                                |
+| `README.md`                             | Update | Tambah endpoint direktori, API usage                                       |
 
 **Acceptance Criteria:**
 
@@ -1655,8 +1766,14 @@ share_service.share(file_id, owner, recipient_username)
 - [ ] Security analysis dapat dilihat dari file detail panel
 - [ ] System Info page menampilkan semua konfigurasi aktif
 - [ ] POST /files/{id}/analyze mengembalikan metrics lengkap
-- [ ] Semua 77+ test pass
-- [ ] README lengkap dengan endpoint direktori
+- [ ] POST /api-keys generate key, nilai hanya muncul sekali
+- [ ] X-API-Key header dipakai sebagai auth di semua endpoint user
+- [ ] GET /admin/users hanya bisa diakses role admin → 403 untuk user biasa
+- [ ] PATCH /admin/users/{id} bisa update role dan is_active
+- [ ] GET /public/{token} akses tanpa login
+- [ ] Profile page tampilkan panduan API (curl + fetch contoh)
+- [ ] Semua 105+ test pass
+- [ ] README lengkap: endpoint direktori, API key, public link, admin
 
 **Integrasi Frontend (Wajib di Fase 4):**
 
@@ -1689,8 +1806,13 @@ share_service.share(file_id, owner, recipient_username)
 | E2E — Download Flow            | 5+          | `test_download_flow.py`      | Fase 3 (M3) |
 | E2E — Share Flow               | 5+          | `test_share_flow.py`         | Fase 3 (M3) |
 | Integration — File Management  | 5+          | `test_file_management.py`    | Fase 4 (M4) |
+| Integration — Directory        | 6+          | `test_directory.py`          | Fase 4 (M4) |
+| Integration — API Key          | 6+          | `test_api_key.py`            | Fase 4 (M4) |
+| Integration — Public Link      | 6+          | `test_public_link.py`        | Fase 4 (M4) |
+| Integration — Admin Panel      | 5+          | `test_admin.py`              | Fase 4 (M4) |
+| Integration — RBAC Guard       | 4+          | `test_rbac.py`               | Fase 4 (M4) |
 | Security — Unauthorized Access | 6+          | `test_security.py`           | Fase 4 (M4) |
-| **Total**                      | **77+**     |                              |             |
+| **Total**                      | **105+**    |                              |             |
 
 ### 10.2 Skenario Pengujian Kritis
 
@@ -1833,6 +1955,10 @@ pytest tests/test\_upload\_flow.py::test\_upload\_download\_roundtrip \-v
 | File upload berbahaya              | Malware di storage                      | Hanya simpan ciphertext (tidak executable)    |
 | Integritas share gagal             | Recipient dapat data rusak              | Integrity check sama saat download dari share |
 | Session key sama untuk semua file  | Kompromi satu kunci \= semua file bocor | Session key unik per file (random 32 bytes)   |
+| API key bocor                      | Akses tidak sah ke semua file user      | Simpan hanya hash, revoke mudah, prefix cv_   |
+| Public link tanpa expiry           | File bisa diakses selamanya             | Defaultkan expiry 7 hari, max_access opsional |
+| Eskalasi privilege (user → admin)  | Akses dashboard teknis tidak sah        | role_guard middleware, test RBAC menyeluruh   |
+| Brute force public link token      | Akses file orang lain                   | HMAC-SHA256 + SECRET_KEY = tidak bisa ditebak |
 
 ### 11.2 Prinsip Keamanan yang Diterapkan
 
@@ -1845,12 +1971,18 @@ pytest tests/test\_upload\_flow.py::test\_upload\_download\_roundtrip \-v
 
 ### 11.3 Yang Belum Diterapkan (Future)
 
-- Rate limiting pada endpoint login
-- HTTPS enforcement (di production)
+**Fase 5 (Planned — Production Hardening):**
+
+- Email verification saat register (SMTP / SendGrid)
+- Rate limiting: login (5x/menit), upload (10x/jam per user)
+- Quota storage per user (configurable via admin panel)
+- HTTPS enforcement + HSTS header (production deployment)
 - CSP (Content Security Policy) header
-- Two-factor authentication
-- Audit log yang tidak bisa dihapus (append-only)
-- Key rotation periodik
+- Two-factor authentication (TOTP)
+- Audit log append-only (tidak bisa dihapus bahkan oleh admin)
+- Key rotation periodik (re-wrap session keys dengan user key baru)
+- Notifikasi email: share diterima, public link diakses
+- S3/GCS storage backend (saat ini abstraksi lokal)
 
 ---
 
@@ -2111,13 +2243,14 @@ curl -X DELETE http://localhost:8000/files/directories/1 \
 
 ### 14.4 Changelog Dokumen
 
-| Versi | Tanggal      | Perubahan                                                                                                                                                                                                                                                                                                                                                                          |
-| :---- | :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.0   | Juli 2026    | Dokumen awal, rencana lengkap 6 fase                                                                                                                                                                                                                                                                                                                                               |
-| 2.0   | 6 Juli 2026  | Sinkronisasi Plan.md + Notebook UHC mod 257. Kompresi timeline 6→4 minggu. Server Wrapping Key untuk sharing.                                                                                                                                                                                                                                                                      |
-| 3.0   | 6 Juli 2026  | **Final.** AI_MODE=adaptive_split, LAYER2=hybrid (AES+RSA), UHC_MODULUS=257. Tambah RSA engine, AI selector + feature extraction, security analyzer (entropi, korrelasi, avalanche, NPCR, UACI, score). Semua parameter via .env. Frontend: System Info page, Security Score modal, File Detail panel. Total test 67+.                                                             |
-| 4.0   | 15 Juli 2026 | **Enhanced AI Selector.** Tambah section 7.6 Multi-Feature Adaptive Matrix: klasifikasi tipe file (text/structured/compressed/binary), size tier log-scaled, entropy adjustment (±2 index), type adjustment (±1 index), adaptive logistic parameter r (3.90–3.99). Simulasi 4 file 50KB → 4 matrix_size berbeda. Decision trace di metadata. Test 6: AI Variation. Total test 77+. |
-| 5.0   | 20 Juli 2026 | **Manajemen Direktori.** Tambah fitur folder hirarkis di Manajemen File. Tambah parent_id & is_directory di stored_files. Tambah section 6.10 endpoint direktori. Tambah file backend/services/directory_service.py + frontend breadcrumb navigasi. Update Fase 4 dengan task direktori. Total test 83+.                                                                           |
+| Versi | Tanggal        | Perubahan                                                                                                                                                                                                                                                                                                                                                                            |
+| :---- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0   | Juli 2026      | Dokumen awal, rencana lengkap 6 fase                                                                                                                                                                                                                                                                                                                                                 |
+| 2.0   | 6 Juli 2026    | Sinkronisasi Plan.md + Notebook UHC mod 257. Kompresi timeline 6→4 minggu. Server Wrapping Key untuk sharing.                                                                                                                                                                                                                                                                        |
+| 3.0   | 6 Juli 2026    | **Final.** AI_MODE=adaptive_split, LAYER2=hybrid (AES+RSA), UHC_MODULUS=257. Tambah RSA engine, AI selector + feature extraction, security analyzer (entropi, korrelasi, avalanche, NPCR, UACI, score). Semua parameter via .env. Frontend: System Info page, Security Score modal, File Detail panel. Total test 67+.                                                               |
+| 4.0   | 15 Juli 2026   | **Enhanced AI Selector.** Tambah section 7.6 Multi-Feature Adaptive Matrix: klasifikasi tipe file (text/structured/compressed/binary), size tier log-scaled, entropy adjustment (±2 index), type adjustment (±1 index), adaptive logistic parameter r (3.90–3.99). Simulasi 4 file 50KB → 4 matrix_size berbeda. Decision trace di metadata. Test 6: AI Variation. Total test 77+.   |
+| 5.0   | 20 Juli 2026   | **Manajemen Direktori.** Tambah fitur folder hirarkis di Manajemen File. Tambah parent_id & is_directory di stored_files. Tambah section 6.10 endpoint direktori. Tambah file backend/services/directory_service.py + frontend breadcrumb navigasi. Update Fase 4 dengan task direktori. Total test 83+.                                                                             |
+| 6.0   | 4 Agustus 2026 | **Production-Ready Refactor.** Requirement berubah dari prototype ke produk siap jual. Tambah: RBAC dua peran (admin/user), kolom role+is_active di users, tabel api_keys + public_links, 6 section API baru (auth reset, upload URL, download cipher, public link, API key, admin panel), seeder default, Fase 5 planned (email verify, rate limit, quota, HTTPS). Total test 105+. |
 
 ---
 
