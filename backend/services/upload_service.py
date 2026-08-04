@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from backend.config import get_settings
@@ -39,8 +40,26 @@ class UploadService:
         filename_original: str,
         mime_type: str,
         plaintext: bytes,
+        parent_id: int | None = None,
     ) -> FileUploadResponse:
         plaintext_hash = compute_sha256(plaintext)
+
+        # Validate parent folder if provided
+        if parent_id is not None:
+            parent = (
+                db.query(StoredFile)
+                .filter(
+                    StoredFile.id == parent_id,
+                    StoredFile.owner_id == user.id,
+                    StoredFile.is_directory == True,  # noqa: E712
+                )
+                .first()
+            )
+            if not parent:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Target folder not found",
+                )
 
         session_key = generate_session_key()
         features = extract_features(
@@ -119,6 +138,7 @@ class UploadService:
             file_size_original=len(plaintext),
             file_size_encrypted=len(cipher_aes),
             encryption_type=f"UHC(mod{settings.uhc_modulus},M{matrix_size},R{logistic_r})+AES+RSA",
+            parent_id=parent_id,
         )
         db.add(stored_file)
         db.flush()

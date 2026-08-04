@@ -69,6 +69,8 @@ const Upload = (() => {
 
       const formData = new FormData();
       formData.append("file", file);
+      const dirId = App.getDirectory();
+      if (dirId) formData.append("parent_id", dirId);
 
       const res = await API.request("POST", "/files/upload", formData, true);
       const bar = document.getElementById(pid);
@@ -78,6 +80,7 @@ const Upload = (() => {
       UI.toast(`"${file.name}" uploaded successfully`, "success");
 
       await FileList.render(document.getElementById("file-list-area"));
+      DirectoryUI.renderToolbar(document.getElementById("directory-toolbar"));
       SecurityUI.renderUploadAnalysis(
         file.name,
         res.security_score,

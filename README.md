@@ -46,39 +46,67 @@ uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 
 > Di Windows PowerShell, aktivasi venv: `\.venv\Scripts\Activate.ps1`
 
+## Default Accounts (seeded)
+
+Saat pertama kali dijalankan, sistem otomatis membuat akun default:
+
+| Username | Password    | Email                | Role  |
+| -------- | ----------- | -------------------- | ----- |
+| `admin`  | `Admin123!` | admin@ciphervault.io | admin |
+| `user`   | `User123!`  | user@ciphervault.io  | user  |
+
+- **Admin**: dapat melihat konfigurasi teknis, entropy, parameter kripto, dan mengelola semua user.
+- **User**: hanya upload/download/share/file management — tidak melihat parameter kripto.
+
 ## Endpoint penting
 
-| Endpoint                  | Method | Deskripsi                                        | Auth Required |
-| ------------------------- | ------ | ------------------------------------------------ | :-----------: |
-| `/`                       | GET    | Frontend dashboard                               |    ✅ JWT     |
-| `/login.html`             | GET    | Halaman login/register                           |      ❌       |
-| `/docs`                   | GET    | Swagger UI dokumentasi API                       |      ❌       |
-| `/health/live`            | GET    | Liveness probe — proses API hidup                |      ❌       |
-| `/health/ready`           | GET    | Readiness probe — database siap                  |      ❌       |
-| `/health`                 | GET    | Alias ke readiness                               |      ❌       |
-| `/auth/register`          | POST   | Registrasi user baru                             |      ❌       |
-| `/auth/login`             | POST   | Login, terima JWT token                          |      ❌       |
-| `/auth/me`                | GET    | Ambil profil user saat ini                       |      ✅       |
-| `/auth/reset-password`    | POST   | Reset password (verifikasi username + email)     |      ❌       |
-| `/files`                  | GET    | List file milik sendiri (pagination)             |      ✅       |
-| `/files/search?q=`        | GET    | Cari file berdasarkan nama                       |      ✅       |
-| `/files/shared`           | GET    | List file yang dibagikan ke user ini             |      ✅       |
-| `/files/{id}`             | GET    | Detail file + metadata + ai_decision             |      ✅       |
-| `/files/{id}`             | DELETE | Hapus file (owner only)                          |      ✅       |
-| `/files/{id}/download`    | GET    | Download + dekripsi file (owner/recipient)       |      ✅       |
-| `/files/{id}/share`       | POST   | Bagikan file ke user lain                        |      ✅       |
-| `/files/{id}/shares`      | GET    | List semua share untuk file ini (owner only)     |      ✅       |
-| `/files/shares/{id}`      | DELETE | Cabut akses share (owner only)                   |      ✅       |
-| `/files/{id}/analyze`     | POST   | Analisis keamanan ciphertext (owner/recipient)   |      ✅       |
-| `/files/upload`           | POST   | Upload file (multipart/form-data, field: `file`) |      ✅       |
-| `/files/directories`      | POST   | Buat folder baru                                 |      ✅       |
-| `/files/directories`      | GET    | Isi folder (root jika tanpa parent_id)           |      ✅       |
-| `/files/directories/{id}` | GET    | Detail folder                                    |      ✅       |
-| `/files/{id}/move`        | PATCH  | Pindahkan file/folder ke folder lain             |      ✅       |
-| `/files/directories/{id}` | DELETE | Hapus folder (rekursif)                          |      ✅       |
-| `/system/config`          | GET    | Konfigurasi sistem runtime                       |      ✅       |
-| `/system/status`          | GET    | Status sistem (RSA, storage, database)           |      ✅       |
-| `/activities`             | GET    | Log aktivitas user                               |      ✅       |
+| Endpoint                           | Method | Deskripsi                                                |   Auth    |
+| ---------------------------------- | ------ | -------------------------------------------------------- | :-------: |
+| `/`                                | GET    | Frontend dashboard                                       |  ✅ JWT   |
+| `/login.html`                      | GET    | Halaman login/register                                   |    ❌     |
+| `/docs`                            | GET    | Swagger UI dokumentasi API                               |    ❌     |
+| `/health/live`                     | GET    | Liveness probe — proses API hidup                        |    ❌     |
+| `/health/ready`                    | GET    | Readiness probe — database siap                          |    ❌     |
+| `/health`                          | GET    | Alias ke readiness                                       |    ❌     |
+| `/auth/register`                   | POST   | Registrasi user baru (role: user)                        |    ❌     |
+| `/auth/login`                      | POST   | Login, terima JWT token                                  |    ❌     |
+| `/auth/me`                         | GET    | Ambil profil user saat ini                               | JWT / Key |
+| `/auth/reset-password`             | POST   | Reset password (verifikasi username + email)             |    ❌     |
+| `/files/upload`                    | POST   | Upload + enkripsi file (field: `file`, opt: `parent_id`) | JWT / Key |
+| `/files`                           | GET    | List file milik sendiri (excludes dirs)                  | JWT / Key |
+| `/files/search?q=`                 | GET    | Cari file berdasarkan nama                               | JWT / Key |
+| `/files/shared`                    | GET    | List file yang dibagikan ke user ini                     | JWT / Key |
+| `/files/{id}`                      | GET    | Detail file + metadata + ai_decision                     | JWT / Key |
+| `/files/{id}`                      | DELETE | Hapus file (owner only)                                  | JWT / Key |
+| `/files/{id}/analyze`              | POST   | Analisis keamanan ciphertext                             | ✅ Admin  |
+| `/files/{id}/verify`               | POST   | Verifikasi integritas tanpa download                     | JWT / Key |
+| `/files/{id}/download`             | GET    | Download + dekripsi file                                 | JWT / Key |
+| `/files/{id}/download/cipher`      | GET    | Download raw ciphertext                                  | JWT / Key |
+| `/files/{id}/move`                 | PATCH  | Pindahkan file/folder ke folder lain                     | JWT / Key |
+| `/files/{id}/share`                | POST   | Bagikan file ke user lain                                | JWT / Key |
+| `/files/{id}/shares`               | GET    | List semua share untuk file ini                          | JWT / Key |
+| `/files/shares/{id}`               | DELETE | Cabut akses share (owner only)                           | JWT / Key |
+| `/files/{id}/public-link`          | POST   | Buat public link (password/expiry/limit opt)             | JWT / Key |
+| `/files/{id}/public-links`         | GET    | List public links untuk file                             | JWT / Key |
+| `/public-links/{id}`               | DELETE | Cabut public link                                        | JWT / Key |
+| `/public/{token}`                  | GET    | Download via public link (no auth, opt: password)        |    ❌     |
+| `/files/directories`               | POST   | Buat folder baru                                         | JWT / Key |
+| `/files/directories`               | GET    | Isi folder (root jika tanpa parent_id)                   | JWT / Key |
+| `/files/directories/{id}`          | DELETE | Hapus folder (rekursif)                                  | JWT / Key |
+| `/api-keys`                        | POST   | Buat API key (key ditampilkan sekali)                    |  ✅ JWT   |
+| `/api-keys`                        | GET    | List API keys milik user                                 | JWT / Key |
+| `/api-keys/{id}`                   | DELETE | Cabut API key                                            | JWT / Key |
+| `/system/config`                   | GET    | Konfigurasi sistem runtime                               | ✅ Admin  |
+| `/system/status`                   | GET    | Status sistem (RSA, storage, database)                   | ✅ Admin  |
+| `/admin/users`                     | GET    | List semua user (pagination)                             | ✅ Admin  |
+| `/admin/users/{id}`                | GET    | Detail user                                              | ✅ Admin  |
+| `/admin/users/{id}/role`           | PATCH  | Ubah role user (admin/user)                              | ✅ Admin  |
+| `/admin/users/{id}/active`         | PATCH  | Aktifkan/nonaktifkan user                                | ✅ Admin  |
+| `/admin/users/{id}/reset-password` | POST   | Reset password user                                      | ✅ Admin  |
+| `/admin/users/{id}`                | DELETE | Hapus user                                               | ✅ Admin  |
+| `/admin/stats`                     | GET    | Statistik sistem (users, files, shares, storage)         | ✅ Admin  |
+| `/admin/security/stats`            | GET    | Metrik keamanan global (entropy, score per file)         | ✅ Admin  |
+| `/activities`                      | GET    | Log aktivitas user                                       | JWT / Key |
 
 ### Keterangan health endpoint
 
@@ -110,6 +138,15 @@ Variabel yang umum dipakai:
 - `ACCESS_TOKEN_EXPIRE_MINUTES`
 - `AI_MATRIX_STRATEGY` (default: `multi_feature_adaptive`, opsi: `legacy`)
 - `AI_ADAPTIVE_R` (default: `true`, jika `false` pakai `UHC_LOGISTIC_R` statis)
+
+### Otentikasi Ganda — JWT atau API Key
+
+Semua endpoint yang memerlukan auth menerima **dua metode**:
+
+1. **JWT Bearer** — `Authorization: Bearer <token>` (dari login)
+2. **API Key** — `X-API-Key: cv_...` (dari Profile → Generate)
+
+Pengecualian: `POST /api-keys` hanya menerima JWT (tidak bisa membuat key dengan key lain).
 
 ## Fitur Frontend per Fase
 
@@ -204,6 +241,50 @@ pytest tests/test_download_flow.py tests/test_share_flow.py -v
   2. Hard refresh browser (`Ctrl+F5`) atau aktifkan `Disable cache` di DevTools.
   3. Logout dan login ulang agar token tersinkron.
 - Download gagal dengan `500`: periksa log container (`docker compose logs api`). File key mismatch atau metadata korupsi mungkin penyebabnya.
+
+### Tahap 5 — Production Ready (v6)
+
+- **RBAC dua tier**: `admin` (lihat parameter kripto, kelola user) vs `user` (hanya operasi file)
+- **Admin Panel** — kelola user: promote/demote, activate/deactivate, reset password, delete
+- **System Stats** — total users, files, shares, storage, API keys, recent activities
+- **Security Stats** — avg entropy, avg score, per-file metrics untuk semua file terenkripsi
+- **API Keys** — generate/revoke keys untuk akses programatik (key ditampilkan sekali)
+- **Public Links** — share file tanpa login (password, expiry, download limit opsional)
+- **Directory Management** — folder hirarkis seperti Google Drive
+- **Verify Integrity** — cek integritas file tanpa download (`POST /files/{id}/verify`)
+- **Download Ciphertext** — download raw ciphertext (`GET /files/{id}/download/cipher`)
+- **Seeder** — akun default `admin`/`Admin123!` dan `user`/`User123!`
+
+## Otentikasi API
+
+### Membuat API Key
+
+1. Login ke dashboard → klik ikon Profile di navbar
+2. Klik **Generate** di section API Keys
+3. Simpan key yang ditampilkan (hanya muncul sekali)
+
+### Contoh Penggunaan API Key
+
+```bash
+# Upload file
+curl -X POST http://localhost:8000/files/upload \
+  -H "X-API-Key: cv_your_key_here" \
+  -F "file=@document.pdf"
+
+# List files
+curl -H "X-API-Key: cv_your_key_here" http://localhost:8000/files
+
+# Download file
+curl -H "X-API-Key: cv_your_key_here" \
+  -o decrypted.pdf \
+  http://localhost:8000/files/1/download
+
+# Create public link
+curl -X POST http://localhost:8000/files/1/public-link \
+  -H "X-API-Key: cv_your_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"max_access": 10, "expires_in_hours": 24}'
+```
 
 ## Arsitektur AI Selector Hybrid Encryption (UHC + AES)
 

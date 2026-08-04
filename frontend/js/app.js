@@ -2,19 +2,24 @@ const App = (() => {
   let currentView = "dashboard";
   let currentUser = null;
   let systemConfig = null;
+  let currentDirectoryId = null;
 
   async function init() {
     currentUser = await Auth.ensureAuthenticated();
     if (!currentUser) return;
 
+    // System config is admin-only; regular users get a null fallback
     try {
-      systemConfig = await API.request("GET", "/system/config");
+      if (currentUser.role === "admin") {
+        systemConfig = await API.request("GET", "/system/config");
+      }
     } catch {
       systemConfig = null;
     }
 
     hydrateUserUI(currentUser);
     setupNavbar();
+    applyRoleBasedUI(currentUser);
     setupRouter();
     navigate(window.location.hash.replace("#", "") || "dashboard");
   }
@@ -25,11 +30,36 @@ const App = (() => {
 
     const name = document.getElementById("nav-username");
     if (name) name.textContent = user.username;
+
+    const roleBadge = document.getElementById("nav-role");
+    if (roleBadge) {
+      roleBadge.textContent = user.role;
+      roleBadge.style.display = "inline-flex";
+      if (user.role === "admin") {
+        roleBadge.style.background =
+          "color-mix(in srgb, var(--primary) 15%, transparent)";
+        roleBadge.style.color = "var(--primary)";
+      }
+    }
+  }
+
+  function applyRoleBasedUI(user) {
+    const isAdmin = user.role === "admin";
+
+    const adminTab = document.querySelector('[data-nav="admin"]');
+    if (adminTab) adminTab.style.display = isAdmin ? "" : "none";
+
+    const systemTab = document.querySelector('[data-nav="system"]');
+    if (systemTab) systemTab.style.display = isAdmin ? "" : "none";
   }
 
   function setupNavbar() {
     const logoutBtn = document.getElementById("btn-logout");
     if (logoutBtn) logoutBtn.addEventListener("click", Auth.logout);
+
+    const profileBtn = document.getElementById("btn-profile");
+    if (profileBtn)
+      profileBtn.addEventListener("click", () => navigate("profile"));
 
     document.querySelectorAll(".nav-tab").forEach((link) => {
       link.addEventListener("click", (e) => {
@@ -49,14 +79,12 @@ const App = (() => {
     currentView = view;
     window.location.hash = view;
 
-    // Tab active state with bottom border (index.html tabs)
     document.querySelectorAll(".nav-tab").forEach((el) => {
       const isActive = el.dataset.nav === view;
       el.classList.toggle("active", isActive);
       el.classList.toggle("text-primary", isActive);
       el.classList.toggle("text-secondary", !isActive);
 
-      // Toggle the active bar underline
       const bar = el.querySelector(".tab-active-bar");
       if (bar) {
         bar.classList.toggle("scale-x-100", isActive);
@@ -80,6 +108,16 @@ const App = (() => {
       case "activity":
         renderActivity(container);
         break;
+      case "profile":
+        renderProfile(container);
+        break;
+      case "admin":
+        if (currentUser?.role === "admin") {
+          AdminPanel.render(container);
+        } else {
+          renderDashboard(container);
+        }
+        break;
       default:
         renderDashboard(container);
     }
@@ -94,20 +132,35 @@ const App = (() => {
     return `UHC + ${layer2} (${aiMode}, ${adaptiveR})`;
   }
 
+  function setDirectory(dirId) {
+    currentDirectoryId = dirId ?? null;
+  }
+
+  function getDirectory() {
+    return currentDirectoryId;
+  }
+
   async function renderDashboard(container) {
     const encryptionSummary = buildEncryptionSummary();
 
     container.innerHTML = `
       <div class="page-enter">
+        <div id="directory-toolbar"></div>
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
             <h1 class="text-3xl font-black font-heading tracking-tight">My Files</h1>
             <p class="text-sm text-muted mt-1">Securely encrypted with <span style="color: var(--success);" class="font-medium">${encryptionSummary}</span></p>
           </div>
-          <button class="flex items-center gap-2 px-5 py-2.5 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" style="background: var(--primary);" onclick="document.getElementById('file-input').click()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Upload File
-          </button>
+          <div class="flex items-center gap-2">
+            <button class="flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium text-secondary hover:text-primary hover:bg-surface-hover transition-all duration-200 cursor-pointer bg-transparent border border-border" onclick="DirectoryUI.openCreateModal()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              New Folder
+            </button>
+            <button class="flex items-center gap-2 px-5 py-2.5 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" style="background: var(--primary);" onclick="document.getElementById('file-input').click()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload File
+            </button>
+          </div>
         </div>
         <div id="stats-area"></div>
         <div id="upload-area"></div>
@@ -115,6 +168,7 @@ const App = (() => {
         <div id="file-list-area"></div>
       </div>
     `;
+    DirectoryUI.renderToolbar(document.getElementById("directory-toolbar"));
     Search.render(document.getElementById("search-area"), (query) =>
       FileList.render(document.getElementById("file-list-area"), query),
     );
@@ -136,12 +190,33 @@ const App = (() => {
   }
 
   async function renderSystem(container) {
+    if (currentUser?.role !== "admin") {
+      container.innerHTML = `
+        <div class="page-enter">
+          <div class="bg-surface-card border border-border rounded-lg p-10 text-center">
+            <p class="text-muted">Admin access required to view system configuration.</p>
+          </div>
+        </div>`;
+      return;
+    }
     container.innerHTML = `
       <div class="page-enter">
         <div id="system-content"></div>
       </div>
     `;
     await SystemPage.render(document.getElementById("system-content"));
+  }
+
+  async function renderProfile(container) {
+    container.innerHTML = `
+      <div class="page-enter">
+        <div id="profile-content"></div>
+      </div>
+    `;
+    await Profile.render(
+      document.getElementById("profile-content"),
+      currentUser,
+    );
   }
 
   async function renderActivity(container) {
@@ -154,6 +229,7 @@ const App = (() => {
         share: "text-[#d4a72c] bg-[rgba(212,167,44,0.1)]",
         verify: "text-primary bg-[rgba(45,106,79,0.1)]",
         delete: "text-[#c44545] bg-[rgba(196,69,69,0.1)]",
+        delete_folder: "text-[#c44545] bg-[rgba(196,69,69,0.1)]",
         download: "text-[#d4a72c] bg-[rgba(212,167,44,0.1)]",
         login: "text-muted bg-surface",
       };
@@ -162,6 +238,7 @@ const App = (() => {
         share: "text-[#e0b94a] bg-[rgba(224,185,74,0.1)]",
         verify: "text-[#40916c] bg-[rgba(64,145,108,0.1)]",
         delete: "text-[#d15151] bg-[rgba(209,81,81,0.1)]",
+        delete_folder: "text-[#d15151] bg-[rgba(209,81,81,0.1)]",
         download: "text-[#e0b94a] bg-[rgba(224,185,74,0.1)]",
         login: "text-muted bg-surface",
       };
@@ -173,6 +250,8 @@ const App = (() => {
         verify:
           '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>',
         delete:
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+        delete_folder:
           '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
         download:
           '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
@@ -192,7 +271,6 @@ const App = (() => {
         return;
       }
 
-      // Check if dark mode to use appropriate colors
       const isDark = document.documentElement.classList.contains("dark");
       const acMap = isDark ? darkActionColors : actionColors;
 
@@ -223,7 +301,14 @@ const App = (() => {
     }
   }
 
-  return { init, navigate, getSystemConfig: () => systemConfig };
+  return {
+    init,
+    navigate,
+    getSystemConfig: () => systemConfig,
+    getCurrentUser: () => currentUser,
+    setDirectory,
+    getDirectory,
+  };
 })();
 
 document.addEventListener("DOMContentLoaded", () => App.init());
