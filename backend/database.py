@@ -32,6 +32,8 @@ def _migrate_columns() -> None:
     migrations = [
         ("users", "role", "VARCHAR(10) DEFAULT 'user' NOT NULL"),
         ("users", "is_active", "BOOLEAN DEFAULT 1"),
+        ("stored_files", "parent_id", "INTEGER"),
+        ("stored_files", "is_directory", "BOOLEAN DEFAULT 0"),
     ]
     with engine.connect() as conn:
         for table, column, definition in migrations:

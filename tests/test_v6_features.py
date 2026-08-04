@@ -341,3 +341,204 @@ class TestAdminPanel:
             headers=auth,
         )
         assert r.status_code == 422
+
+
+# ── Directory Management Tests ─────────────────────────────────
+
+
+class TestDirectoryManagement:
+    def test_create_root_folder(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        r = client.post(
+            "/files/directories",
+            json={"name": "MyDocuments"},
+            headers=auth,
+        )
+        assert r.status_code == 200
+        assert r.json()["is_directory"] is True
+        assert r.json()["parent_id"] is None
+
+    def test_create_subfolder(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        r = client.post("/files/directories", json={"name": "Parent"}, headers=auth)
+        parent_id = r.json()["id"]
+
+        r = client.post(
+            "/files/directories",
+            json={"name": "Child", "parent_id": parent_id},
+            headers=auth,
+        )
+        assert r.status_code == 200
+        assert r.json()["parent_id"] == parent_id
+
+    def test_list_directory_contents(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        client.post("/files/directories", json={"name": "FolderA"}, headers=auth)
+        client.post("/files/directories", json={"name": "FolderB"}, headers=auth)
+
+        r = client.get("/files/directories", headers=auth)
+        assert r.status_code == 200
+        names = [i["name"] for i in r.json()["items"]]
+        assert "FolderA" in names
+        assert "FolderB" in names
+
+    def test_breadcrumb_navigation(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        r = client.post("/files/directories", json={"name": "L1"}, headers=auth)
+        l1_id = r.json()["id"]
+        r = client.post(
+            "/files/directories",
+            json={"name": "L2", "parent_id": l1_id},
+            headers=auth,
+        )
+        l2_id = r.json()["id"]
+
+        r = client.get(f"/files/directories?parent_id={l2_id}", headers=auth)
+        path_names = [b["name"] for b in r.json()["current_path"]]
+        assert path_names == ["L1", "L2"]
+
+    def test_move_file_to_folder(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        up = _upload(token, "test.txt", b"content")
+        file_id = up.json()["id"]
+
+        r = client.post("/files/directories", json={"name": "F"}, headers=auth)
+        folder_id = r.json()["id"]
+
+        r = client.patch(
+            f"/files/{file_id}/move",
+            json={"target_parent_id": folder_id},
+            headers=auth,
+        )
+        assert r.status_code == 200
+
+        # File should appear in folder
+        r = client.get(f"/files/directories?parent_id={folder_id}", headers=auth)
+        ids = [i["id"] for i in r.json()["items"]]
+        assert file_id in ids
+
+    def test_cannot_move_folder_into_itself(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        r = client.post("/files/directories", json={"name": "F"}, headers=auth)
+        folder_id = r.json()["id"]
+
+        r = client.patch(
+            f"/files/{folder_id}/move",
+            json={"target_parent_id": folder_id},
+            headers=auth,
+        )
+        assert r.status_code == 400
+
+    def test_delete_folder_recursive(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        r = client.post("/files/directories", json={"name": "Parent"}, headers=auth)
+        parent_id = r.json()["id"]
+
+        up = _upload(token, "f.txt", b"data")
+        file_id = up.json()["id"]
+        client.patch(
+            f"/files/{file_id}/move",
+            json={"target_parent_id": parent_id},
+            headers=auth,
+        )
+
+        r = client.delete(f"/files/directories/{parent_id}", headers=auth)
+        assert r.status_code == 200
+
+    def test_duplicate_folder_name_conflict(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        client.post("/files/directories", json={"name": "SameName"}, headers=auth)
+        r = client.post("/files/directories", json={"name": "SameName"}, headers=auth)
+        assert r.status_code == 409
+
+
+# ── Verify Integrity Tests ──────────────────────────────────────
+
+
+class TestVerifyIntegrity:
+    def test_verify_passes(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        up = _upload(token, "f.txt", b"verify me")
+        file_id = up.json()["id"]
+
+        r = client.post(f"/files/{file_id}/verify", headers=auth)
+        assert r.status_code == 200
+        assert r.json()["status"] == "ok"
+
+    def test_verify_nonexistent_file(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        r = client.post("/files/99999/verify", headers=auth)
+        assert r.status_code == 404
+
+
+# ── Download Ciphertext Tests ───────────────────────────────────
+
+
+class TestDownloadCiphertext:
+    def test_download_cipher(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        plaintext = b"this is secret plaintext data"
+        up = _upload(token, "secret.bin", plaintext)
+        file_id = up.json()["id"]
+
+        r = client.get(f"/files/{file_id}/download/cipher", headers=auth)
+        assert r.status_code == 200
+        assert r.content != plaintext  # ciphertext should differ
+
+    def test_download_cipher_nonexistent(self):
+        _, token, _ = _register_and_login()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        r = client.get("/files/99999/download/cipher", headers=auth)
+        assert r.status_code == 404
+
+
+# ── Admin Security Stats Tests ──────────────────────────────────
+
+
+class TestAdminSecurityStats:
+    def _get_admin_token(self):
+        _, token, user = _register_and_login()
+        _make_admin(user["id"])
+        return token
+
+    def test_security_stats_admin_only(self):
+        _, token, _ = _register_and_login()
+        r = client.get(
+            "/admin/security/stats",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert r.status_code == 403
+
+    def test_security_stats_returns_data(self):
+        token = self._get_admin_token()
+        auth = {"Authorization": f"Bearer {token}"}
+
+        r = client.get("/admin/security/stats", headers=auth)
+        assert r.status_code == 200
+        data = r.json()
+        assert "files_analyzed" in data
+        assert "average_score" in data
+        assert "average_entropy" in data

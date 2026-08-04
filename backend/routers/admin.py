@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from backend.crypto import analyze_file
 from backend.database import get_db
 from backend.middleware.auth_middleware import get_current_user
 from backend.middleware.role_guard import require_admin
-from backend.models import ActivityLog, Share, StoredFile, User
+from backend.models import ActivityLog, FileKey, Share, StoredFile, User
+from backend.models import StoredFile as SF
 from backend.schemas.admin import (
     AdminUserDetail,
     AdminUserItem,
@@ -15,6 +17,7 @@ from backend.schemas.admin import (
     UpdateRoleRequest,
 )
 from backend.services.admin_service import AdminService
+from backend.storage import storage
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -121,3 +124,60 @@ def admin_stats(
         _activity_to_dict(log) for log in stats["recent_activities"]
     ]
     return stats
+
+
+@router.get("/security/stats")
+def admin_security_stats(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+) -> dict:
+    """Global security statistics across all encrypted files.
+
+    Only analyzes files whose ciphertext still exists in storage.
+    Returns aggregated metrics: avg entropy, avg score, min/max, etc.
+    """
+    files = (
+        db.query(SF)
+        .filter(SF.is_directory == False)
+        .order_by(SF.created_at.desc())
+        .limit(200)
+        .all()
+    )
+
+    scores = []
+    entropies = []
+    analyzed = 0
+    per_file = []
+
+    for f in files:
+        if not storage.exists(f.filename_stored):
+            continue
+        try:
+            ciphertext = storage.read(f.filename_stored)
+            analysis = analyze_file(ciphertext)
+            scores.append(analysis["score"])
+            entropies.append(analysis["metrics"].get("entropy", 0))
+            per_file.append(
+                {
+                    "file_id": f.id,
+                    "filename": f.filename_original,
+                    "owner_id": f.owner_id,
+                    "score": analysis["score"],
+                    "entropy": analysis["metrics"].get("entropy", 0),
+                    "size_encrypted": f.file_size_encrypted,
+                }
+            )
+            analyzed += 1
+        except Exception:
+            continue
+
+    return {
+        "files_analyzed": analyzed,
+        "average_score": round(sum(scores) / len(scores), 2) if scores else 0,
+        "average_entropy": round(sum(entropies) / len(entropies), 4)
+        if entropies
+        else 0,
+        "min_score": min(scores) if scores else 0,
+        "max_score": max(scores) if scores else 0,
+        "per_file": per_file[:50],
+    }

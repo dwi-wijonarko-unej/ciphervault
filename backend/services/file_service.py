@@ -13,6 +13,7 @@ from backend.schemas.file import (
     SecurityAnalysisResponse,
 )
 from backend.schemas.share import SharedFileItem, SharedFileListResponse
+from backend.services.download_service import DownloadService
 from backend.storage import storage
 
 
@@ -34,7 +35,10 @@ class FileService:
 
         query = (
             db.query(StoredFile)
-            .filter(StoredFile.owner_id == user.id)
+            .filter(
+                StoredFile.owner_id == user.id,
+                StoredFile.is_directory == False,
+            )
             .order_by(StoredFile.created_at.desc())
         )
 
@@ -80,6 +84,7 @@ class FileService:
             db.query(StoredFile)
             .filter(
                 StoredFile.owner_id == user.id,
+                StoredFile.is_directory == False,
                 StoredFile.filename_original.ilike(f"%{q}%"),
             )
             .order_by(StoredFile.created_at.desc())
@@ -268,6 +273,50 @@ class FileService:
             items=items,
             total=total,
         )
+
+    @staticmethod
+    def verify_file_integrity(
+        db: Session, file_id: int, user: User
+    ) -> dict[str, object]:
+        """Decrypt file in memory to verify integrity without returning it."""
+        file = db.query(StoredFile).filter(StoredFile.id == file_id).first()
+        if not file:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="File not found",
+            )
+
+        key = db.query(FileKey).filter(FileKey.file_id == file.id).first()
+        if not key:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="File key not found",
+            )
+
+        if not storage.exists(file.filename_stored):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Ciphertext not found in storage",
+            )
+
+        try:
+            # Reuse download logic (decrypts + checks integrity)
+            DownloadService.download(file_id, user, db)
+            return {
+                "file_id": file_id,
+                "filename": file.filename_original,
+                "status": "ok",
+                "message": "Integrity check passed",
+            }
+        except HTTPException as exc:
+            if exc.status_code == 403 and "Integrity" in str(exc.detail):
+                return {
+                    "file_id": file_id,
+                    "filename": file.filename_original,
+                    "status": "failed",
+                    "message": "Integrity check failed: file may be corrupted",
+                }
+            raise
 
     @staticmethod
     def delete_user_file(db: Session, file_id: int, user: User) -> dict[str, str]:
