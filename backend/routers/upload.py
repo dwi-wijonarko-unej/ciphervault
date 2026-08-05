@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
+from backend.config import get_settings
 from backend.database import get_db
 from backend.middleware.auth_middleware import get_current_user
 from backend.models import User
 from backend.schemas.file import FileUploadResponse
 from backend.services.upload_service import UploadService
+
+settings = get_settings()
 
 router = APIRouter(prefix="/files", tags=["upload"])
 
@@ -22,6 +25,11 @@ async def upload_file(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Uploaded file is empty",
+        )
+    if len(payload) > settings.max_upload_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"File too large. Max {settings.max_upload_bytes} bytes",
         )
 
     return UploadService.upload(

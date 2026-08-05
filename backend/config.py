@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     session_key_bytes: int = 32
     pbkdf2_iterations: int = 100000
 
+    max_upload_bytes: int = 1_048_576  # 1 MB
+
 
 @lru_cache
 def get_settings() -> Settings:

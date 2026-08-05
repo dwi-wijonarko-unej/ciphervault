@@ -193,6 +193,7 @@ Variabel yang umum dipakai:
 - `ACCESS_TOKEN_EXPIRE_MINUTES`
 - `AI_MATRIX_STRATEGY` (default: `multi_feature_adaptive`, opsi: `legacy`)
 - `AI_ADAPTIVE_R` (default: `true`, jika `false` pakai `UHC_LOGISTIC_R` statis)
+- `MAX_UPLOAD_BYTES` (default: `1048576` / 1 MB, batas maksimal ukuran file upload; sesuaikan untuk production)
 
 ### Otentikasi Ganda — JWT atau API Key
 

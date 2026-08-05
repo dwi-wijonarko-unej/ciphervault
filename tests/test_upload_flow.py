@@ -171,3 +171,13 @@ def test_files_listing_is_user_scoped_and_system_endpoints_available():
         )
         assert cfg.status_code == 403
         assert stat.status_code == 403
+
+
+def test_upload_rejects_file_over_max_size_limit():
+    with TestClient(app) as client:
+        token, _ = _register_and_login(client, "uplimit")
+        # default MAX_UPLOAD_BYTES = 1_048_576 (1 MB) -> send 1.5 MB
+        res = _upload(client, token, "big.bin", b"x" * (1_048_576 + 512 * 1024))
+
+    assert res.status_code == 413
+    assert "too large" in res.json()["detail"].lower()
