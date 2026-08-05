@@ -1971,18 +1971,28 @@ pytest tests/test\_upload\_flow.py::test\_upload\_download\_roundtrip \-v
 
 ### 11.3 Yang Belum Diterapkan (Future)
 
-**Fase 5 (Planned — Production Hardening):**
+Berikut item keamanan & operasional yang belum diimplementasikan pada produk inti (Fase 0–4). Detail tahapan pengerjaan lengkap ada di **Section 15 — Roadmap Komersialisasi SaaS**.
 
-- Email verification saat register (SMTP / SendGrid)
-- Rate limiting: login (5x/menit), upload (10x/jam per user)
-- Quota storage per user (configurable via admin panel)
-- HTTPS enforcement + HSTS header (production deployment)
-- CSP (Content Security Policy) header
-- Two-factor authentication (TOTP)
+**Fase 5 — Production Hardening (rencana jangka pendek):**
+
+- HTTPS enforcement + HSTS header (reverse proxy Caddy/Nginx + Let's Encrypt)
+- Rate limiting: login (5x/menit), upload (10x/jam per user), API key (configurable)
+- Quota storage per user per plan (configurable via admin panel)
+- CSP (Content Security Policy) + security headers (X-Frame-Options, dll)
+- Email transaksional: verification saat register, notifikasi share/link (SMTP / Brevo)
+- Backup otomatis terjadwal (pgdata + data/) dengan retensi
+- Rotasi password akun default seeder; secret management via env injection
+- Monitoring: Uptime Kuma (uptime), Sentry (error tracking)
+
+**Fase 6–9 (rencana jangka menengah — komersialisasi SaaS):**
+
+- Two-factor authentication (TOTP) untuk akun admin & berbayar
 - Audit log append-only (tidak bisa dihapus bahkan oleh admin)
 - Key rotation periodik (re-wrap session keys dengan user key baru)
-- Notifikasi email: share diterima, public link diakses
-- S3/GCS storage backend (saat ini abstraksi lokal)
+- Object storage backend (MinIO/S3) menggantikan storage lokal
+- Multipart upload untuk file besar (>100 MB)
+- Payment gateway integration (Midtrans/Xendit) + subscription engine
+- DPA (Data Processing Agreement) + audit/pentest untuk segmen B2B
 
 ---
 
@@ -2243,14 +2253,304 @@ curl -X DELETE http://localhost:8000/files/directories/1 \
 
 ### 14.4 Changelog Dokumen
 
-| Versi | Tanggal        | Perubahan                                                                                                                                                                                                                                                                                                                                                                            |
-| :---- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.0   | Juli 2026      | Dokumen awal, rencana lengkap 6 fase                                                                                                                                                                                                                                                                                                                                                 |
-| 2.0   | 6 Juli 2026    | Sinkronisasi Plan.md + Notebook UHC mod 257. Kompresi timeline 6→4 minggu. Server Wrapping Key untuk sharing.                                                                                                                                                                                                                                                                        |
-| 3.0   | 6 Juli 2026    | **Final.** AI_MODE=adaptive_split, LAYER2=hybrid (AES+RSA), UHC_MODULUS=257. Tambah RSA engine, AI selector + feature extraction, security analyzer (entropi, korrelasi, avalanche, NPCR, UACI, score). Semua parameter via .env. Frontend: System Info page, Security Score modal, File Detail panel. Total test 67+.                                                               |
-| 4.0   | 15 Juli 2026   | **Enhanced AI Selector.** Tambah section 7.6 Multi-Feature Adaptive Matrix: klasifikasi tipe file (text/structured/compressed/binary), size tier log-scaled, entropy adjustment (±2 index), type adjustment (±1 index), adaptive logistic parameter r (3.90–3.99). Simulasi 4 file 50KB → 4 matrix_size berbeda. Decision trace di metadata. Test 6: AI Variation. Total test 77+.   |
-| 5.0   | 20 Juli 2026   | **Manajemen Direktori.** Tambah fitur folder hirarkis di Manajemen File. Tambah parent_id & is_directory di stored_files. Tambah section 6.10 endpoint direktori. Tambah file backend/services/directory_service.py + frontend breadcrumb navigasi. Update Fase 4 dengan task direktori. Total test 83+.                                                                             |
-| 6.0   | 4 Agustus 2026 | **Production-Ready Refactor.** Requirement berubah dari prototype ke produk siap jual. Tambah: RBAC dua peran (admin/user), kolom role+is_active di users, tabel api_keys + public_links, 6 section API baru (auth reset, upload URL, download cipher, public link, API key, admin panel), seeder default, Fase 5 planned (email verify, rate limit, quota, HTTPS). Total test 105+. |
+| Versi | Tanggal        | Perubahan                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| :---- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0   | Juli 2026      | Dokumen awal, rencana lengkap 6 fase                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 2.0   | 6 Juli 2026    | Sinkronisasi Plan.md + Notebook UHC mod 257. Kompresi timeline 6→4 minggu. Server Wrapping Key untuk sharing.                                                                                                                                                                                                                                                                                                                                         |
+| 3.0   | 6 Juli 2026    | **Final.** AI_MODE=adaptive_split, LAYER2=hybrid (AES+RSA), UHC_MODULUS=257. Tambah RSA engine, AI selector + feature extraction, security analyzer (entropi, korrelasi, avalanche, NPCR, UACI, score). Semua parameter via .env. Frontend: System Info page, Security Score modal, File Detail panel. Total test 67+.                                                                                                                                |
+| 4.0   | 15 Juli 2026   | **Enhanced AI Selector.** Tambah section 7.6 Multi-Feature Adaptive Matrix: klasifikasi tipe file (text/structured/compressed/binary), size tier log-scaled, entropy adjustment (±2 index), type adjustment (±1 index), adaptive logistic parameter r (3.90–3.99). Simulasi 4 file 50KB → 4 matrix_size berbeda. Decision trace di metadata. Test 6: AI Variation. Total test 77+.                                                                    |
+| 5.0   | 20 Juli 2026   | **Manajemen Direktori.** Tambah fitur folder hirarkis di Manajemen File. Tambah parent_id & is_directory di stored_files. Tambah section 6.10 endpoint direktori. Tambah file backend/services/directory_service.py + frontend breadcrumb navigasi. Update Fase 4 dengan task direktori. Total test 83+.                                                                                                                                              |
+| 6.0   | 4 Agustus 2026 | **Production-Ready Refactor.** Requirement berubah dari prototype ke produk siap jual. Tambah: RBAC dua peran (admin/user), kolom role+is_active di users, tabel api_keys + public_links, 6 section API baru (auth reset, upload URL, download cipher, public link, API key, admin panel), seeder default, Fase 5 planned (email verify, rate limit, quota, HTTPS). Total test 105+.                                                                  |
+| 7.0   | 5 Agustus 2026 | **PostgreSQL + Legal + SaaS Roadmap.** Migrasi database production ke PostgreSQL 16 (docker-compose, dialect-aware migration). Tambah 4 halaman legal (ToS, Privacy UU PDP, Data Breach 72 jam, SLA). Batas upload konfigurabel (`MAX_UPLOAD_BYTES`). Tambah **Section 15 — Roadmap Komersialisasi SaaS**: penilaian kesiapan (~50% SaaS), desain DB baru (plans/subscriptions/invoices/payments), API billing, Fase 5–9 menuju 100%. Total test 90+. |
+
+---
+
+## 15. Roadmap Komersialisasi SaaS — Menuju 100% Kesiapan
+
+Bagian ini mendefinisikan kebutuhan dan tahap implementasi untuk mengubah CipherVault dari produk operasional (~73%) menjadi layanan SaaS subscription yang siap dipasarkan (100%). Penilaian ini melengkapi Fase 0–4 yang sudah membangun produk inti.
+
+### 15.1 Penilaian Kesiapan Saat Ini
+
+| Dimensi                               |     Skor | Catatan                                                               |
+| :------------------------------------ | -------: | :-------------------------------------------------------------------- |
+| Enkripsi & Inti Keamanan              |      85% | UHC+AES cascade, AI Selector, RSA wrapping, PBKDF2, SHA-256 integrity |
+| Autentikasi & RBAC                    |      80% | JWT + API Key, role admin/user, reset password                        |
+| API & Fitur Fungsional                |      85% | Upload/download/share/public-link/directory/admin CRUD lengkap        |
+| Database                              |      78% | PostgreSQL 16 (production-grade); single instance, belum ada replica  |
+| Storage File                          |      55% | Lokal 1 server, tanpa redundancy; belum object storage                |
+| Infrastruktur & Deployment            |      72% | Docker + post-receive + health probe; tanpa HTTPS/reverse proxy       |
+| Frontend & UX                         |      75% | Redesign per design guide, dark/light; audit aksesibilitas belum      |
+| Testing                               |      65% | 90 integration test; belum load test/security scan                    |
+| SecOps Operasional                    |      40% | Tanpa rate limiting, brute-force protection, secrets plaintext        |
+| Observability                         |      45% | Ada activity log; tanpa monitoring/APM/Sentry                         |
+| Compliance & Legal                    |      58% | ToS/Privacy/Breach/SLA ada; belum DPA B2B                             |
+| **Produk operasional (blended)**      | **~73%** |                                                                       |
+| Pembayaran & Billing                  |       0% | Tidak ada payment gateway/subscription engine                         |
+| Subscription tiers/plans              |       5% | Hanya role admin/user, bukan model plan                               |
+| Quota per plan (metering)             |      15% | `MAX_UPLOAD_BYTES` global, tidak per-user per-plan                    |
+| Email transaksional                   |       5% | Reset password hanya verifikasi, tidak kirim email                    |
+| Landing/marketing page                |       5% | Hanya login + dashboard                                               |
+| Invoice, PPN, receipt                 |       0% | Tidak ada                                                             |
+| Status page publik                    |       5% | Disebut di SLA, belum dibangun                                        |
+| Customer support                      |       0% | Tidak ada sistem tiket                                                |
+| Analytics konversi/churn              |       0% | Tidak ada                                                             |
+| **Kesiapan SaaS komersial (blended)** | **~50%** |                                                                       |
+
+### 15.2 Definisi "100% Siap Jual SaaS"
+
+100% berarti calon pelanggan dapat **self-signup → pilih plan → bayar otomatis → langsung pakai**, dengan dukungan operasional penuh:
+
+1. **Onboarding self-serve** — registrasi, verifikasi email, pilih plan, checkout
+2. **Billing otomatis** — payment gateway, recurring, invoice PPN, dunning
+3. **Quota enforcement** — storage & API usage dibatasi per plan
+4. **Keamanan production** — HTTPS, rate limiting, backup, monitoring, 2FA
+5. **Dukungan & transparansi** — status page, support channel, analytics
+6. **Compliance** — DPA B2B, audit trail, data residency, refund policy
+7. **Skala** — object storage, CI/CD, load test, multi-region backup
+
+### 15.3 Kebutuhan Database Baru (SaaS layer)
+
+Empat tabel baru untuk mendukung subscription & billing:
+
+#### `plans`
+
+| Kolom               | Tipe        | Keterangan                                     |
+| :------------------ | :---------- | :--------------------------------------------- |
+| id                  | Integer PK  |                                                |
+| name                | VARCHAR(32) | free / pro / enterprise                        |
+| tier                | VARCHAR(16) | urutan tier                                    |
+| price_monthly       | INTEGER     | dalam rupiah (cent)                            |
+| price_yearly        | INTEGER     | dalam rupiah (cent)                            |
+| storage_bytes       | BIGINT      | quota storage                                  |
+| max_file_bytes      | INTEGER     | ukuran file max                                |
+| max_api_calls_month | INTEGER     | quota API                                      |
+| features_json       | JSON        | fitur aktif (sharing, public_link, api_access) |
+| is_active           | BOOLEAN     | bisa dipilih saat checkout                     |
+| created_at          | TIMESTAMPTZ |                                                |
+
+#### `subscriptions`
+
+| Kolom                   | Tipe         | Keterangan                                      |
+| :---------------------- | :----------- | :---------------------------------------------- |
+| id                      | Integer PK   |                                                 |
+| user_id                 | FK users     |                                                 |
+| plan_id                 | FK plans     |                                                 |
+| status                  | VARCHAR(16)  | trial / active / past_due / cancelled / expired |
+| current_period_start    | TIMESTAMPTZ  |                                                 |
+| current_period_end      | TIMESTAMPTZ  |                                                 |
+| cancel_at_period_end    | BOOLEAN      |                                                 |
+| payment_gateway         | VARCHAR(16)  | midtrans / xendit / manual                      |
+| gateway_subscription_id | VARCHAR(128) | id di sisi gateway                              |
+| trial_ends_at           | TIMESTAMPTZ  | nullable                                        |
+| created_at / updated_at | TIMESTAMPTZ  |                                                 |
+
+#### `invoices`
+
+| Kolom                        | Tipe             | Keterangan                          |
+| :--------------------------- | :--------------- | :---------------------------------- |
+| id                           | Integer PK       |                                     |
+| subscription_id              | FK subscriptions |                                     |
+| user_id                      | FK users         |                                     |
+| amount                       | INTEGER          | subtotal (cent)                     |
+| tax_amount                   | INTEGER          | PPN (cent)                          |
+| currency                     | VARCHAR(8)       | IDR                                 |
+| status                       | VARCHAR(16)      | draft / open / paid / void          |
+| gateway_invoice_id           | VARCHAR(128)     |                                     |
+| invoice_number               | VARCHAR(32)      | nomor human-readable (CV-2026-0001) |
+| pdf_url                      | VARCHAR(512)     | hasil generate                      |
+| issued_at / due_at / paid_at | TIMESTAMPTZ      |                                     |
+
+#### `payments`
+
+| Kolom                  | Tipe         | Keterangan                            |
+| :--------------------- | :----------- | :------------------------------------ |
+| id                     | Integer PK   |                                       |
+| invoice_id             | FK invoices  |                                       |
+| gateway                | VARCHAR(16)  | midtrans / xendit                     |
+| gateway_transaction_id | VARCHAR(128) |                                       |
+| amount                 | INTEGER      |                                       |
+| method                 | VARCHAR(32)  | gopay / va / qris / card              |
+| status                 | VARCHAR(16)  | pending / success / failed / refunded |
+| raw_response_json      | JSON         | audit trail                           |
+| created_at             | TIMESTAMPTZ  |                                       |
+
+### 15.4 Kebutuhan API Baru (Billing & Subscription)
+
+| Endpoint                       | Method | Deskripsi                                            | Auth    |
+| :----------------------------- | :----- | :--------------------------------------------------- | :------ |
+| `/billing/plans`               | GET    | List plan publik (tanpa login)                       | ❌      |
+| `/billing/checkout`            | POST   | Buat checkout session (plan_id, cycle)               | JWT     |
+| `/billing/webhook/{gateway}`   | POST   | Callback payment gateway (no auth, verify signature) | ❌      |
+| `/billing/subscription`        | GET    | Subscription user saat ini                           | JWT/Key |
+| `/billing/subscription/cancel` | POST   | Batalkan (effektif akhir periode)                    | JWT     |
+| `/billing/invoices`            | GET    | Riwayat invoice user                                 | JWT/Key |
+| `/billing/invoices/{id}`       | GET    | Detail + download PDF                                | JWT/Key |
+| `/billing/usage`               | GET    | Storage terpakai vs quota                            | JWT/Key |
+| `/admin/subscriptions`         | GET    | Semua subscriber (filter status)                     | Admin   |
+| `/admin/revenue`               | GET    | Revenue summary (MRR, churn)                         | Admin   |
+| `/admin/invoices`              | GET    | Semua invoice                                        | Admin   |
+
+**Middleware quota:** upload & API key call dicek terhadap `subscriptions` + `plans` sebelum diproses.
+
+### 15.5 Fase 5 — Production Hardening (Keamanan & Operasional)
+
+**Tujuan:** Menutup celah operasional kritis sehingga layanan aman diakses publik.
+
+**Target kesiapan:** 50% → **65%**
+
+| File / Komponen                          | Aksi   | Detail                                                    |
+| :--------------------------------------- | :----- | :-------------------------------------------------------- |
+| `Caddyfile` / `nginx.conf`               | Buat   | Reverse proxy + auto-TLS Let's Encrypt, domain → :3000    |
+| `backend/middleware/rate_limit.py`       | Buat   | slowapi: login 5/mnt, upload 10/jam, API key configurable |
+| `backend/middleware/security_headers.py` | Buat   | HSTS, CSP, X-Frame-Options, X-Content-Type-Options        |
+| `backend/services/email_service.py`      | Buat   | SMTP/Brevo: welcome, verify, share notify, receipt        |
+| `scripts/backup.sh` + cron               | Buat   | pg_dump + rsync data/, retensi 7 hari, terenkripsi        |
+| `docker-compose.yml`                     | Update | Tambah service monitoring (uptime-kuma)                   |
+| `backend/seeders/seed.py`                | Update | Generate random password default; log ke file aman        |
+| `.env.example` / docs                    | Update | Dokumentasi ganti `POSTGRES_PASSWORD`, `SMTP_*`           |
+
+**Acceptance Criteria:**
+
+- [ ] HTTPS aktif dengan cert valid (A+ di SSL Labs)
+- [ ] Rate limiting memblokir brute force login (>5 percobaan/menit → 429)
+- [ ] Email verifikasi terkirim saat register; link verifikasi berfungsi
+- [ ] Backup harian berjalan; restore terverifikasi
+- [ ] Monitoring uptime + error tracking aktif
+- [ ] Password default seeder tidak lagi hardcoded publik
+- [ ] Security headers muncul di response (cek via curl/browser)
+
+### 15.6 Fase 6 — Billing & Subscription Core
+
+**Tujuan:** Mengaktifkan pembayaran otomatis dan pembatasan kuota per plan.
+
+**Target kesiapan:** 65% → **75%**
+
+| File / Komponen                           | Aksi | Detail                                                  |
+| :---------------------------------------- | :--- | :------------------------------------------------------ |
+| `backend/models/plan.py`                  | Buat | Model tabel plans + seeder 3 tier (free/pro/enterprise) |
+| `backend/models/subscription.py`          | Buat | Model subscriptions + status state machine              |
+| `backend/models/invoice.py`               | Buat | Model invoices + generator invoice_number               |
+| `backend/models/payment.py`               | Buat | Model payments + raw_response_json audit                |
+| `backend/services/billing_service.py`     | Buat | Create checkout, handle webhook, activate subscription  |
+| `backend/services/gateway/midtrans.py`    | Buat | Snap token, notification handler, signature verify      |
+| `backend/services/invoice_service.py`     | Buat | Generate PDF invoice (PPN 11%), kirim email             |
+| `backend/middleware/quota_guard.py`       | Buat | Cek storage & api usage vs plan sebelum upload/call     |
+| `backend/routers/billing.py`              | Buat | Endpoint section 15.4                                   |
+| `backend/routers/admin_billing.py`        | Buat | Admin revenue/subscriber views                          |
+| `frontend/billing.html` + `js/billing.js` | Buat | Pricing page, checkout, riwayat invoice                 |
+| `tests/test_billing.py`                   | Buat | Webhook simulasi, quota enforcement, invoice generate   |
+
+**Acceptance Criteria:**
+
+- [ ] GET /billing/plans mengembalikan 3 tier dengan harga IDR
+- [ ] POST /billing/checkout menghasilkan Snap token / redirect URL
+- [ ] Webhook menandai invoice paid → aktifkan subscription
+- [ ] Quota upload ditolak (402/429) saat storage melebihi plan
+- [ ] Invoice PDF berisi PPN 11%, nomor, dan detail plan
+- [ ] Email receipt terkirim setelah pembayaran sukses
+- [ ] Admin dapat melihat MRR & daftar subscriber aktif
+- [ ] Trial period (14 hari) aktif untuk plan berbayar
+
+### 15.7 Fase 7 — SaaS Completeness
+
+**Tujuan:** Melengkapi pengalaman pelanggan self-serve dan dukungan operasional.
+
+**Target kesiapan:** 75% → **85%**
+
+| File / Komponen                         | Aksi   | Detail                                             |
+| :-------------------------------------- | :----- | :------------------------------------------------- |
+| `frontend/landing.html`                 | Buat   | Hero asimetris, pricing, fitur bento, CTA signup   |
+| `frontend/js/landing.js`                | Buat   | Animasi, testimonial carousel, FAQ accordion       |
+| `frontend/support.html`                 | Buat   | Knowledge base, form kontak, link status page      |
+| `backend/services/analytics_service.py` | Buat   | Track signup, activation, churn, conversion funnel |
+| `backend/services/dunning_service.py`   | Buat   | Retry pembayaran gagal, email reminder, downgrade  |
+| `docker-compose.yml`                    | Update | Tambah uptime-kuma + status page config            |
+| `backend/routers/admin.py`              | Update | Dashboard revenue, churn chart, subscriber growth  |
+| `frontend/js/admin.js`                  | Update | Render chart revenue & churn                       |
+| `tests/test_dunning.py`                 | Buat   | Retry logic, downgrade otomatis setelah N hari     |
+
+**Acceptance Criteria:**
+
+- [ ] Landing page SEO-ready (meta, OG, structured data)
+- [ ] Pricing page terhubung ke checkout flow Fase 6
+- [ ] Analytics mencatat funnel: visit → signup → trial → paid
+- [ ] Dunning mengirim reminder H+1, H+3, H+7 lalu downgrade ke free
+- [ ] Status page publik menampilkan uptime historis
+- [ ] Support form mengirim email ke tim support
+
+### 15.8 Fase 8 — Skala & Enterprise
+
+**Tujuan:** Menyiapkan infrastruktur untuk skala dan segmen B2B/enterprise.
+
+**Target kesiapan:** 85% → **93%**
+
+| File / Komponen                      | Aksi   | Detail                                             |
+| :----------------------------------- | :----- | :------------------------------------------------- |
+| `backend/storage/s3_backend.py`      | Buat   | Abstraksi storage ke MinIO/S3 (menggantikan lokal) |
+| `backend/services/upload_service.py` | Update | Multipart upload untuk file >100 MB (chunked)      |
+| `.github/workflows/ci.yml`           | Buat   | Lint + test + build image setiap push              |
+| `tests/test_load.py`                 | Buat   | k6/locust: 100 concurrent upload, latency p95      |
+| `backend/services/two_factor.py`     | Buat   | TOTP (Google Authenticator), backup codes          |
+| `backend/middleware/audit_log.py`    | Update | Append-only log (tamper-evident via chain hash)    |
+| `docs/DPA.md`                        | Buat   | Data Processing Agreement template B2B             |
+| `scripts/multi_region_backup.sh`     | Buat   | Backup ke region kedua (cross-region replication)  |
+
+**Acceptance Criteria:**
+
+- [ ] File tersimpan di MinIO/S3, bukan disk lokal
+- [ ] Upload 500 MB berhasil via multipart tanpa OOM
+- [ ] CI pipeline: push → test → build → push image registry
+- [ ] Load test: 100 concurrent user, p95 < 2s, 0 error
+- [ ] 2FA dapat diaktifkan akun admin; backup codes berfungsi
+- [ ] Audit log tidak dapat diubah (verifikasi chain hash)
+- [ ] DPA tersedia untuk download oleh calon enterprise customer
+
+### 15.9 Fase 9 — Launch & Compliance Final
+
+**Tujuan:** Finalisasi dokumentasi, kepatuhan, dan go-live checklist.
+
+**Target kesiapan:** 93% → **100%**
+
+| Komponen               | Aksi    | Detail                                                   |
+| :--------------------- | :------ | :------------------------------------------------------- |
+| Dokumentasi API publik | Buat    | OpenAPI export, quickstart, SDK Python/JS                |
+| Update legal docs      | Update  | Tambah klausa subscription, refund, auto-renewal         |
+| `docs/SECURITY.md`     | Buat    | Disclosure policy, PGP key, SLA respons bug              |
+| Pentest report         | Lakukan | Audit keamanan pihak ketigac independent                 |
+| Privacy/ToS review     | Lakukan | Review hukum untuk konsistensi UU PDP                    |
+| Runbook operasional    | Buat    | Incident response, rollback, scale-up                    |
+| Go-live checklist      | Buat    | 50+ item pre-launch (DNS, TLS, backup, monitor, billing) |
+
+**Acceptance Criteria:**
+
+- [ ] Dokumentasi API publik live di /docs + quickstart guide
+- [ ] ToS/Privacy memuat klausa subscription & refund
+- [ ] Pentest lulus tanpa critical/high finding
+- [ ] Runbook teruji via simulation drill
+- [ ] Go-live checklist 100% tercentang
+- [ ] UAT final lintas browser (Chrome/Firefox/Safari) lulus
+
+### 15.10 Matriks Kesiapan per Fase
+
+| Fase | Fokus                  | Skor Awal | Skor Target | Estimasi Durasi |
+| :--- | :--------------------- | --------: | ----------: | :-------------- |
+| 5    | Production Hardening   |       50% |         65% | 1 minggu        |
+| 6    | Billing & Subscription |       65% |         75% | 2–3 minggu      |
+| 7    | SaaS Completeness      |       75% |         85% | 2–3 minggu      |
+| 8    | Skala & Enterprise     |       85% |         93% | 2–3 minggu      |
+| 9    | Launch & Compliance    |       93% |        100% | 1–2 minggu      |
+
+### 15.11 Urutan Eksekusi & Strategi Validasi
+
+Pendekatan bertahap disarankan untuk meminimalkan risiko dan memvalidasi willingness-to-pay sebelum membangun seluruh lapisan komersial:
+
+1. **Sekarang (Fase 5 awal)** — jual beta berbayar **manual** ke 3–5 customer early-access, invoice manual. Validasi orang mau bayar untuk produk enkripsi storage ini.
+2. **Fase 5 selesai** — buka beta publik dengan pembayaran manual, HTTPS + backup aktif.
+3. **Fase 6 selesai** — aktifkan self-serve subscription otomatis (Midtrans/Xendit).
+4. **Fase 7–8** — scale-up marketing & infra sesuai pertumbuhan subscriber.
+5. **Fase 9** — go-live penuh dengan DPA & pentest untuk segmen B2B.
+
+> **Catatan strategis:** Validasi willingness-to-pay lebih berharga daripada membangun billing otomatis sebelum ada calon pembeli nyata. Jangan tunggu 100% untuk mulai menjual — mulai dari beta berbayar manual begitu Fase 5 selesai.
 
 ---
 
