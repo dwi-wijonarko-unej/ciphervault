@@ -2262,6 +2262,7 @@ curl -X DELETE http://localhost:8000/files/directories/1 \
 | 5.0   | 20 Juli 2026   | **Manajemen Direktori.** Tambah fitur folder hirarkis di Manajemen File. Tambah parent_id & is_directory di stored_files. Tambah section 6.10 endpoint direktori. Tambah file backend/services/directory_service.py + frontend breadcrumb navigasi. Update Fase 4 dengan task direktori. Total test 83+.                                                                                                                                              |
 | 6.0   | 4 Agustus 2026 | **Production-Ready Refactor.** Requirement berubah dari prototype ke produk siap jual. Tambah: RBAC dua peran (admin/user), kolom role+is_active di users, tabel api_keys + public_links, 6 section API baru (auth reset, upload URL, download cipher, public link, API key, admin panel), seeder default, Fase 5 planned (email verify, rate limit, quota, HTTPS). Total test 105+.                                                                  |
 | 7.0   | 5 Agustus 2026 | **PostgreSQL + Legal + SaaS Roadmap.** Migrasi database production ke PostgreSQL 16 (docker-compose, dialect-aware migration). Tambah 4 halaman legal (ToS, Privacy UU PDP, Data Breach 72 jam, SLA). Batas upload konfigurabel (`MAX_UPLOAD_BYTES`). Tambah **Section 15 — Roadmap Komersialisasi SaaS**: penilaian kesiapan (~50% SaaS), desain DB baru (plans/subscriptions/invoices/payments), API billing, Fase 5–9 menuju 100%. Total test 90+. |
+| 8.0   | 5 Agustus 2026 | **Fiturn Dwibahasa (i18n) planned.** Tambah **Section 16 — Fitur Dwibahasa (Indonesia & Inggris)**: pendekatan client-side i18n (kamus JSON + `data-i18n`), langkah implementasi 8 tahap, file yang berubah, acceptance criteria, dan estimasi penjadwalan.                                                                                                                                                                                           |
 
 ---
 
@@ -2551,6 +2552,155 @@ Pendekatan bertahap disarankan untuk meminimalkan risiko dan memvalidasi willing
 5. **Fase 9** — go-live penuh dengan DPA & pentest untuk segmen B2B.
 
 > **Catatan strategis:** Validasi willingness-to-pay lebih berharga daripada membangun billing otomatis sebelum ada calon pembeli nyata. Jangan tunggu 100% untuk mulai menjual — mulai dari beta berbayar manual begitu Fase 5 selesai.
+
+---
+
+## 16. Fitur Dwibahasa (i18n) — Bahasa Indonesia & English
+
+### 16.1 Latar Belakang & Masalah
+
+Saat ini bahasa antarmuka **tidak konsisten**:
+
+- Dashboard (`index.html`) dan halaman login (`login.html`) memakai **Bahasa Inggris**
+- Halaman legal (`terms.html`, `privacy.html`, `breach.html`, `sla.html`) dan footer memakai **Bahasa Indonesia**
+- Belum ada cara bagi pengguna untuk memilih bahasa
+
+**Kebutuhan:** Seluruh website harus **dwibahasa** (Indonesia + Inggris) dengan pengalih bahasa, agar konsisten dan dapat menjangkau pasar lokal (Indonesia) maupun global (Inggris).
+
+### 16.2 Kebutuhan Fungsional
+
+1. Pengalih bahasa (ID ↔ EN) tersedia di halaman login, dashboard, halaman legal, dan semua halaman publik
+2. Pilihan bahasa tersimpan persisten di `localStorage` (key: `cv_lang`)
+3. Bahasa default mengikuti preferensi browser (`navigator.language`), fallback ke Inggris
+4. Semua teks statis HTML (label, judul, tombol, footer) dapat diterjemahkan
+5. Semua teks yang dirender JavaScript (toast, modal, konfirmasi, tabel) dapat diterjemahkan
+6. Dokumen legal tersedia penuh dalam kedua bahasa (tab ID/EN atau tombol toggle)
+7. Tidak perlu RTL (kedua bahasa sama-sama LTR)
+8. Tidak mengubah logika backend/enkripsi sama sekali
+
+### 16.3 Pendekatan Arsitektur — Client-Side i18n
+
+**Pilihan:** i18n **client-side** dengan kamus JSON (tanpa perubahan backend).
+
+**Alasan (dibandingkan alternatif):**
+
+| Pendekatan                                      | Kelebihan                                                                                    | Kekurangan                                                     | Keputusan      |
+| :---------------------------------------------- | :------------------------------------------------------------------------------------------- | :------------------------------------------------------------- | :------------- |
+| **Client-side i18n** (kamus JSON + `data-i18n`) | Tanpa ubah backend; cocok dengan arsitektur static files saat ini; deploy instan; test mudah | JS tambahan; teks dinamis perlu handler                        | ✅ **Dipilih** |
+| Server-side (Jinja2 template)                   | SEO lebih baik                                                                               | Ubah total ke template; pindah dari static files; effort besar | ❌             |
+| Duplikasi halaman (`terms-en.html`)             | Sederhana                                                                                    | Maintenance dobel; tidak konsisten; tidak scalable             | ❌             |
+
+**Alur kerja i18n.js:**
+
+```
+DOMContentLoaded
+  ├── 1. Baca cv_lang dari localStorage (default: navigator.language, fallback 'en')
+  ├── 2. Ambil kamus: fetch('lang/<lang>.json')
+  ├── 3. Terapkan ke elemen [data-i18n] (textContent / placeholder / title)
+  ├── 4. Terapkan ke elemen [data-i18n-html] (innerHTML untuk teks berformat)
+  ├── 5. Panggil callback i18nApply() untuk teks dinamis yang dirender JS
+  └── 6. Render pilihan bahasa aktif di switcher (ID | EN)
+```
+
+### 16.4 Struktur File Baru
+
+| File                        | Aksi | Detail                                                              |
+| :-------------------------- | :--- | :------------------------------------------------------------------ |
+| `frontend/lang/id.json`     | Buat | Kamus Bahasa Indonesia (key → teks)                                 |
+| `frontend/lang/en.json`     | Buat | Kamus Bahasa Inggris (key → teks)                                   |
+| `frontend/js/i18n.js`       | Buat | Loader kamus, terapkan `data-i18n`, switcher, persistensi           |
+| `frontend/js/i18n-legal.js` | Buat | Loader konten panjang legal per bahasa (menyuntikkan dokumen penuh) |
+
+### 16.5 Langkah Implementasi
+
+**Langkah 1 — Buat kamus dasar**
+
+- Buat `frontend/lang/en.json` dan `frontend/lang/id.json`
+- Struktur key ber-namespace: `nav.upload`, `auth.login`, `toast.uploadSuccess`, `legal.tosTitle`, dst.
+- Mulai dari ~100 key inti (login, dashboard, upload, file list, share, legal), lalu lengkapi iteratif
+
+**Langkah 2 — Buat i18n.js**
+
+- `I18n.init()`: baca `cv_lang`, fetch kamus, terapkan atribut
+- Dukungan atribut: `data-i18n` (textContent), `data-i18n-placeholder`, `data-i18n-title`
+- `I18n.t(key, vars)` untuk interpolasi (`{name}` → nilai)
+- `I18n.setLang(lang)`: simpan ke localStorage, reload/re-render halaman
+- Hook `window.addEventListener('cv:i18n-ready', ...)` untuk modul JS lain
+- **Penting:** jalankan inline script anti-flash di `<head>` (pola yang sama seperti theme.js) agar tidak ada kedipan teks
+
+**Langkah 3 — Terapkan atribut data-i18n ke HTML statis**
+
+- `login.html`: judul, label form, tombol, teks reset password, footer links
+- `index.html` (dashboard): navbar, tab, tombol upload, kolom tabel, empty state, modal
+- Halaman legal: judul, subjudul, label daftar isi, footer
+
+**Langkah 4 — Tangani teks dinamis dari JS**
+
+- File JS yang memproduksi string UI: `app.js`, `auth.js`, `files.js`, `upload.js`, `share.js`, `download.js`, `security.js`, `admin.js`, `system.js`, `profile.js`, `directory.js`, `search.js`, `ui.js`
+- Ganti string hardcoded dengan `I18n.t('key')`
+- Panggil `I18n.applyDynamic()` setelah render list/modal agar elemen baru ikut diterjemahkan
+
+**Langkah 5 — Buat halaman legal dwibahasa**
+
+- Pendekatan: konten legal disimpan penuh di kamus (`legal.tos.body` dst.) ATAU dua blok `<section lang>` dalam satu file dengan toggle tab
+- Rekomendasi: **dua blok dalam satu file** (class `lang-id` / `lang-en`) + toggle ID/EN di header — lebih mudah dibaca mesin pencari & dicetak
+- Tambahkan toggle bahasa di header halaman legal (di samping tombol theme)
+
+**Langkah 6 — Tambah language switcher**
+
+- Komponen kecil: dua tombol `ID` / `EN` atau dropdown, di header/navbar semua halaman
+- Tampilkan bahasa aktif dengan penekanan visual (border/underline)
+- Konsisten dengan design system (sharp border, hover translate)
+
+**Langkah 7 — Tambahkan lang attribute dinamis**
+
+- Set `document.documentElement.lang = 'id' | 'en'` saat ganti bahasa (untuk aksesibilitas & SEO)
+
+**Langkah 8 — Update halaman yang sudah ada**
+
+- Ubah footer links halaman legal + login agar labelnya ikut diterjemahkan
+- Pastikan halaman legal tetap valid jika JS mati (default: tampil kedua bahasa, atau bahasa default)
+
+### 16.6 File yang Berubah
+
+| File                        | Aksi                                    |
+| :-------------------------- | :-------------------------------------- |
+| `frontend/login.html`       | Update — atribut data-i18n + switcher   |
+| `frontend/index.html`       | Update — atribut data-i18n + switcher   |
+| `frontend/terms.html`       | Update — blok dwibahasa + toggle        |
+| `frontend/privacy.html`     | Update — blok dwibahasa + toggle        |
+| `frontend/breach.html`      | Update — blok dwibahasa + toggle        |
+| `frontend/sla.html`         | Update — blok dwibahasa + toggle        |
+| `frontend/js/i18n.js`       | Buat                                    |
+| `frontend/js/i18n-legal.js` | Buat                                    |
+| `frontend/lang/en.json`     | Buat                                    |
+| `frontend/lang/id.json`     | Buat                                    |
+| `frontend/js/*.js`          | Update — string UI → `I18n.t()`         |
+| `README.md`                 | Update — dokumentasikan fitur dwibahasa |
+
+### 16.7 Acceptance Criteria
+
+- [ ] Pengalih ID/EN muncul di login, dashboard, dan semua halaman legal
+- [ ] Pilihan bahasa tersimpan; halaman baru terbuka dengan bahasa yang sama
+- [ ] Bahasa default mengikuti `navigator.language` (id → Indonesia, selainnya → Inggris)
+- [ ] Seluruh label statis halaman login & dashboard berubah sesuai bahasa terpilih
+- [ ] Toast, modal, dan konfirmasi dari JS ikut berubah bahasa
+- [ ] Dokumen legal lengkap & akurat di kedua bahasa (bukan terjemahan mesin mentah)
+- [ ] `document.documentElement.lang` sinkron dengan bahasa aktif
+- [ ] Tidak ada kedipan teks saat halaman dimuat (anti-flash inline script)
+- [ ] Tanpa JS, halaman tetap menampilkan konten (default bahasa)
+- [ ] Seluruh test backend tetap lolos (fitur ini murni frontend)
+- [ ] UAT manual: login → upload → share → buka halaman legal, ganti bahasa di tiap langkah
+
+### 16.8 Penjadwalan
+
+| Item                          | Estimasi |
+| :---------------------------- | :------- |
+| Kamus JSON + i18n.js (inti)   | 1–2 hari |
+| Terapkan ke login + dashboard | 1–2 hari |
+| Halaman legal dwibahasa       | 1–2 hari |
+| Teks dinamis JS + polish      | 1–2 hari |
+| UAT + perbaikan               | 1 hari   |
 
 ---
 
