@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CipherVault — Prosedur Pelaporan Insiden Keamanan</title>
+  <title>CipherVault</title>
   <script>
     (function(){
       var saved = localStorage.getItem('cv_theme');
@@ -282,9 +282,15 @@
   <script src="js/i18n.js?v=20260805"></script>
   <script src="js/i18n-legal.js?v=20260805"></script>
   <script>
-    I18n.init();
-    I18nLegal.init();
-    (function(){
+    (async () => {
+      await I18n.init();
+      I18nLegal.init();
+      const titles = { id: 'Prosedur Data Breach', en: 'Data Breach Procedure' };
+      document.title = 'CipherVault — ' + titles[I18n.getLang()];
+      window.addEventListener('cv:i18n-changed', () => {
+        document.title = 'CipherVault — ' + titles[I18n.getLang()];
+        I18nLegal.init();
+      });
       var links = document.querySelectorAll('.toc-link');
       var sections = Array.from(links).map(function(l){ return document.querySelector(l.getAttribute('href')); });
       function onScroll(){

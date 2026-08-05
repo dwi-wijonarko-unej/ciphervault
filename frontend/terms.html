@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CipherVault — Syarat & Ketentuan</title>
+  <title>CipherVault</title>
   <!-- Prevent theme flash -->
   <script>
     (function(){
@@ -265,20 +265,23 @@
   <script src="js/i18n.js?v=20260805"></script>
   <script src="js/i18n-legal.js?v=20260805"></script>
   <script>
-    I18n.init();
-    I18nLegal.init();
-    // Highlight active TOC section on scroll
-    (function(){
+    (async () => {
+      await I18n.init();
+      I18nLegal.init();
+      const titles = { id: 'Syarat & Ketentuan', en: 'Terms & Conditions' };
+      document.title = 'CipherVault — ' + titles[I18n.getLang()];
+      window.addEventListener('cv:i18n-changed', () => {
+        document.title = 'CipherVault — ' + titles[I18n.getLang()];
+        I18nLegal.init();
+      });
       var links = document.querySelectorAll('.toc-link');
       var sections = Array.from(links).map(function(l){ return document.querySelector(l.getAttribute('href')); });
       function onScroll(){
-        var pos = window.scrollY + 140;
-        var idx = 0;
+        var pos = window.scrollY + 140; var idx = 0;
         for (var i=0;i<sections.length;i++){ if(sections[i] && sections[i].offsetTop <= pos) idx = i; }
         links.forEach(function(l,i){ l.classList.toggle('active', i===idx); });
       }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
     })();
   </script>
 </body>
