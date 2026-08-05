@@ -13,6 +13,7 @@ const I18n = (() => {
     currentLang = detectLang();
     await loadDict(currentLang);
     applyAll();
+    renderSwitcher();
     document.documentElement.lang = currentLang;
     window.dispatchEvent(new CustomEvent("cv:i18n-ready"));
   }
