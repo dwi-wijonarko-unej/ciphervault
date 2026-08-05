@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherVault — Service Level Agreement</title>
+  <script>
+    (function(){
+      var saved = localStorage.getItem('cv_theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = saved !== null ? saved === 'dark' : prefersDark;
+      document.documentElement.classList.toggle('dark', isDark);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: {
+            colors: {
+              surface: { DEFAULT: 'var(--surface)', card: 'var(--surface-card)', hover: 'var(--surface-hover)', input: 'var(--surface-input)' },
+              border: { DEFAULT: 'var(--border)', focus: '#2d6a4f' },
+              muted: 'var(--muted)', body: 'var(--bg-body)', primary: 'var(--text-primary)', secondary: 'var(--text-secondary)',
+            },
+            fontFamily: { heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+            boxShadow: { sharp: '4px 4px 0px 0px rgba(0,0,0,0.15)', 'sharp-hover': '6px 6px 0px 0px rgba(0,0,0,0.2)', soft: '0 2px 8px rgba(0,0,0,0.06)' },
+            borderRadius: { sharp: '0', pill: '9999px' },
+        }}
+      }
+  </script>
+  <link rel="stylesheet" href="css/style.css?v=20260805">
+  <link rel="stylesheet" href="css/components.css?v=20260805">
+  <style>
+    .prose-legal h2 { font-family: "Space Grotesk", sans-serif; }
+    .prose-legal p, .prose-legal li { color: var(--text-secondary); line-height: 1.75; }
+    .toc-link.active { color: var(--text-primary); border-left-color: var(--primary); }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="border-b sticky top-0 z-40 backdrop-blur" style="background: color-mix(in srgb, var(--surface-card) 88%, transparent); border-color: var(--border);">
+    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+      <a href="login.html" class="flex items-center gap-2 group">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
+      </a>
+      <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);"><span>←</span> Kembali</a>
+    </div>
+  </header>
+
+  <section class="border-b" style="border-color: var(--border); background: var(--surface);">
+    <div class="max-w-6xl mx-auto px-5 py-10 grid grid-cols-12 gap-6 items-end">
+      <div class="col-span-12 md:col-span-8">
+        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);">Operasional · v1.0</p>
+        <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">Service Level<br>Agreement</h1>
+      </div>
+      <div class="col-span-12 md:col-span-4 md:text-right space-y-1">
+        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);">Terakhir diperbarui</p>
+        <p class="font-heading font-bold text-primary text-lg">5 Agustus 2026</p>
+        <p class="text-[12px]" style="color: var(--text-secondary);">Target uptime 99,5%</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-6xl mx-auto px-5 py-12 grid grid-cols-12 gap-10">
+    <aside class="hidden lg:block lg:col-span-3">
+      <nav class="sticky top-24 space-y-1 text-[13px]" id="toc">
+        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);">Daftar Isi</p>
+        <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Definisi Layanan</a>
+        <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Target Uptime</a>
+        <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Kategori Downtime</a>
+        <a href="#s4" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">4. Maintenance</a>
+        <a href="#s5" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">5. Response Time</a>
+        <a href="#s6" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. Eksklusi</a>
+        <a href="#s7" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. Metrik</a>
+        <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Status</a>
+      </nav>
+    </aside>
+
+    <article class="col-span-12 lg:col-span-9 prose-legal max-w-none">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
+        Service Level Agreement (SLA) ini menjelaskan komitmen ketersediaan dan respons CipherVault. Dokumen ini berlaku untuk versi layanan saat ini dan dapat disesuaikan seiring pertumbuhan infrastruktur.
+      </p>
+
+      <h2 id="s1" class="text-2xl font-bold mt-12 mb-3 text-primary">1. Definisi Layanan</h2>
+      <p class="text-[14px]">Layanan mencakup komponen berikut yang dipantau ketersediaannya:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>API aplikasi (upload, download, share, manajemen file).</li>
+        <li>Dashboard frontend.</li>
+        <li>Autentikasi (login, register, API Key).</li>
+        <li>Database penyimpanan metadata dan kunci terbungkus.</li>
+        <li>Storage file terenkripsi (ciphertext).</li>
+      </ul>
+      <p class="text-[14px] mt-3">Indikator kesehatan tersedia di endpoint publik: <span class="font-mono">/health/live</span> dan <span class="font-mono">/health/ready</span>.</p>
+
+      <h2 id="s2" class="text-2xl font-bold mt-10 mb-3 text-primary">2. Target Uptime</h2>
+      <div class="overflow-x-auto my-4">
+        <table class="w-full text-[13px] border-2" style="border-color: var(--border);">
+          <thead style="background: var(--surface);">
+            <tr><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Tingkat</th><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Uptime</th><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Downtime/bulan</th></tr>
+          </thead>
+          <tbody>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3">Target</td><td class="p-3 font-mono" style="color: var(--primary);">99,5%</td><td class="p-3">≈ 3,6 jam</td></tr>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3">Aspirasi</td><td class="p-3 font-mono">99,9%</td><td class="p-3">≈ 43 menit</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-[14px]">Uptime diukur selama periode kalender bulanan, mengecualikan maintenance terjadwal (lihat bagian 4).</p>
+
+      <h2 id="s3" class="text-2xl font-bold mt-10 mb-3 text-primary">3. Kategori Downtime</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Planned Maintenance:</strong> downtime terjadwal yang diumumkan sebelumnya. Tidak dihitung dalam perhitungan uptime.</li>
+        <li><strong>Unplanned Incident:</strong> gangguan tak terduga (mis. crash, kegagalan database). Dihitung penuh dalam uptime.</li>
+        <li><strong>Partial Degradation:</strong> sebagian fitur bermasalah namun inti layanan tetap berjalan.</li>
+      </ul>
+
+      <h2 id="s4" class="text-2xl font-bold mt-10 mb-3 text-primary">4. Maintenance Window &amp; Notifikasi</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Jadwal:</strong> maintenance rutin dilakukan pada jam sepi (mis. 02:00–05:00 WIB) bila memungkinkan.</li>
+        <li><strong>Notifikasi:</strong> minimal <strong>48 jam sebelumnya</strong> untuk maintenance terjadwal melalui email terdaftar dan/atau banner aplikasi.</li>
+        <li><strong>Darurat:</strong> pemeliharaan kritis (mis. tambal kerentanan) dapat dilakukan dengan notifikasi sesingkat mungkin.</li>
+      </ul>
+
+      <h2 id="s5" class="text-2xl font-bold mt-10 mb-3 text-primary">5. Response Time untuk Laporan Insiden</h2>
+      <div class="overflow-x-auto my-4">
+        <table class="w-full text-[13px] border-2" style="border-color: var(--border);">
+          <thead style="background: var(--surface);">
+            <tr><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Tingkat</th><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Contoh</th><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Respons</th></tr>
+          </thead>
+          <tbody>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3 font-mono">P1</td><td class="p-3">Layanan tidak bisa diakses total</td><td class="p-3">≤ 1 jam (konfirmasi)</td></tr>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3 font-mono">P2</td><td class="p-3">Fitur utama bermasalah</td><td class="p-3">≤ 4 jam</td></tr>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3 font-mono">P3</td><td class="p-3">Gangguan minor / pertanyaan</td><td class="p-3">≤ 24 jam</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="s6" class="text-2xl font-bold mt-10 mb-3 text-primary">6. Yang Tidak Dicakup SLA (Eksklusi)</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Force majeure:</strong> bencana alam, gangguan infrastruktur internet, atau peristiwa di luar kendali wajar.</li>
+        <li><strong>Misconfiguration pengguna:</strong> kesalahan konfigurasi, kredensial hilang, atau penyalahgunaan API.</li>
+        <li><strong>Outage pihak ketiga:</strong> gangguan penyedia DNS, certificate authority, atau layanan upstream.</li>
+        <li><strong>Insiden keamanan aktif:</strong> saat sedang dalam respons insiden (lihat <a href="breach.html" class="underline" style="color: var(--primary);">Prosedur Data Breach</a>), stabilitas dapat sementara dikorbankan demi kontainment.</li>
+      </ul>
+
+      <h2 id="s7" class="text-2xl font-bold mt-10 mb-3 text-primary">7. Metrik Pengukuran</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Uptime:</strong> dihitung dari probing endpoint <span class="font-mono">/health/ready</span> secara berkala.</li>
+        <li><strong>Latency:</strong> waktu respons rata-rata API (best-effort dipantau, tidak menjadi jaminan eksplisit pada versi ini).</li>
+        <li><strong>Error rate:</strong> rasio request gagal (5xx) terhadap total request.</li>
+      </ul>
+
+      <h2 id="s8" class="text-2xl font-bold mt-10 mb-3 text-primary">8. Komunikasi Status</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Status page:</strong> halaman status akan disediakan untuk transparansi uptime historis.</li>
+        <li><strong>Notifikasi insiden:</strong> email kepada pengguna terdampak saat insiden P1/P2.</li>
+        <li><strong>Post-mortem:</strong> ringkasan insiden signifikan dipublikasikan setelah selesai.</li>
+      </ul>
+
+      <div class="mt-14 pt-6 border-t flex flex-wrap items-center justify-between gap-3" style="border-color: var(--border);">
+        <p class="text-[11px]" style="color: var(--muted);">© 2026 CipherVault. Semua hak dilindungi.</p>
+        <nav class="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Syarat &amp; Ketentuan</a>
+          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Kebijakan Privasi</a>
+          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Prosedur Data Breach</a>
+        </nav>
+      </div>
+    </article>
+  </main>
+
+  <button class="fixed top-3 right-5 z-[9999] p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+
+  <script src="js/theme.js?v=20260805"></script>
+  <script>
+    (function(){
+      var links = document.querySelectorAll('.toc-link');
+      var sections = Array.from(links).map(function(l){ return document.querySelector(l.getAttribute('href')); });
+      function onScroll(){
+        var pos = window.scrollY + 140; var idx = 0;
+        for (var i=0;i<sections.length;i++){ if(sections[i] && sections[i].offsetTop <= pos) idx = i; }
+        links.forEach(function(l,i){ l.classList.toggle('active', i===idx); });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    })();
+  </script>
+</body>
+</html>

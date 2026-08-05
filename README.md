@@ -82,7 +82,9 @@ scp .env YOUR_USER@YOUR_SERVER_IP:/opt/ciphervault/.env
 rsync -av data/ YOUR_USER@YOUR_SERVER_IP:/opt/ciphervault/data/
 ```
 
-> `data/` berisi RSA keys + database + storage ciphertext. Jika tidak disalin, file terenkripsi lama tidak bisa didekripsi (key mismatch → download `500`).
+> `data/` berisi RSA keys + storage ciphertext. Jika tidak disalin, file terenkripsi lama tidak bisa didekripsi (key mismatch → download `500`). Catatan: sejak migrasi PostgreSQL, metadata & kunci disimpan di database (volume `pgdata`), terpisah dari `data/`.
+>
+> **PENTING:** Set `POSTGRES_PASSWORD` yang kuat di `.env` server sebelum `docker compose up`. Default `ciphervault_change_me` hanya untuk dev.
 
 ### 5. Buka firewall
 
@@ -185,7 +187,8 @@ cp .env.example .env
 
 Variabel yang umum dipakai:
 
-- `DATABASE_URL` (default: `sqlite:///./data/ciphervault.db`)
+- `DATABASE_URL` (default: `sqlite:///./data/ciphervault.db`; Docker Compose otomatis pakai **PostgreSQL** — lihat `docker-compose.yml`)
+- `POSTGRES_PASSWORD` (default: `ciphervault_change_me`; wajib diganti di production via `.env`)
 - `STORAGE_PATH` (default: `./data/storage`)
 - `RSA_PRIVATE_KEY_PATH` (default: `./data/keys/private.pem`)
 - `RSA_PUBLIC_KEY_PATH` (default: `./data/keys/public.pem`)
@@ -194,6 +197,8 @@ Variabel yang umum dipakai:
 - `AI_MATRIX_STRATEGY` (default: `multi_feature_adaptive`, opsi: `legacy`)
 - `AI_ADAPTIVE_R` (default: `true`, jika `false` pakai `UHC_LOGISTIC_R` statis)
 - `MAX_UPLOAD_BYTES` (default: `1048576` / 1 MB, batas maksimal ukuran file upload; sesuaikan untuk production)
+
+> **Database:** Mode Docker Compose menjalankan **PostgreSQL 16** sebagai database production-grade (service `db`), dengan `api` bergantung pada healthcheck-nya. Untuk development lokal & testing, default tetap SQLite agar ringan dan tanpa dependency eksternal. Migrasi kolom (`_migrate_columns`) bersifat dialect-aware (PRAGMA untuk SQLite, `information_schema` untuk PostgreSQL).
 
 ### Otentikasi Ganda — JWT atau API Key
 
@@ -341,6 +346,17 @@ curl -X POST http://localhost:8000/files/1/public-link \
   -H "Content-Type: application/json" \
   -d '{"max_access": 10, "expires_in_hours": 24}'
 ```
+
+## Halaman Legal & Kebijakan
+
+CipherVault menyediakan dokumen kebijakan publik (Bahasa Indonesia) yang diakses dari footer halaman login:
+
+- `/terms.html` — Syarat & Ketentuan (ToS)
+- `/privacy.html` — Kebijakan Privasi (sesuai UU PDP No. 27/2022)
+- `/breach.html` — Prosedur Pelaporan Insiden Keamanan Data (notifikasi 72 jam)
+- `/sla.html` — Service Level Agreement (target uptime 99,5%)
+
+Semua halaman mendukung dark/light mode dan navigasi table-of-contents adaptif. Email kontak pada dokumen (`legal@`, `privacy@`, `security@`) perlu disesuaikan dengan domain production.
 
 ## Arsitektur AI Selector Hybrid Encryption (UHC + AES)
 

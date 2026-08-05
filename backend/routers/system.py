@@ -64,5 +64,11 @@ def system_status(
         "storage_files": encrypted_count,
         "storage_used": _format_bytes(used),
         "storage_limit": "100 MB",
-        "database": "SQLite" if settings.database_url.startswith("sqlite") else "SQL",
+        "database": (
+            "PostgreSQL"
+            if settings.database_url.startswith("postgresql")
+            else "SQLite"
+            if settings.database_url.startswith("sqlite")
+            else "SQL"
+        ),
     }
