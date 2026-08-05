@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherVault — Cara Kerja</title>
+  <script>
+    (function(){
+      var saved = localStorage.getItem('cv_theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = saved !== null ? saved === 'dark' : prefersDark;
+      document.documentElement.classList.toggle('dark', isDark);
+      var savedLang = localStorage.getItem('cv_lang');
+      var lang = savedLang || (navigator.language.startsWith('id') ? 'id' : 'en');
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute('data-lang', lang);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: {
+            colors: {
+              surface: { DEFAULT: 'var(--surface)', card: 'var(--surface-card)', hover: 'var(--surface-hover)', input: 'var(--surface-input)' },
+              border: { DEFAULT: 'var(--border)', focus: '#2d6a4f' },
+              muted: 'var(--muted)', body: 'var(--bg-body)', primary: 'var(--text-primary)', secondary: 'var(--text-secondary)',
+            },
+            fontFamily: { heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+            boxShadow: { sharp: '4px 4px 0px 0px rgba(0,0,0,0.15)', 'sharp-hover': '6px 6px 0px 0px rgba(0,0,0,0.2)', soft: '0 2px 8px rgba(0,0,0,0.06)' },
+            borderRadius: { sharp: '0', pill: '9999px' },
+        }}
+      }
+  </script>
+  <link rel="stylesheet" href="css/style.css?v=20260805">
+  <link rel="stylesheet" href="css/components.css?v=20260805">
+  <style>
+    .flow-step { position: relative; }
+    .flow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 56px;
+      bottom: -8px;
+      width: 2px;
+      background: var(--border);
+    }
+    .flow-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .flow-num_encrypt { background: rgba(45,106,79,0.12); color: var(--primary); }
+    .flow-num_decrypt { background: rgba(212,167,44,0.12); color: #d4a72c; }
+    code { font-family: "JetBrains Mono", "Fira Code", monospace; font-size: 0.85em; background: var(--surface); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); }
+    .ascii-diagram { font-family: "JetBrains Mono", "Fira Code", monospace; font-size: 12px; line-height: 1.6; overflow-x: auto; white-space: pre; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="border-b sticky top-0 z-40 backdrop-blur" style="background: color-mix(in srgb, var(--surface-card) 88%, transparent); border-color: var(--border);">
+    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2 group">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <div class="lang-switcher flex items-center bg-surface-card border border-border rounded-md overflow-hidden"></div>
+        <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="index.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);">
+          <span data-i18n="legal.back">← Back</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="border-b" style="border-color: var(--border); background: var(--surface);">
+    <div class="max-w-6xl mx-auto px-5 py-10 grid grid-cols-12 gap-6 items-end">
+      <div class="col-span-12 md:col-span-8">
+        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);">Technical Documentation</p>
+        <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">
+          <span class="lang-id">Cara Kerja<br>Enkripsi</span>
+          <span class="lang-en">How<br>Encryption Works</span>
+        </h1>
+      </div>
+      <div class="col-span-12 md:col-span-4 md:text-right space-y-1">
+        <p class="text-[12px]" style="color: var(--text-secondary);">
+          <span class="lang-id">Arsitektur hibrida UHC + AES + RSA</span>
+          <span class="lang-en">Hybrid architecture UHC + AES + RSA</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-6xl mx-auto px-5 py-12">
+
+    <!-- ===== INDONESIAN ===== -->
+    <div class="lang-id">
+
+    <div class="mb-12">
+      <p class="text-[15px] leading-relaxed" style="color: var(--text-secondary);">
+        CipherVault menggunakan arsitektur enkripsi hibrida tiga lapis yang dirancang untuk zero-knowledge storage. Setiap file melalui pipeline tetap: <strong>AI Selector</strong> → <strong>UHC</strong> → <strong>AES-256-CBC</strong> → <strong>RSA Key Wrapping</strong>. Urutan ini selalu sama — tidak ada algoritma yang dipilih atau diganti secara dinamis.
+      </p>
+    </div>
+
+    <!-- ENCRYPTION FLOW -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold font-heading mb-8 flex items-center gap-3">
+        <span class="flow-num flow-num_encrypt">E</span>
+        Alur Enkripsi (Upload)
+      </h2>
+
+      <div class="space-y-6">
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">1</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">AI Selector</h3>
+            <p class="text-[14px] mb-3" style="color: var(--text-secondary);">AI Selector <strong>bukan</strong> pemilih algoritma. Ia hanya menganalisis file untuk menentukan parameter UHC yang optimal.</p>
+            <div class="bg-surface border border-border rounded-lg p-4 text-[13px] space-y-1.5" style="color: var(--text-secondary);">
+              <p><code>extract_features()</code> — Membaca ukuran, entropy, dan tipe file</p>
+              <p><code>adaptive_matrix()</code> — Menentukan ukuran matriks UHC (M)</p>
+              <p><code>select_r()</code> — Menentukan parameter r untuk Logistic Map</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">2</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Generate Session Key</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Membangkitkan kunci acak 32 byte yang unik untuk setiap file. Kunci ini digunakan sebagai seed untuk UHC dan key untuk AES.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">3</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Lapisan 1: UHC (Inner Layer)</h3>
+            <p class="text-[14px] mb-3" style="color: var(--text-secondary);">Unimodular Hill Cipher bekerja di modulus 257 — byte 0–255 dinaikkan menjadi 1–256 agar matriks kunci selalu bisa di-invert saat dekripsi.</p>
+            <div class="bg-surface border border-border rounded-lg p-4 text-[13px] space-y-1.5" style="color: var(--text-secondary);">
+              <p>Logistic Map PRNG dengan seed = Session Key, parameter = r</p>
+              <p>Membangun matriks unimodular berukuran M × M</p>
+              <p>Mengenkripsi plaintext → menghasilkan intermediate ciphertext</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">4</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Lapisan 2: AES-256-CBC (Outer Layer)</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Mengenkripsi intermediate ciphertext dari UHC menggunakan Session Key. Menghasilkan final ciphertext yang disimpan ke disk.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">5</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Key Wrapping</h3>
+            <p class="text-[14px] mb-3" style="color: var(--text-secondary);">Session Key tidak pernah disimpan dalam keadaan plain. Dibungkus tergantung siapa yang akan mengakses:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-surface border border-border rounded-lg p-4 text-[13px]" style="color: var(--text-secondary);">
+                <p class="font-bold text-primary mb-1">Owner</p>
+                <p><code>AES-ECB(PBKDF2(password))</code></p>
+                <p>Session Key dibungkus dengan key derivasi dari password user</p>
+              </div>
+              <div class="bg-surface border border-border rounded-lg p-4 text-[13px]" style="color: var(--text-secondary);">
+                <p class="font-bold text-primary mb-1">Sharing</p>
+                <p><code>RSA-OAEP 2048-bit</code></p>
+                <p>Session Key dibungkus dengan public key penerima</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">6</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Simpan</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Ciphertext disimpan ke disk. Wrapped key, metadata (M, r, IVs, SHA-256 hash), dan info file disimpan ke database. Plaintext tidak pernah disimpan.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DECRYPTION FLOW -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold font-heading mb-8 flex items-center gap-3">
+        <span class="flow-num flow-num_decrypt">D</span>
+        Alur Dekripsi (Download)
+      </h2>
+
+      <div class="space-y-6">
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">1</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Key Unwrapping</h3>
+            <p class="text-[14px] mb-3" style="color: var(--text-secondary);">Membuka bungkus Session Key berdasarkan peran pengguna:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-surface border border-border rounded-lg p-4 text-[13px]" style="color: var(--text-secondary);">
+                <p class="font-bold text-primary mb-1">Owner</p>
+                <p><code>AES-ECB_Decrypt(PBKDF2(password))</code></p>
+              </div>
+              <div class="bg-surface border border-border rounded-lg p-4 text-[13px]" style="color: var(--text-secondary);">
+                <p class="font-bold text-primary mb-1">Recipient</p>
+                <p><code>RSA-OAEP_Decrypt(private key)</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">2</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Baca Metadata</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Mengambil nilai M (ukuran matriks), r (parameter logistic), dan IVs dari database untuk merekonstruksi kunci UHC.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">3</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Balikkan Lapisan 2: AES-256-CBC</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Mendekripsi ciphertext menggunakan Session Key → menghasilkan intermediate ciphertext.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">4</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Balikkan Lapisan 1: UHC</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Merekonstruksi matriks unimodular dari Session Key, r, dan M. Melakukan UHC decrypt → menghasilkan plaintext.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">5</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Verifikasi Integritas</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Menghitung ulang SHA-256 dari plaintext hasil dekripsi dan membandingkannya dengan hash yang tersimpan. Jika tidak cocok → file ditolak.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- KEY CONCEPTS -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold font-heading mb-6">Konsep Kunci</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-surface border border-border rounded-lg p-5">
+          <h3 class="font-heading font-bold text-primary mb-2">Mod 257</h3>
+          <p class="text-[13px] leading-relaxed" style="color: var(--text-secondary);">UHC menggunakan modulus 257 (prima) bukan 256. Byte 0–255 dinaikkan menjadi 1–256 sebelum operasi matriks, menjamin setiap matriks kunci memiliki inverse — syarat mutlak agar dekripsi selalu berhasil.</p>
+        </div>
+        <div class="bg-surface border border-border rounded-lg p-5">
+          <h3 class="font-heading font-bold text-primary mb-2">Logistic Map</h3>
+          <p class="text-[13px] leading-relaxed" style="color: var(--text-secondary);">PRNG chaos-based yang menghasilkan deret pseudo-acak dari seed (Session Key) dan parameter r. Digunakan untuk membangun matriks UHC yang unik per file.</p>
+        </div>
+        <div class="bg-surface border border-border rounded-lg p-5">
+          <h3 class="font-heading font-bold text-primary mb-2">Zero-Knowledge</h3>
+          <p class="text-[13px] leading-relaxed" style="color: var(--text-secondary);">Server tidak pernah melihat plaintext, password, atau session key dalam keadaan plain. Semua kunci dibungkus (wrapped) sebelum disimpan ke database.</p>
+        </div>
+        <div class="bg-surface border border-border rounded-lg p-5">
+          <h3 class="font-heading font-bold text-primary mb-2">Double Key Wrapping</h3>
+          <p class="text-[13px] leading-relaxed" style="color: var(--text-secondary);">Session Key dibungkus dua cara: owner menggunakan password-derived key (PBKDF2), penerima sharing menggunakan RSA public key. Memungkinkan sharing tanpa mengungkap password.</p>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <!-- END Indonesian -->
+
+
+    <!-- ===== ENGLISH ===== -->
+    <div class="lang-en">
+
+    <div class="mb-12">
+      <p class="text-[15px] leading-relaxed" style="color: var(--text-secondary);">
+        CipherVault uses a three-layer hybrid encryption architecture designed for zero-knowledge storage. Every file follows a fixed pipeline: <strong>AI Selector</strong> → <strong>UHC</strong> → <strong>AES-256-CBC</strong> → <strong>RSA Key Wrapping</strong>. This order is always the same — no algorithm is selected or swapped dynamically.
+      </p>
+    </div>
+
+    <!-- ENCRYPTION FLOW -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold font-heading mb-8 flex items-center gap-3">
+        <span class="flow-num flow-num_encrypt">E</span>
+        Encryption Flow (Upload)
+      </h2>
+
+      <div class="space-y-6">
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">1</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">AI Selector</h3>
+            <p class="text-[14px] mb-3" style="color: var(--text-secondary);">The AI Selector does <strong>not</strong> choose algorithms. It only analyzes the file to determine optimal UHC parameters.</p>
+            <div class="bg-surface border border-border rounded-lg p-4 text-[13px] space-y-1.5" style="color: var(--text-secondary);">
+              <p><code>extract_features()</code> — Reads file size, entropy, and type</p>
+              <p><code>adaptive_matrix()</code> — Determines UHC matrix size (M)</p>
+              <p><code>select_r()</code> — Determines parameter r for Logistic Map</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">2</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Generate Session Key</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Generates a unique random 32-byte key for each file. This key serves as the seed for UHC and the key for AES.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">3</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Layer 1: UHC (Inner Layer)</h3>
+            <p class="text-[14px] mb-3" style="color: var(--text-secondary);">Unimodular Hill Cipher operates in modulus 257 — bytes 0–255 are elevated to 1–256 so the key matrix can always be inverted during decryption.</p>
+            <div class="bg-surface border border-border rounded-lg p-4 text-[13px] space-y-1.5" style="color: var(--text-secondary);">
+              <p>Logistic Map PRNG with seed = Session Key, parameter = r</p>
+              <p>Builds a unimodular matrix of size M × M</p>
+              <p>Encrypts plaintext → produces intermediate ciphertext</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">4</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Layer 2: AES-256-CBC (Outer Layer)</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Encrypts the intermediate ciphertext from UHC using the Session Key. Produces the final ciphertext stored to disk.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">5</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Key Wrapping</h3>
+            <p class="text-[14px] mb-3" style="color: var(--text-secondary);">The Session Key is never stored in plaintext. It is wrapped depending on who will access it:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-surface border border-border rounded-lg p-4 text-[13px]" style="color: var(--text-secondary);">
+                <p class="font-bold text-primary mb-1">Owner</p>
+                <p><code>AES-ECB(PBKDF2(password))</code></p>
+                <p>Session Key wrapped with password-derived key</p>
+              </div>
+              <div class="bg-surface border border-border rounded-lg p-4 text-[13px]" style="color: var(--text-secondary);">
+                <p class="font-bold text-primary mb-1">Sharing</p>
+                <p><code>RSA-OAEP 2048-bit</code></p>
+                <p>Session Key wrapped with recipient's public key</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_encrypt">6</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Save</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Ciphertext is saved to disk. Wrapped key, metadata (M, r, IVs, SHA-256 hash), and file info are saved to the database. Plaintext is never stored.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DECRYPTION FLOW -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold font-heading mb-8 flex items-center gap-3">
+        <span class="flow-num flow-num_decrypt">D</span>
+        Decryption Flow (Download)
+      </h2>
+
+      <div class="space-y-6">
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">1</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Key Unwrapping</h3>
+            <p class="text-[14px] mb-3" style="color: var(--text-secondary);">Unwraps the Session Key based on the user's role:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-surface border border-border rounded-lg p-4 text-[13px]" style="color: var(--text-secondary);">
+                <p class="font-bold text-primary mb-1">Owner</p>
+                <p><code>AES-ECB_Decrypt(PBKDF2(password))</code></p>
+              </div>
+              <div class="bg-surface border border-border rounded-lg p-4 text-[13px]" style="color: var(--text-secondary);">
+                <p class="font-bold text-primary mb-1">Recipient</p>
+                <p><code>RSA-OAEP_Decrypt(private key)</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">2</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Read Metadata</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Retrieves M (matrix size), r (logistic parameter), and IVs from the database to reconstruct the UHC key.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">3</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Reverse Layer 2: AES-256-CBC</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Decrypts ciphertext using the Session Key → produces intermediate ciphertext.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">4</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Reverse Layer 1: UHC</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Reconstructs the unimodular matrix from Session Key, r, and M. Performs UHC decrypt → produces plaintext.</p>
+          </div>
+        </div>
+
+        <div class="flow-step flex gap-4">
+          <span class="flow-num flow-num_decrypt">5</span>
+          <div class="flex-1">
+            <h3 class="font-heading font-bold text-primary mb-1">Verify Integrity</h3>
+            <p class="text-[14px]" style="color: var(--text-secondary);">Recalculates SHA-256 from the decrypted plaintext and compares it with the stored hash. If it doesn't match → the file is rejected.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- KEY CONCEPTS -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold font-heading mb-6">Key Concepts</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-surface border border-border rounded-lg p-5">
+          <h3 class="font-heading font-bold text-primary mb-2">Mod 257</h3>
+          <p class="text-[13px] leading-relaxed" style="color: var(--text-secondary);">UHC uses modulus 257 (prime) instead of 256. Bytes 0–255 are elevated to 1–256 before matrix operations, guaranteeing every key matrix has an inverse — an absolute requirement for decryption to always succeed.</p>
+        </div>
+        <div class="bg-surface border border-border rounded-lg p-5">
+          <h3 class="font-heading font-bold text-primary mb-2">Logistic Map</h3>
+          <p class="text-[13px] leading-relaxed" style="color: var(--text-secondary);">A chaos-based PRNG that generates a pseudo-random sequence from a seed (Session Key) and parameter r. Used to build a unique UHC matrix per file.</p>
+        </div>
+        <div class="bg-surface border border-border rounded-lg p-5">
+          <h3 class="font-heading font-bold text-primary mb-2">Zero-Knowledge</h3>
+          <p class="text-[13px] leading-relaxed" style="color: var(--text-secondary);">The server never sees plaintext, passwords, or session keys in plain form. All keys are wrapped before being stored in the database.</p>
+        </div>
+        <div class="bg-surface border border-border rounded-lg p-5">
+          <h3 class="font-heading font-bold text-primary mb-2">Double Key Wrapping</h3>
+          <p class="text-[13px] leading-relaxed" style="color: var(--text-secondary);">The Session Key is wrapped two ways: the owner uses a password-derived key (PBKDF2), while sharing recipients use an RSA public key. This enables sharing without exposing passwords.</p>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <!-- END English -->
+
+    <div class="mt-14 pt-6 border-t flex flex-wrap items-center justify-between gap-3" style="border-color: var(--border);">
+      <p class="text-[11px]" style="color: var(--muted);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
+      <nav class="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+        <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+        <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.privacy_title">Privacy Policy</a>
+        <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.breach_title">Data Breach Procedure</a>
+        <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.sla_title">SLA</a>
+      </nav>
+    </div>
+  </main>
+
+  <script src="js/theme.js?v=20260805"></script>
+  <script src="js/i18n.js?v=20260805"></script>
+  <script src="js/i18n-legal.js?v=20260805"></script>
+  <script>
+    I18n.init();
+    I18nLegal.init();
+  </script>
+</body>
+</html>
