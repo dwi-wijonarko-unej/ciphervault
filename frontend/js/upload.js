@@ -4,8 +4,8 @@ const Upload = (() => {
       <div class="bg-surface-card border border-border rounded-lg p-6 mb-6">
         <div class="border-2 border-dashed border-border rounded-lg p-10 text-center transition-all duration-200 cursor-pointer drop-zone" id="drop-zone">
           <svg class="w-12 h-12 mx-auto mb-3" style="color: var(--muted);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <h3 class="text-base font-semibold mb-1">Drag & drop files here</h3>
-          <p class="text-sm text-muted">or click to browse — files up to 100MB</p>
+          <h3 class="text-base font-semibold mb-1">${I18n.t("upload.dropzone")}</h3>
+          <p class="text-sm text-muted">${I18n.t("upload.browse")}</p>
           <input type="file" id="file-input" class="hidden" multiple>
         </div>
         <div id="upload-progress-area" class="hidden mt-4"></div>
@@ -53,7 +53,7 @@ const Upload = (() => {
       <span class="file-icon ${icon.cls} w-[36px] h-[36px]" style="width:36px;height:36px;">${icon.svg}</span>
       <div class="flex-1 min-w-0">
         <div class="text-sm font-medium truncate">${file.name}</div>
-        <div class="text-xs text-muted upload-status">${formatFileSize(file.size)} — Encrypting & uploading...</div>
+        <div class="text-xs text-muted upload-status">${formatFileSize(file.size)} — ${I18n.t("upload.encrypting")}</div>
       </div>
       <div class="w-[120px] h-1.5 bg-surface rounded-full overflow-hidden">
         <div class="h-full rounded-full transition-all" style="background: var(--primary); width: 0%;" id="progress-${file.name.replace(/[^a-zA-Z0-9]/g, "_")}"></div>
@@ -75,9 +75,9 @@ const Upload = (() => {
       const res = await API.request("POST", "/files/upload", formData, true);
       const bar = document.getElementById(pid);
       if (bar) bar.style.width = "100%";
-      statusEl.textContent = `${formatFileSize(file.size)} — Encrypted with ${res.encryption_type || "UHC+AES+RSA"} ✓`;
+      statusEl.textContent = `${formatFileSize(file.size)} — ${I18n.t("upload.encrypted_with", { type: res.encryption_type || "UHC+AES+RSA" })}`;
       item.style.borderColor = "var(--success)";
-      UI.toast(`"${file.name}" uploaded successfully`, "success");
+      UI.toast(I18n.t("upload.success", { filename: file.name }), "success");
 
       await FileList.render(document.getElementById("file-list-area"));
       DirectoryUI.renderToolbar(document.getElementById("directory-toolbar"));
@@ -87,9 +87,9 @@ const Upload = (() => {
         res.security_metrics,
       );
     } catch (err) {
-      statusEl.textContent = `Failed: ${err.detail || "Unknown error"}`;
+      statusEl.textContent = I18n.t("upload.error_detail", { error: err.detail || "Unknown error" });
       item.style.borderColor = "var(--error)";
-      UI.toast(`Upload failed: ${file.name}`, "error");
+      UI.toast(I18n.t("upload.failed", { filename: file.name }), "error");
     }
   }
 

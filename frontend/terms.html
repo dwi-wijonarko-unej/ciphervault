@@ -11,6 +11,11 @@
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       var isDark = saved !== null ? saved === 'dark' : prefersDark;
       document.documentElement.classList.toggle('dark', isDark);
+
+      var savedLang = localStorage.getItem('cv_lang');
+      var lang = savedLang || (navigator.language.startsWith('id') ? 'id' : 'en');
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute('data-lang', lang);
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,7 +69,7 @@
         <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
       </a>
       <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);">
-        <span>←</span> Kembali
+        <span>←</span> <span data-i18n="legal.back">Back</span>
       </a>
     </div>
   </header>
@@ -73,15 +78,16 @@
   <section class="border-b" style="border-color: var(--border); background: var(--surface);">
     <div class="max-w-6xl mx-auto px-5 py-10 grid grid-cols-12 gap-6 items-end">
       <div class="col-span-12 md:col-span-8">
-        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);">Dokumen Hukum · v1.0</p>
+        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);" data-i18n="legal.doc_label">Legal Document · v1.0</p>
         <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">
-          Syarat &amp;<br>Ketentuan
+          <span class="lang-id">Syarat &amp;<br>Ketentuan</span>
+          <span class="lang-en">Terms &amp;<br>Conditions</span>
         </h1>
       </div>
       <div class="col-span-12 md:col-span-4 md:text-right space-y-1">
-        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);">Terakhir diperbarui</p>
-        <p class="font-heading font-bold text-primary text-lg">5 Agustus 2026</p>
-        <p class="text-[12px]" style="color: var(--text-secondary);">Berlaku sejak tanggal tersebut</p>
+        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);" data-i18n="legal.updated">Last updated</p>
+        <p class="font-heading font-bold text-primary text-lg">5 August 2026</p>
+        <p class="text-[12px]" style="color: var(--text-secondary);" data-i18n="legal.effective">Effective from that date</p>
       </div>
     </div>
   </section>
@@ -92,7 +98,8 @@
     <!-- Sticky TOC -->
     <aside class="hidden lg:block lg:col-span-3">
       <nav class="sticky top-24 space-y-1 text-[13px]" id="toc">
-        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);">Daftar Isi</p>
+        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);" data-i18n="legal.toc">Table of Contents</p>
+        <div class="lang-id">
         <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Penerimaan</a>
         <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Akun</a>
         <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Penggunaan</a>
@@ -103,11 +110,25 @@
         <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Perubahan</a>
         <a href="#s9" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">9. Hukum</a>
         <a href="#s10" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">10. Kontak</a>
+        </div>
+        <div class="lang-en">
+        <a href="#s1e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Acceptance</a>
+        <a href="#s2e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Account</a>
+        <a href="#s3e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Usage</a>
+        <a href="#s4e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">4. Storage</a>
+        <a href="#s5e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">5. IP Rights</a>
+        <a href="#s6e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. Liability</a>
+        <a href="#s7e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. Suspension</a>
+        <a href="#s8e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Changes</a>
+        <a href="#s9e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">9. Governing Law</a>
+        <a href="#s10e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">10. Contact</a>
+        </div>
       </nav>
     </aside>
 
     <!-- Body -->
     <article class="col-span-12 lg:col-span-9 prose-legal max-w-none">
+      <div class="lang-id">
       <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
         Selamat datang di CipherVault ("Layanan"). Layanan ini disediakan oleh CipherVault ("kami"). Dengan membuat akun, mengunggah file, atau mengakses API, Anda ("Pengguna") dianggap telah membaca, memahami, dan menyetujui seluruh ketentuan di bawah ini.
       </p>
@@ -162,26 +183,91 @@
 
       <h2 id="s10" class="text-2xl font-bold mt-10 mb-3 text-primary">10. Kontak</h2>
       <p class="text-[14px]">Untuk pertanyaan terkait ketentuan ini, hubungi: <span class="font-mono" style="color: var(--primary);">legal@ciphervault.io</span></p>
+      </div>
+
+      <div class="lang-en">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
+        Welcome to CipherVault ("Service"). This Service is provided by CipherVault ("we"). By creating an account, uploading files, or accessing the API, you ("User") are deemed to have read, understood, and agreed to all terms below.
+      </p>
+
+      <h2 id="s1e" class="text-2xl font-bold mt-12 mb-3 text-primary">1. Acceptance of Terms</h2>
+      <p class="text-[14px]">By using CipherVault, you represent that you are at least 17 years old or have obtained permission from a parent or guardian, and agree to be bound by this document along with our <a href="privacy.html" class="underline" style="color: var(--primary);">Privacy Policy</a>. If you do not agree with any part, do not use the Service.</p>
+
+      <h2 id="s2e" class="text-2xl font-bold mt-10 mb-3 text-primary">2. Account &amp; User Responsibilities</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>You are responsible for maintaining the confidentiality of your credentials (username, password, and API Key). Any activity occurring under your account is your responsibility.</li>
+        <li>Notify us immediately if you suspect unauthorized use of your account. We are not liable for losses resulting from your negligence in safeguarding credentials.</li>
+        <li>Information you provide during registration must be accurate. Accounts with false data may be suspended.</li>
+      </ul>
+
+      <h2 id="s3e" class="text-2xl font-bold mt-10 mb-3 text-primary">3. Acceptable Use</h2>
+      <p class="text-[14px] mb-3">You agree <strong>not</strong> to use CipherVault to:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Store or distribute content that violates Indonesian law, including but not limited to copyrighted material, child pornography, or terrorism-related material.</li>
+        <li>Attempt unauthorized access to systems, infrastructure, or other user accounts.</li>
+        <li>Upload malware, ransomware, or malicious code intended to damage systems.</li>
+        <li>Use the Service for spam, phishing, or fraudulent activities.</li>
+        <li>Perform reverse engineering on encryption mechanisms to exploit vulnerabilities.</li>
+      </ul>
+
+      <h2 id="s4e" class="text-2xl font-bold mt-10 mb-3 text-primary">4. Storage &amp; File Limitations</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Every uploaded file is end-to-end encrypted using a hybrid architecture (UHC + AES) before being stored on our servers. Plaintext is never stored.</li>
+        <li>Maximum file size per upload is determined by server configuration (see documentation). This limit may change at any time.</li>
+        <li>Storage quota per account may be limited. We reserve the right to reject uploads that exceed the quota.</li>
+        <li>We reserve the right to delete files that have been inactive for an extended period per our retention policy.</li>
+      </ul>
+
+      <h2 id="s5e" class="text-2xl font-bold mt-10 mb-3 text-primary">5. Intellectual Property</h2>
+      <p class="text-[14px]">You retain all intellectual property rights to files you upload. CipherVault does not claim ownership of your content. We only process and store content in encrypted form solely to provide the Service. CipherVault's trademarks, logos, and software are our property and protected by law.</p>
+
+      <h2 id="s6e" class="text-2xl font-bold mt-10 mb-3 text-primary">6. Limitation of Liability</h2>
+      <p class="text-[14px]">The Service is provided "as is" without warranties of any kind, either express or implied. To the extent permitted by law, CipherVault shall not be liable for:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Data loss resulting from user negligence (e.g., losing a password that makes files irrecoverable).</li>
+        <li>Indirect, incidental, or consequential damages.</li>
+        <li>Service disruptions caused by force majeure or third parties beyond our control.</li>
+      </ul>
+
+      <h2 id="s7e" class="text-2xl font-bold mt-10 mb-3 text-primary">7. Account Suspension &amp; Termination</h2>
+      <p class="text-[14px]">We reserve the right to suspend or terminate accounts that violate these terms, engage in harmful activities, or upon request from authorized authorities. You may delete your account at any time; deletion will permanently remove all associated files.</p>
+
+      <h2 id="s8e" class="text-2xl font-bold mt-10 mb-3 text-primary">8. Changes to Terms</h2>
+      <p class="text-[14px]">We may update this document from time to time. Significant changes will be notified via registered email or in-app notification. Continued use after changes take effect constitutes your acceptance.</p>
+
+      <h2 id="s9e" class="text-2xl font-bold mt-10 mb-3 text-primary">9. Governing Law</h2>
+      <p class="text-[14px]">These terms are governed by and construed in accordance with the laws of the Republic of Indonesia, including Law No. 27 of 2022 on Personal Data Protection (UU PDP). Any disputes shall be resolved through applicable legal mechanisms in Indonesia.</p>
+
+      <h2 id="s10e" class="text-2xl font-bold mt-10 mb-3 text-primary">10. Contact</h2>
+      <p class="text-[14px]">For questions regarding these terms, contact: <span class="font-mono" style="color: var(--primary);">legal@ciphervault.io</span></p>
+      </div>
 
       <div class="mt-14 pt-6 border-t flex flex-wrap items-center justify-between gap-3" style="border-color: var(--border);">
-        <p class="text-[11px]" style="color: var(--muted);">© 2026 CipherVault. Semua hak dilindungi.</p>
+        <p class="text-[11px]" style="color: var(--muted);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
         <nav class="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
-          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Kebijakan Privasi</a>
-          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Prosedur Data Breach</a>
-          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);">SLA</a>
+          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.privacy_title">Privacy Policy</a>
+          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.breach_title">Data Breach Procedure</a>
+          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.sla_title">SLA</a>
         </nav>
       </div>
     </article>
   </main>
 
-  <!-- Theme toggle -->
-  <button class="fixed top-3 right-5 z-[9999] p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+  <!-- Theme toggle + Language switcher -->
+  <div class="fixed top-3 right-5 z-[9999] flex items-center gap-2">
+    <div class="lang-switcher flex items-center bg-surface-card border border-border rounded-md overflow-hidden"></div>
+    <button class="p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
+  </div>
 
   <script src="js/theme.js?v=20260805"></script>
+  <script src="js/i18n.js?v=20260805"></script>
+  <script src="js/i18n-legal.js?v=20260805"></script>
   <script>
+    I18n.init();
+    I18nLegal.init();
     // Highlight active TOC section on scroll
     (function(){
       var links = document.querySelectorAll('.toc-link');

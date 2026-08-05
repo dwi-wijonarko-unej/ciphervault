@@ -21,10 +21,10 @@ const Auth = (() => {
         password,
       });
       API.setToken(res.access_token);
-      UI.toast(`Welcome back, ${res.user.username}!`, "success");
+      UI.toast(I18n.t("auth.welcome_back", { username: res.user.username }), "success");
       window.location.href = "index.html";
     } catch (e) {
-      UI.toast(errorMessage(e, "Login failed"), "error");
+      UI.toast(errorMessage(e, I18n.t("auth.login_failed")), "error");
       throw e;
     } finally {
       UI.loading(false);
@@ -39,10 +39,10 @@ const Auth = (() => {
         email,
         password,
       });
-      UI.toast("Registration successful! Please login.", "success");
+      UI.toast(I18n.t("auth.register_success"), "success");
       return res;
     } catch (e) {
-      UI.toast(errorMessage(e, "Registration failed"), "error");
+      UI.toast(errorMessage(e, I18n.t("auth.register_failed")), "error");
       throw e;
     } finally {
       UI.loading(false);
@@ -66,7 +66,7 @@ const Auth = (() => {
 
   function logout() {
     API.clearToken();
-    UI.toast("Logged out", "info");
+    UI.toast(I18n.t("auth.logged_out"), "info");
     window.location.href = "login.html";
   }
 

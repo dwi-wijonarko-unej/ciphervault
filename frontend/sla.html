@@ -10,6 +10,11 @@
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       var isDark = saved !== null ? saved === 'dark' : prefersDark;
       document.documentElement.classList.toggle('dark', isDark);
+
+      var savedLang = localStorage.getItem('cv_lang');
+      var lang = savedLang || (navigator.language.startsWith('id') ? 'id' : 'en');
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute('data-lang', lang);
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,20 +52,23 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
       </a>
-      <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);"><span>←</span> Kembali</a>
+      <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);"><span>←</span> <span data-i18n="legal.back">Back</span></a>
     </div>
   </header>
 
   <section class="border-b" style="border-color: var(--border); background: var(--surface);">
     <div class="max-w-6xl mx-auto px-5 py-10 grid grid-cols-12 gap-6 items-end">
       <div class="col-span-12 md:col-span-8">
-        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);">Operasional · v1.0</p>
-        <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">Service Level<br>Agreement</h1>
+        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);" data-i18n="legal.doc_label">Legal Document · v1.0</p>
+        <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">
+          <span class="lang-id">Service Level<br>Agreement</span>
+          <span class="lang-en">Service Level<br>Agreement</span>
+        </h1>
       </div>
       <div class="col-span-12 md:col-span-4 md:text-right space-y-1">
-        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);">Terakhir diperbarui</p>
-        <p class="font-heading font-bold text-primary text-lg">5 Agustus 2026</p>
-        <p class="text-[12px]" style="color: var(--text-secondary);">Target uptime 99,5%</p>
+        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);" data-i18n="legal.updated">Last updated</p>
+        <p class="font-heading font-bold text-primary text-lg">5 August 2026</p>
+        <p class="text-[12px]" style="color: var(--text-secondary);">99.5% uptime target</p>
       </div>
     </div>
   </section>
@@ -68,7 +76,8 @@
   <main class="max-w-6xl mx-auto px-5 py-12 grid grid-cols-12 gap-10">
     <aside class="hidden lg:block lg:col-span-3">
       <nav class="sticky top-24 space-y-1 text-[13px]" id="toc">
-        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);">Daftar Isi</p>
+        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);" data-i18n="legal.toc">Table of Contents</p>
+        <div class="lang-id">
         <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Definisi Layanan</a>
         <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Target Uptime</a>
         <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Kategori Downtime</a>
@@ -77,10 +86,22 @@
         <a href="#s6" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. Eksklusi</a>
         <a href="#s7" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. Metrik</a>
         <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Status</a>
+        </div>
+        <div class="lang-en">
+        <a href="#s1e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Service Definition</a>
+        <a href="#s2e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Uptime Target</a>
+        <a href="#s3e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Downtime Categories</a>
+        <a href="#s4e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">4. Maintenance</a>
+        <a href="#s5e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">5. Response Time</a>
+        <a href="#s6e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. Exclusions</a>
+        <a href="#s7e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. Metrics</a>
+        <a href="#s8e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Status Communication</a>
+        </div>
       </nav>
     </aside>
 
     <article class="col-span-12 lg:col-span-9 prose-legal max-w-none">
+      <div class="lang-id">
       <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
         Service Level Agreement (SLA) ini menjelaskan komitmen ketersediaan dan respons CipherVault. Dokumen ini berlaku untuk versi layanan saat ini dan dapat disesuaikan seiring pertumbuhan infrastruktur.
       </p>
@@ -159,25 +180,114 @@
         <li><strong>Notifikasi insiden:</strong> email kepada pengguna terdampak saat insiden P1/P2.</li>
         <li><strong>Post-mortem:</strong> ringkasan insiden signifikan dipublikasikan setelah selesai.</li>
       </ul>
+      </div>
+
+      <div class="lang-en">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
+        This Service Level Agreement (SLA) describes CipherVault's availability and response commitments. This document applies to the current version of the service and may be adjusted as infrastructure grows.
+      </p>
+
+      <h2 id="s1e" class="text-2xl font-bold mt-12 mb-3 text-primary">1. Service Definition</h2>
+      <p class="text-[14px]">The service includes the following monitored components:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Application API (upload, download, share, file management).</li>
+        <li>Frontend dashboard.</li>
+        <li>Authentication (login, register, API Key).</li>
+        <li>Database for metadata and wrapped key storage.</li>
+        <li>Encrypted file storage (ciphertext).</li>
+      </ul>
+      <p class="text-[14px] mt-3">Health indicators are available at public endpoints: <span class="font-mono">/health/live</span> and <span class="font-mono">/health/ready</span>.</p>
+
+      <h2 id="s2e" class="text-2xl font-bold mt-10 mb-3 text-primary">2. Uptime Target</h2>
+      <div class="overflow-x-auto my-4">
+        <table class="w-full text-[13px] border-2" style="border-color: var(--border);">
+          <thead style="background: var(--surface);">
+            <tr><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Tier</th><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Uptime</th><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Downtime/month</th></tr>
+          </thead>
+          <tbody>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3">Target</td><td class="p-3 font-mono" style="color: var(--primary);">99.5%</td><td class="p-3">≈ 3.6 hours</td></tr>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3">Aspirational</td><td class="p-3 font-mono">99.9%</td><td class="p-3">≈ 43 minutes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-[14px]">Uptime is measured over calendar monthly periods, excluding scheduled maintenance (see section 4).</p>
+
+      <h2 id="s3e" class="text-2xl font-bold mt-10 mb-3 text-primary">3. Downtime Categories</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Planned Maintenance:</strong> scheduled downtime announced in advance. Not counted toward uptime calculations.</li>
+        <li><strong>Unplanned Incident:</strong> unexpected disruptions (e.g., crashes, database failures). Fully counted toward uptime.</li>
+        <li><strong>Partial Degradation:</strong> some features malfunctioning while core service remains operational.</li>
+      </ul>
+
+      <h2 id="s4e" class="text-2xl font-bold mt-10 mb-3 text-primary">4. Maintenance Window &amp; Notifications</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Schedule:</strong> routine maintenance is performed during off-peak hours (e.g., 02:00–05:00 WIB) when possible.</li>
+        <li><strong>Notification:</strong> at least <strong>48 hours in advance</strong> for scheduled maintenance via registered email and/or in-app banner.</li>
+        <li><strong>Emergency:</strong> critical maintenance (e.g., vulnerability patches) may be performed with as little notice as possible.</li>
+      </ul>
+
+      <h2 id="s5e" class="text-2xl font-bold mt-10 mb-3 text-primary">5. Incident Report Response Time</h2>
+      <div class="overflow-x-auto my-4">
+        <table class="w-full text-[13px] border-2" style="border-color: var(--border);">
+          <thead style="background: var(--surface);">
+            <tr><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Tier</th><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Example</th><th class="text-left p-3 font-heading" style="color: var(--text-primary);">Response</th></tr>
+          </thead>
+          <tbody>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3 font-mono">P1</td><td class="p-3">Service completely inaccessible</td><td class="p-3">≤ 1 hour (acknowledgment)</td></tr>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3 font-mono">P2</td><td class="p-3">Major feature impairment</td><td class="p-3">≤ 4 hours</td></tr>
+            <tr class="border-t" style="border-color: var(--border);"><td class="p-3 font-mono">P3</td><td class="p-3">Minor disruption / inquiry</td><td class="p-3">≤ 24 hours</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="s6e" class="text-2xl font-bold mt-10 mb-3 text-primary">6. SLA Exclusions</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Force majeure:</strong> natural disasters, internet infrastructure disruptions, or events beyond reasonable control.</li>
+        <li><strong>User misconfiguration:</strong> configuration errors, lost credentials, or API misuse.</li>
+        <li><strong>Third-party outages:</strong> disruptions from DNS providers, certificate authorities, or upstream services.</li>
+        <li><strong>Active security incidents:</strong> during incident response (see <a href="breach.html" class="underline" style="color: var(--primary);">Data Breach Procedure</a>), stability may be temporarily sacrificed for containment.</li>
+      </ul>
+
+      <h2 id="s7e" class="text-2xl font-bold mt-10 mb-3 text-primary">7. Measurement Metrics</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Uptime:</strong> calculated from periodic probing of the <span class="font-mono">/health/ready</span> endpoint.</li>
+        <li><strong>Latency:</strong> average API response time (best-effort monitored, not an explicit guarantee in this version).</li>
+        <li><strong>Error rate:</strong> ratio of failed requests (5xx) to total requests.</li>
+      </ul>
+
+      <h2 id="s8e" class="text-2xl font-bold mt-10 mb-3 text-primary">8. Status Communication</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Status page:</strong> a status page will be provided for historical uptime transparency.</li>
+        <li><strong>Incident notifications:</strong> email to affected users during P1/P2 incidents.</li>
+        <li><strong>Post-mortem:</strong> summary of significant incidents published after resolution.</li>
+      </ul>
+      </div>
 
       <div class="mt-14 pt-6 border-t flex flex-wrap items-center justify-between gap-3" style="border-color: var(--border);">
-        <p class="text-[11px]" style="color: var(--muted);">© 2026 CipherVault. Semua hak dilindungi.</p>
+        <p class="text-[11px]" style="color: var(--muted);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
         <nav class="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
-          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Syarat &amp; Ketentuan</a>
-          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Kebijakan Privasi</a>
-          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Prosedur Data Breach</a>
+          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.privacy_title">Privacy Policy</a>
+          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.breach_title">Data Breach Procedure</a>
         </nav>
       </div>
     </article>
   </main>
 
-  <button class="fixed top-3 right-5 z-[9999] p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+  <div class="fixed top-3 right-5 z-[9999] flex items-center gap-2">
+    <div class="lang-switcher flex items-center bg-surface-card border border-border rounded-md overflow-hidden"></div>
+    <button class="p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
+  </div>
 
   <script src="js/theme.js?v=20260805"></script>
+  <script src="js/i18n.js?v=20260805"></script>
+  <script src="js/i18n-legal.js?v=20260805"></script>
   <script>
+    I18n.init();
+    I18nLegal.init();
     (function(){
       var links = document.querySelectorAll('.toc-link');
       var sections = Array.from(links).map(function(l){ return document.querySelector(l.getAttribute('href')); });

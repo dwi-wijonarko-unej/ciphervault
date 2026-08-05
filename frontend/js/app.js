@@ -5,6 +5,7 @@ const App = (() => {
   let currentDirectoryId = null;
 
   async function init() {
+    await I18n.init();
     currentUser = await Auth.ensureAuthenticated();
     if (!currentUser) return;
 
@@ -148,17 +149,17 @@ const App = (() => {
         <div id="directory-toolbar"></div>
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
-            <h1 class="text-3xl font-black font-heading tracking-tight">My Files</h1>
-            <p class="text-sm text-muted mt-1">Securely encrypted with <span style="color: var(--success);" class="font-medium">${encryptionSummary}</span></p>
+            <h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("dashboard.title")}</h1>
+            <p class="text-sm text-muted mt-1">${I18n.t("dashboard.encrypted_with")} <span style="color: var(--success);" class="font-medium">${encryptionSummary}</span></p>
           </div>
           <div class="flex items-center gap-2">
             <button class="flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium text-secondary hover:text-primary hover:bg-surface-hover transition-all duration-200 cursor-pointer bg-transparent border border-border" onclick="DirectoryUI.openCreateModal()">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              New Folder
+              ${I18n.t("dashboard.new_folder")}
             </button>
             <button class="flex items-center gap-2 px-5 py-2.5 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" style="background: var(--primary);" onclick="document.getElementById('file-input').click()">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Upload File
+              ${I18n.t("dashboard.upload_file")}
             </button>
           </div>
         </div>
@@ -180,8 +181,8 @@ const App = (() => {
     container.innerHTML = `
       <div class="page-enter">
         <div class="mb-6">
-          <h1 class="text-3xl font-black font-heading tracking-tight">Shared with Me</h1>
-          <p class="text-sm text-muted mt-1">Files shared by other users</p>
+          <h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("shared.title")}</h1>
+          <p class="text-sm text-muted mt-1">${I18n.t("shared.desc")}</p>
         </div>
         <div id="shared-list-area"></div>
       </div>
@@ -194,7 +195,7 @@ const App = (() => {
       container.innerHTML = `
         <div class="page-enter">
           <div class="bg-surface-card border border-border rounded-lg p-10 text-center">
-            <p class="text-muted">Admin access required to view system configuration.</p>
+            <p class="text-muted">${I18n.t("dashboard.admin_required")}</p>
           </div>
         </div>`;
       return;
@@ -262,10 +263,10 @@ const App = (() => {
       if (res.items.length === 0) {
         container.innerHTML = `
           <div class="page-enter">
-            <div class="mb-6"><h1 class="text-3xl font-black font-heading tracking-tight">Activity Log</h1><p class="text-sm text-muted mt-1">Recent actions and events</p></div>
+            <div class="mb-6"><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted mt-1">${I18n.t("activity.desc")}</p></div>
             <div class="bg-surface-card border border-border rounded-lg p-10 text-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mx-auto mb-2 opacity-40" style="color: var(--muted);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <p class="text-muted text-sm">No activity yet.</p>
+              <p class="text-muted text-sm">${I18n.t("activity.empty")}</p>
             </div>
           </div>`;
         return;
@@ -277,8 +278,8 @@ const App = (() => {
       let html = `
         <div class="page-enter">
           <div class="flex items-center justify-between mb-6">
-            <div><h1 class="text-3xl font-black font-heading tracking-tight">Activity Log</h1><p class="text-sm text-muted mt-1">Recent actions and events</p></div>
-            <span class="text-xs text-muted">${res.total} events</span>
+            <div><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted mt-1">${I18n.t("activity.desc")}</p></div>
+            <span class="text-xs text-muted">${res.total} ${I18n.t("activity.events")}</span>
           </div>
           <div class="space-y-1">`;
       res.items.forEach((a) => {
@@ -289,7 +290,7 @@ const App = (() => {
               <span class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${ac}">${ai}</span>
               <div class="flex-1 min-w-0">
                 <div class="text-sm">${a.details}</div>
-                ${a.file_name ? `<div class="text-xs text-muted mt-0.5">File: ${a.file_name}</div>` : ""}
+                ${a.file_name ? `<div class="text-xs text-muted mt-0.5">${I18n.t("activity.file_prefix")} ${a.file_name}</div>` : ""}
               </div>
               <span class="text-xs text-muted whitespace-nowrap flex-shrink-0">${new Date(a.timestamp).toLocaleDateString("en-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
             </div>`;
@@ -297,7 +298,7 @@ const App = (() => {
       html += "</div></div>";
       container.innerHTML = html;
     } catch {
-      container.innerHTML = `<div class="page-enter"><div class="mb-6"><h1 class="text-3xl font-black font-heading tracking-tight">Activity Log</h1><p class="text-sm text-muted mt-1">Recent actions and events</p></div><div class="bg-surface-card border border-border rounded-lg p-10 text-center"><p class="text-error">Failed to load activity.</p></div></div>`;
+      container.innerHTML = `<div class="page-enter"><div class="mb-6"><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted mt-1">${I18n.t("activity.desc")}</p></div><div class="bg-surface-card border border-border rounded-lg p-10 text-center"><p class="text-error">${I18n.t("activity.load_error")}</p></div></div>`;
     }
   }
 

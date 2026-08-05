@@ -2,14 +2,14 @@ const Download = (() => {
   async function handle(fileId, filename) {
     UI.loading(true);
     try {
-      UI.toast(`Decrypting "${filename}"...`, "info");
+      UI.toast(I18n.t("download.decrypting", { filename }), "info");
       const res = await fetch(`/files/${fileId}/download`, {
         headers: { Authorization: `Bearer ${API.getToken()}` },
       });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw { detail: err.detail || "Download failed" };
+        throw { detail: err.detail || I18n.t("download.failed") };
       }
 
       const blob = await res.blob();
@@ -22,9 +22,9 @@ const Download = (() => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      UI.toast(`"${filename}" downloaded & decrypted successfully`, "success");
+      UI.toast(I18n.t("download.success", { filename }), "success");
     } catch (e) {
-      UI.toast(e.detail || "Download failed", "error");
+      UI.toast(e.detail || I18n.t("download.failed"), "error");
     } finally {
       UI.loading(false);
     }

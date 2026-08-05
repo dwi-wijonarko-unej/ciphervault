@@ -3,7 +3,7 @@ const SecurityUI = (() => {
     // Per design guide: inline metric badges instead of 2-col grid
     const metricsList = [
       {
-        label: "Entropy",
+        label: I18n.t("security.entropy"),
         value: metrics.entropy,
         max: 8,
         good: ">7.9",
@@ -15,7 +15,7 @@ const SecurityUI = (() => {
               : "fail",
       },
       {
-        label: "Correlation",
+        label: I18n.t("security.correlation"),
         value: metrics.correlation,
         max: 1,
         good: "<0.01",
@@ -27,7 +27,7 @@ const SecurityUI = (() => {
               : "fail",
       },
       {
-        label: "Avalanche",
+        label: I18n.t("security.avalanche"),
         value: metrics.avalanche + "%",
         max: 100,
         good: "~50%",
@@ -35,21 +35,21 @@ const SecurityUI = (() => {
           metrics.avalanche > 45 && metrics.avalanche < 55 ? "pass" : "warn",
       },
       {
-        label: "NPCR",
+        label: I18n.t("security.npcr"),
         value: metrics.npcr + "%",
         max: 100,
         good: ">99%",
         status: metrics.npcr > 99 ? "pass" : "warn",
       },
       {
-        label: "UACI",
+        label: I18n.t("security.uaci"),
         value: metrics.uaci + "%",
         max: 50,
         good: "~33%",
         status: metrics.uaci > 30 && metrics.uaci < 36 ? "pass" : "warn",
       },
       {
-        label: "Bit Change",
+        label: I18n.t("security.bit_change"),
         value: metrics.bit_change + "%",
         max: 100,
         good: "~50%",
@@ -74,12 +74,12 @@ const SecurityUI = (() => {
       <div class="page-enter">
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h2 class="text-xl font-bold font-heading">Security Analysis</h2>
+            <h2 class="text-xl font-bold font-heading">${I18n.t("security.title")}</h2>
             <p class="text-sm text-muted mt-1">${fileName}</p>
           </div>
           <div class="text-center">
             <div class="text-4xl font-black tracking-tight" style="color: ${score >= 80 ? "var(--success)" : score >= 60 ? "var(--warning)" : "var(--error)"}">${score}</div>
-            <div class="meta">/ 100</div>
+            <div class="meta">${I18n.t("security.out_of")}</div>
           </div>
         </div>
 
@@ -101,12 +101,12 @@ const SecurityUI = (() => {
         </div>
 
         <div class="bg-surface border border-border rounded-lg p-4">
-          <div class="text-xs text-muted mb-2">Rating</div>
+          <div class="text-xs text-muted mb-2">${I18n.t("security.rating")}</div>
           <div class="text-lg font-bold" style="color: ${score >= 80 ? "var(--success)" : score >= 60 ? "var(--warning)" : "var(--error)"}">
-            ${score >= 80 ? "✅ Excellent" : score >= 60 ? "⚠️ Good" : "❌ Needs Improvement"}
+            ${score >= 80 ? I18n.t("security.excellent") : score >= 60 ? I18n.t("security.good") : I18n.t("security.needs_improvement")}
           </div>
           <p class="text-xs text-muted mt-1">
-            ${score >= 80 ? "Strong encryption with excellent diffusion and randomness." : score >= 60 ? "Adequate security but some metrics can be improved." : "Review encryption parameters for better security."}
+            ${score >= 80 ? I18n.t("security.desc_excellent") : score >= 60 ? I18n.t("security.desc_good") : I18n.t("security.desc_poor")}
           </p>
         </div>
       </div>
@@ -115,9 +115,9 @@ const SecurityUI = (() => {
 
   function renderUploadAnalysis(fileName, score, metrics) {
     const overlay = UI.modal(
-      "Upload Security Analysis",
+      I18n.t("security.upload_analysis"),
       '<div id="upload-analysis-content"></div>',
-      '<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest(\'.fixed.inset-0\').remove()">Close</button>',
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>`,
     );
 
     const content = document.getElementById("upload-analysis-content");
@@ -130,9 +130,9 @@ const SecurityUI = (() => {
 
   function renderFileAnalysis(fileId) {
     const overlay = UI.modal(
-      "Security Analysis",
-      '<div id="analysis-content"><div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border animate-spin mx-auto" style="border-top-color: var(--primary); border-radius: 50%;"></div></div></div>',
-      '<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest(\'.fixed.inset-0\').remove()">Close</button>',
+      I18n.t("security.title"),
+      `<div id="analysis-content"><div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border animate-spin mx-auto" style="border-top-color: var(--primary); border-radius: 50%;"></div><p class="text-xs text-muted mt-3">${I18n.t("common.loading")}</p></div></div>`,
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>`,
     );
 
     setTimeout(async () => {
@@ -148,7 +148,7 @@ const SecurityUI = (() => {
         );
       } catch {
         content.innerHTML =
-          '<p class="text-error text-center py-10">Analysis failed. The file may no longer exist.</p>';
+          `<p class="text-error text-center py-10">${I18n.t("security.analysis_failed")}</p>`;
       }
     }, 100);
 

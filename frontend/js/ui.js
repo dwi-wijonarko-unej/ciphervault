@@ -78,10 +78,10 @@ const UI = (() => {
   function confirmDialog(message) {
     return new Promise((resolve) => {
       const overlay = modal(
-        "Confirm",
+        I18n.t("common.confirm"),
         `<p class="text-secondary">${message}</p>`,
-        `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(false)">Cancel</button>
-         <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(true)" style="background: var(--error);">Delete</button>`,
+        `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(false)">${I18n.t("common.cancel")}</button>
+         <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(true)" style="background: var(--error);">${I18n.t("common.delete")}</button>`,
       );
       window.__confirmResolve = resolve;
     });
@@ -124,7 +124,7 @@ const UI = (() => {
             <span class="file-icon" style="width:36px;height:36px;">${icon.svg}</span>
             <div>
               <h3 class="text-base font-semibold font-heading truncate max-w-[280px]">${file.filename_original}</h3>
-              <span class="text-xs" style="color: var(--success);">Encrypted</span>
+              <span class="text-xs" style="color: var(--success);">${I18n.t("common.active")}</span>
             </div>
           </div>
           <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
@@ -134,7 +134,7 @@ const UI = (() => {
 
         <div class="space-y-4">
           <div class="bg-surface border border-border rounded-lg p-4">
-            <h4 class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">Encryption Details</h4>
+            <h4 class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">${I18n.t("files.stats_encryption")}</h4>
             <div class="space-y-2.5">
               <div class="flex justify-between"><span class="text-sm text-muted">Layer 1</span><span class="text-sm font-medium">UHC (mod ${modulus})</span></div>
               <div class="flex justify-between"><span class="text-sm text-muted">Layer 2</span><span class="text-sm font-medium">${
@@ -154,22 +154,22 @@ const UI = (() => {
           </div>
 
           <div class="bg-surface border border-border rounded-lg p-4">
-            <h4 class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">File Info</h4>
+            <h4 class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">${I18n.t("common.type")}</h4>
             <div class="space-y-2.5">
-              <div class="flex justify-between"><span class="text-sm text-muted">Size</span><span class="text-sm font-medium">${file.file_size_formatted || formatBytes(file.file_size_original)}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Encrypted Size</span><span class="text-sm font-medium">${formatBytes(file.file_size_encrypted)}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Type</span><span class="text-sm font-medium">${file.mime_type || "—"}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Created</span><span class="text-sm font-medium">${formatDate(file.created_at)}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("common.size")}</span><span class="text-sm font-medium">${file.file_size_formatted || formatBytes(file.file_size_original)}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("files.stats_encryption")} ${I18n.t("common.size")}</span><span class="text-sm font-medium">${formatBytes(file.file_size_encrypted)}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("common.type")}</span><span class="text-sm font-medium">${file.mime_type || "—"}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("common.date")}</span><span class="text-sm font-medium">${formatDate(file.created_at)}</span></div>
               <div class="flex justify-between"><span class="text-sm text-muted">File ID</span><span class="text-sm font-mono" style="color: var(--primary);">${file.id}</span></div>
             </div>
           </div>
 
           <div class="flex gap-2">
             <button class="flex-1 px-4 py-2.5 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" style="background: var(--primary);" onclick="Download.handle(${file.id}, '${file.filename_original}');this.closest('.fixed.inset-0').remove()">
-              Download
+              ${I18n.t("files.tooltip_download")}
             </button>
             <button class="flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 cursor-pointer border-none hover:bg-surface-hover" style="background: var(--surface); color: var(--text-primary);" onclick="SecurityUI.renderFileAnalysis(${file.id})">
-              Analyze Security
+              ${I18n.t("files.tooltip_analyze")}
             </button>
           </div>
         </div>

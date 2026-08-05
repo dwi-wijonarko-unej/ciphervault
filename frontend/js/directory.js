@@ -26,7 +26,7 @@ const DirectoryUI = (() => {
     let html = `<nav class="flex items-center gap-1 text-sm flex-wrap">`;
     html += `<button class="flex items-center gap-1.5 px-2 py-1 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none font-medium" onclick="DirectoryUI.navigate(null)">
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Home
+      ${I18n.t("directory.home")}
     </button>`;
 
     path.forEach((crumb, idx) => {
@@ -52,15 +52,15 @@ const DirectoryUI = (() => {
   function openCreateModal() {
     const currentDir = App.getDirectory();
     UI.modal(
-      "New Folder",
+      I18n.t("directory.new_title"),
       `
-        <p class="text-secondary mb-4">Create a new folder${currentDir ? " in the current location" : " at the root level"}.</p>
-        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Folder Name</label>
-        <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="folder-name-input" placeholder="My Documents" autocomplete="off">
+        <p class="text-secondary mb-4">${currentDir ? I18n.t("directory.create_desc_current") : I18n.t("directory.create_desc_root")}.</p>
+        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("directory.name_label")}</label>
+        <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="folder-name-input" placeholder="${I18n.t("directory.name_placeholder")}" autocomplete="off">
         <div id="folder-result" class="mt-3"></div>
       `,
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">Cancel</button>
-       <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-create-folder" style="background: var(--primary);">Create Folder</button>`,
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.cancel")}</button>
+       <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-create-folder" style="background: var(--primary);">${I18n.t("directory.create_button")}</button>`,
     );
 
     setTimeout(() => {
@@ -72,23 +72,23 @@ const DirectoryUI = (() => {
         btn.addEventListener("click", async () => {
           const name = input.value.trim();
           if (!name) {
-            result.innerHTML = `<p class="text-xs" style="color: var(--error);">Please enter a folder name.</p>`;
+            result.innerHTML = `<p class="text-xs" style="color: var(--error);">${I18n.t("directory.name_required")}</p>`;
             return;
           }
           btn.disabled = true;
-          btn.textContent = "Creating...";
+          btn.textContent = I18n.t("directory.creating");
           try {
             await API.request("POST", "/files/directories", {
               name,
               parent_id: App.getDirectory(),
             });
-            UI.toast("Folder created successfully", "success");
+            UI.toast(I18n.t("directory.created"), "success");
             document.querySelector(".fixed.inset-0.bg-black\\/50")?.remove();
             navigate(App.getDirectory());
           } catch (e) {
-            result.innerHTML = `<p class="text-xs" style="color: var(--error);">${e.detail || "Failed to create folder"}</p>`;
+            result.innerHTML = `<p class="text-xs" style="color: var(--error);">${e.detail || I18n.t("directory.create_failed")}</p>`;
             btn.disabled = false;
-            btn.textContent = "Create Folder";
+            btn.textContent = I18n.t("directory.create_button");
           }
         });
         input.addEventListener("keydown", (e) => {
@@ -101,16 +101,16 @@ const DirectoryUI = (() => {
 
   async function deleteFolder(folderId, folderName) {
     const confirmed = await UI.confirmDialog(
-      `Delete folder "${folderName}" and all its contents? This action cannot be undone.`,
+      I18n.t("directory.delete_confirm", { name: folderName }),
     );
     if (!confirmed) return;
     UI.loading(true);
     try {
       await API.request("DELETE", `/files/directories/${folderId}`);
-      UI.toast("Folder deleted successfully", "success");
+      UI.toast(I18n.t("directory.deleted"), "success");
       navigate(App.getDirectory());
     } catch (e) {
-      UI.toast(e.detail || "Failed to delete folder", "error");
+      UI.toast(e.detail || I18n.t("directory.delete_failed"), "error");
     } finally {
       UI.loading(false);
     }
@@ -118,17 +118,17 @@ const DirectoryUI = (() => {
 
   function openMoveModal(itemId, itemName) {
     UI.modal(
-      "Move Item",
+      I18n.t("directory.move_title"),
       `
-        <p class="text-secondary mb-4">Move <strong>"${escapeHtml(itemName)}"</strong> to a different folder.</p>
-        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Target Folder</label>
+        <p class="text-secondary mb-4">${I18n.t("directory.move_desc")} <strong>"${escapeHtml(itemName)}"</strong></p>
+        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("directory.target_folder")}</label>
         <select class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary outline-none transition-all focus:border-[#2d6a4f]" id="move-target-select">
-          <option value="">— Root (Home) —</option>
+          <option value="">${I18n.t("directory.root_option")}</option>
         </select>
         <div id="move-result" class="mt-3"></div>
       `,
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">Cancel</button>
-       <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-move-item" style="background: var(--primary);">Move</button>`,
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.cancel")}</button>
+       <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-move-item" style="background: var(--primary);">${I18n.t("directory.move_button")}</button>`,
     );
 
     setTimeout(async () => {
@@ -154,19 +154,19 @@ const DirectoryUI = (() => {
         btn.addEventListener("click", async () => {
           const targetVal = select.value;
           btn.disabled = true;
-          btn.textContent = "Moving...";
+          btn.textContent = I18n.t("directory.moving");
           try {
             const body = {
               target_parent_id: targetVal ? parseInt(targetVal) : null,
             };
             await API.request("PATCH", `/files/${itemId}/move`, body);
-            UI.toast("Item moved successfully", "success");
+            UI.toast(I18n.t("directory.moved"), "success");
             document.querySelector(".fixed.inset-0.bg-black\\/50")?.remove();
             navigate(App.getDirectory());
           } catch (e) {
-            result.innerHTML = `<p class="text-xs" style="color: var(--error);">${e.detail || "Move failed"}</p>`;
+            result.innerHTML = `<p class="text-xs" style="color: var(--error);">${e.detail || I18n.t("directory.move_failed")}</p>`;
             btn.disabled = false;
-            btn.textContent = "Move";
+            btn.textContent = I18n.t("directory.move_button");
           }
         });
       }

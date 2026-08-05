@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CipherVault — Secure Cloud Storage</title>
-    <!-- Inline script to prevent theme flash: restore saved theme BEFORE render -->
+    <!-- Inline script to prevent theme & language flash -->
     <script>
       (function () {
         var saved = localStorage.getItem("cv_theme");
@@ -13,6 +13,11 @@
         ).matches;
         var isDark = saved !== null ? saved === "dark" : prefersDark;
         document.documentElement.classList.toggle("dark", isDark);
+
+        var savedLang = localStorage.getItem("cv_lang");
+        var lang = savedLang || (navigator.language.startsWith("id") ? "id" : "en");
+        document.documentElement.lang = lang;
+        document.documentElement.setAttribute("data-lang", lang);
       })();
     </script>
     <!-- Fonts: Space Grotesk (headings) + Inter (body) - font-display swap prevents FOIT -->
@@ -88,9 +93,11 @@
         >
       </div>
       <div class="flex items-center gap-1.5">
+        <div class="lang-switcher flex items-center bg-surface-card border border-border rounded-md overflow-hidden"></div>
         <button
           class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none"
           id="btn-theme"
+          data-i18n-title="nav.theme_toggle"
           title="Toggle theme"
         >
           <svg
@@ -136,6 +143,7 @@
         <button
           class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none"
           id="btn-profile"
+          data-i18n-title="nav.profile"
           title="Profile & API Keys"
         >
           <svg
@@ -164,6 +172,7 @@
         <button
           class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none"
           id="btn-logout"
+          data-i18n-title="nav.logout"
           title="Logout"
         >
           <svg
@@ -203,7 +212,7 @@
               d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
             />
           </svg>
-          My Files
+          <span data-i18n="nav.my_files">My Files</span>
           <span
             class="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full scale-x-0 tab-active-bar transition-transform duration-200"
           ></span>
@@ -227,7 +236,7 @@
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
           </svg>
-          Shared with Me
+          <span data-i18n="nav.shared_with_me">Shared with Me</span>
           <span
             class="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full scale-x-0 tab-active-bar transition-transform duration-200"
           ></span>
@@ -248,7 +257,7 @@
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
           </svg>
-          System
+          <span data-i18n="nav.system">System</span>
           <span
             class="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full scale-x-0 tab-active-bar transition-transform duration-200"
           ></span>
@@ -268,7 +277,7 @@
           >
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
           </svg>
-          Activity
+          <span data-i18n="nav.activity">Activity</span>
           <span
             class="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full scale-x-0 tab-active-bar transition-transform duration-200"
           ></span>
@@ -290,7 +299,7 @@
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             <polyline points="9 12 11 14 15 10" transform="translate(0,-0.5)" />
           </svg>
-          Admin
+          <span data-i18n="nav.admin">Admin</span>
           <span
             class="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full scale-x-0 tab-active-bar transition-transform duration-200"
           ></span>
@@ -306,12 +315,12 @@
     <!-- Legal links footer — minimal, unobtrusive -->
     <footer class="border-t border-border">
       <div class="max-w-[1200px] mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <span class="text-[11px]" style="color: var(--muted);">© 2026 CipherVault — Disimpan sebagai ciphertext, selalu.</span>
+        <span class="text-[11px]" style="color: var(--muted);" data-i18n="legal.copyright">© 2026 CipherVault — Stored as ciphertext, always.</span>
         <nav class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
-          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);">Syarat &amp; Ketentuan</a>
-          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);">Kebijakan Privasi</a>
-          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);">Prosedur Data Breach</a>
-          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);">SLA</a>
+          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="legal.privacy_title">Privacy Policy</a>
+          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="legal.breach_title">Data Breach Procedure</a>
+          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="legal.sla_title">SLA</a>
         </nav>
       </div>
     </footer>
@@ -321,20 +330,21 @@
       class="fixed top-5 right-5 z-[9999] flex flex-col gap-2"
     ></div>
 
-    <script src="js/theme.js?v=20260804"></script>
-    <script src="js/api.js?v=20260804"></script>
-    <script src="js/ui.js?v=20260804"></script>
-    <script src="js/auth.js?v=20260804"></script>
-    <script src="js/files.js?v=20260804"></script>
-    <script src="js/upload.js?v=20260804"></script>
-    <script src="js/download.js?v=20260804"></script>
-    <script src="js/share.js?v=20260804"></script>
-    <script src="js/search.js?v=20260804"></script>
-    <script src="js/security.js?v=20260804"></script>
-    <script src="js/system.js?v=20260804"></script>
-    <script src="js/directory.js?v=20260804"></script>
-    <script src="js/profile.js?v=20260804"></script>
-    <script src="js/admin.js?v=20260804"></script>
-    <script src="js/app.js?v=20260804"></script>
+    <script src="js/theme.js?v=20260805"></script>
+    <script src="js/i18n.js?v=20260805"></script>
+    <script src="js/api.js?v=20260805"></script>
+    <script src="js/ui.js?v=20260805"></script>
+    <script src="js/auth.js?v=20260805"></script>
+    <script src="js/files.js?v=20260805"></script>
+    <script src="js/upload.js?v=20260805"></script>
+    <script src="js/download.js?v=20260805"></script>
+    <script src="js/share.js?v=20260805"></script>
+    <script src="js/search.js?v=20260805"></script>
+    <script src="js/security.js?v=20260805"></script>
+    <script src="js/system.js?v=20260805"></script>
+    <script src="js/directory.js?v=20260805"></script>
+    <script src="js/profile.js?v=20260805"></script>
+    <script src="js/admin.js?v=20260805"></script>
+    <script src="js/app.js?v=20260805"></script>
   </body>
 </html>

@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CipherVault — Secure Login</title>
-  <!-- Inline script to prevent theme flash: restore saved theme BEFORE render -->
+  <!-- Inline script to prevent theme + language flash -->
   <script>
     (function(){
       var saved = localStorage.getItem('cv_theme');
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       var isDark = saved !== null ? saved === 'dark' : prefersDark;
       document.documentElement.classList.toggle('dark', isDark);
+      var lang = localStorage.getItem('cv_lang');
+      if (!lang) { var nav = navigator.language || ''; lang = nav.startsWith('id') ? 'id' : 'en'; }
+      document.documentElement.lang = lang;
     })();
   </script>
   <!-- Fonts: Space Grotesk (headings) + Inter (body) - font-display swap prevents FOIT -->
@@ -85,10 +88,10 @@
       <!-- Decorative content -->
       <div class="space-y-6">
         <h2 class="text-4xl font-black font-heading leading-tight tracking-tight">
-          Your data,<br>
-          <span style="color: var(--primary);">your cipher.</span>
+          <span data-i18n="login.hero_line1">Your data,</span><br>
+          <span style="color: var(--primary);" data-i18n="login.hero_line2">your cipher.</span>
         </h2>
-        <p class="text-sm leading-relaxed" style="color: var(--text-secondary); max-width: 28rem;">
+        <p class="text-sm leading-relaxed" style="color: var(--text-secondary); max-width: 28rem;" data-i18n="login.hero_desc">
           Every file is encrypted client-side with a hybrid UHC + AES cascade.
           We never see your keys — and neither does anyone else.
         </p>
@@ -120,11 +123,11 @@
         <!-- Tab Switcher — pill-style with underline, not filled bg -->
         <div class="flex mb-7 border-b border-border">
           <button class="flex-1 pb-3 text-sm font-medium transition-all tab-btn active relative" data-tab="login" onclick="switchTab('login')">
-            Sign In
+            <span data-i18n="auth.sign_in">Sign In</span>
             <span class="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full scale-x-0 tab-underline transition-transform duration-200"></span>
           </button>
           <button class="flex-1 pb-3 text-sm font-medium transition-all tab-btn relative" data-tab="register" onclick="switchTab('register')">
-            Create Account
+            <span data-i18n="auth.create_account">Create Account</span>
             <span class="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full scale-x-0 tab-underline transition-transform duration-200"></span>
           </button>
         </div>
@@ -132,46 +135,46 @@
         <!-- Login Form -->
         <form id="login-form" class="flex flex-col gap-5" onsubmit="return handleLogin(event)">
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Username</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="login-username" placeholder="Enter your username" required autocomplete="username">
+            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5" data-i18n="auth.username">Username</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="login-username" data-i18n-placeholder="auth.enter_username" placeholder="Enter your username" required autocomplete="username">
           </div>
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Password</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="login-password" type="password" placeholder="Enter your password" required autocomplete="current-password">
+            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5" data-i18n="auth.password">Password</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="login-password" type="password" data-i18n-placeholder="auth.enter_password" placeholder="Enter your password" required autocomplete="current-password">
           </div>
           <button type="submit" class="w-full py-3 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2" style="background: var(--primary);">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Sign In
+            <span data-i18n="auth.sign_in">Sign In</span>
           </button>
           <div class="text-center">
-            <button type="button" class="text-xs text-muted hover:text-primary transition-colors cursor-pointer bg-transparent border-none underline underline-offset-2" onclick="openResetModal()">Forgot Password?</button>
+            <button type="button" class="text-xs text-muted hover:text-primary transition-colors cursor-pointer bg-transparent border-none underline underline-offset-2" onclick="openResetModal()" data-i18n="auth.forgot_password">Forgot Password?</button>
           </div>
         </form>
 
         <!-- Register Form -->
         <form id="register-form" class="flex flex-col gap-5 hidden" onsubmit="return handleRegister(event)">
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Username</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reg-username" placeholder="Choose a username" required autocomplete="off">
+            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5" data-i18n="auth.username">Username</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reg-username" data-i18n-placeholder="auth.choose_username" placeholder="Choose a username" required autocomplete="off">
           </div>
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Email</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reg-email" type="email" placeholder="Enter your email" required autocomplete="email">
+            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5" data-i18n="auth.email">Email</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reg-email" type="email" data-i18n-placeholder="auth.enter_email" placeholder="Enter your email" required autocomplete="email">
           </div>
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Password</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reg-password" type="password" placeholder="Choose a strong password" required minlength="6" autocomplete="new-password">
+            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5" data-i18n="auth.password">Password</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reg-password" type="password" data-i18n-placeholder="auth.choose_password" placeholder="Choose a strong password" required minlength="6" autocomplete="new-password">
           </div>
           <button type="submit" class="w-full py-3 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2" style="background: var(--primary);">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-            Create Account
+            <span data-i18n="auth.create_account">Create Account</span>
           </button>
         </form>
 
         <!-- Divider -->
         <div class="flex items-center gap-3 my-5">
           <div class="flex-1 h-px" style="background: var(--border);"></div>
-          <span class="text-xs" style="color: var(--muted);">or</span>
+          <span class="text-xs" style="color: var(--muted);" data-i18n="common.or">or</span>
           <div class="flex-1 h-px" style="background: var(--border);"></div>
         </div>
 
@@ -185,27 +188,30 @@
           Demo Mode — Quick Login
         </button>
 
-        <p class="text-center mt-6 text-[11px]" style="color: var(--muted);">Secured with UHC + AES/RSA Hybrid Encryption</p>
+        <p class="text-center mt-6 text-[11px]" style="color: var(--muted);" data-i18n="auth.secured_with">Secured with UHC + AES/RSA Hybrid Encryption</p>
       </div>
 
       <!-- Legal links footer — minimal, unobtrusive -->
       <nav class="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px]">
-        <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Syarat &amp; Ketentuan</a>
+        <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
         <span style="color: var(--muted); opacity: .4;">·</span>
-        <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Kebijakan Privasi</a>
+        <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.privacy_title">Privacy Policy</a>
         <span style="color: var(--muted); opacity: .4;">·</span>
-        <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Prosedur Data Breach</a>
+        <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.breach_title">Data Breach Procedure</a>
         <span style="color: var(--muted); opacity: .4;">·</span>
-        <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);">SLA</a>
+        <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.sla_title">SLA</a>
       </nav>
     </div>
   </div>
 
-  <!-- ============ Theme Toggle ============ -->
-  <button class="fixed top-5 right-5 z-[9999] p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+  <!-- ============ Theme Toggle + Language Switcher ============ -->
+  <div class="fixed top-5 right-5 z-[9999] flex items-center gap-2">
+    <div class="lang-switcher flex items-center bg-surface-card border border-border rounded-md overflow-hidden"></div>
+    <button class="p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
+  </div>
 
   <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2"></div>
 
@@ -213,40 +219,41 @@
   <div id="reset-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[8000] hidden flex items-center justify-center p-5" onclick="if(event.target===this)closeResetModal()">
     <div class="bg-surface-card border border-border rounded-xl shadow-2xl w-full max-w-[420px] animate-[scaleIn_0.2s_ease]">
       <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-border">
-        <h3 class="text-lg font-bold">Reset Password</h3>
+        <h3 class="text-lg font-bold" data-i18n="auth.reset_title">Reset Password</h3>
         <button class="p-2 rounded-md text-muted hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="closeResetModal()">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div class="px-6 py-5">
-        <p class="text-sm text-muted mb-4">Enter your username and registered email to reset your password.</p>
+        <p class="text-sm text-muted mb-4" data-i18n="auth.reset_desc">Enter your username and registered email to reset your password.</p>
         <div class="flex flex-col gap-4">
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Username</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reset-username" placeholder="Your username" required autocomplete="off">
+            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5" data-i18n="auth.username">Username</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reset-username" data-i18n-placeholder="auth.reset_username" placeholder="Your username" required autocomplete="off">
           </div>
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">Email</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reset-email" type="email" placeholder="Your registered email" required autocomplete="off">
+            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5" data-i18n="auth.email">Email</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reset-email" type="email" data-i18n-placeholder="auth.reset_email" placeholder="Your registered email" required autocomplete="off">
           </div>
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">New Password</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reset-password" type="password" placeholder="Choose a new password" required minlength="6" autocomplete="off">
+            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5" data-i18n="auth.new_password">New Password</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reset-password" type="password" data-i18n-placeholder="auth.reset_choose" placeholder="Choose a new password" required minlength="6" autocomplete="off">
           </div>
           <div id="reset-error" class="text-xs text-red-500 dark:text-red-400 hidden"></div>
           <button class="w-full py-3 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2" style="background: var(--primary);" id="btn-reset" onclick="handleResetPassword()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            Reset Password
+            <span data-i18n="auth.reset_button">Reset Password</span>
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="js/theme.js?v=20260721"></script>
-  <script src="js/api.js?v=20260721"></script>
-  <script src="js/ui.js?v=20260721"></script>
-  <script src="js/auth.js?v=20260721"></script>
+  <script src="js/theme.js?v=20260805"></script>
+  <script src="js/i18n.js?v=20260805"></script>
+  <script src="js/api.js?v=20260805"></script>
+  <script src="js/ui.js?v=20260805"></script>
+  <script src="js/auth.js?v=20260805"></script>
   <script>
     function switchTab(tab) {
       document.querySelectorAll('.tab-btn').forEach(t => {
@@ -286,7 +293,7 @@
     }
 
     function handleDemoLogin() {
-      UI.toast('Demo auto-login dinonaktifkan. Silakan login dengan akun yang valid.', 'info');
+      UI.toast(I18n.t('auth.demo_disabled'), 'info');
     }
 
     function openResetModal() {
@@ -307,37 +314,38 @@
       const btn = document.getElementById('btn-reset');
 
       if (!username || !email || !password) {
-        errorEl.textContent = 'All fields are required.';
+        errorEl.textContent = I18n.t('auth.all_fields_required');
         errorEl.classList.remove('hidden');
         return;
       }
       if (password.length < 6) {
-        errorEl.textContent = 'Password must be at least 6 characters.';
+        errorEl.textContent = I18n.t('auth.password_min');
         errorEl.classList.remove('hidden');
         return;
       }
 
       errorEl.classList.add('hidden');
       btn.disabled = true;
-      btn.innerHTML = '<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Resetting...';
+      btn.innerHTML = '<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> ' + I18n.t('auth.resetting');
 
       try {
         const res = await API.request('POST', '/auth/reset-password', { username, email, new_password: password });
-        UI.toast(res.message || 'Password reset successful!', 'success');
+        UI.toast(res.message || I18n.t('auth.reset_success'), 'success');
         closeResetModal();
         document.getElementById('login-password').value = '';
         document.getElementById('login-password').focus();
       } catch (e) {
-        errorEl.textContent = e.detail || 'Reset failed. Check your credentials.';
+        errorEl.textContent = e.detail || I18n.t('auth.reset_failed');
         errorEl.classList.remove('hidden');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Reset Password';
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> ' + I18n.t('auth.reset_password');
       }
     }
 
     // Activate default tab underline on load
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await I18n.init();
       const activeTab = document.querySelector('.tab-btn.active');
       if (activeTab) {
         const underline = activeTab.querySelector('.tab-underline');

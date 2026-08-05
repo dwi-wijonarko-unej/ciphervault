@@ -10,6 +10,11 @@
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       var isDark = saved !== null ? saved === 'dark' : prefersDark;
       document.documentElement.classList.toggle('dark', isDark);
+
+      var savedLang = localStorage.getItem('cv_lang');
+      var lang = savedLang || (navigator.language.startsWith('id') ? 'id' : 'en');
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute('data-lang', lang);
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,20 +52,25 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
       </a>
-      <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);"><span>←</span> Kembali</a>
+      <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);">
+        <span>←</span> <span data-i18n="legal.back">Back</span>
+      </a>
     </div>
   </header>
 
   <section class="border-b" style="border-color: var(--border); background: var(--surface);">
     <div class="max-w-6xl mx-auto px-5 py-10 grid grid-cols-12 gap-6 items-end">
       <div class="col-span-12 md:col-span-8">
-        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);">Operasional · v1.0</p>
-        <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">Prosedur Data<br>Breach</h1>
+        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);" data-i18n="legal.doc_label">Operational · v1.0</p>
+        <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">
+          <span class="lang-id">Prosedur Data<br>Breach</span>
+          <span class="lang-en">Data Breach<br>Procedure</span>
+        </h1>
       </div>
       <div class="col-span-12 md:col-span-4 md:text-right space-y-1">
-        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);">Terakhir diperbarui</p>
-        <p class="font-heading font-bold text-primary text-lg">5 Agustus 2026</p>
-        <p class="text-[12px]" style="color: var(--text-secondary);">Sesuai UU PDP · notifikasi 72 jam</p>
+        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);" data-i18n="legal.updated">Last updated</p>
+        <p class="font-heading font-bold text-primary text-lg">5 August 2026</p>
+        <p class="text-[12px]" style="color: var(--text-secondary);" data-i18n="legal.effective">Effective from that date</p>
       </div>
     </div>
   </section>
@@ -68,7 +78,8 @@
   <main class="max-w-6xl mx-auto px-5 py-12 grid grid-cols-12 gap-10">
     <aside class="hidden lg:block lg:col-span-3">
       <nav class="sticky top-24 space-y-1 text-[13px]" id="toc">
-        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);">Daftar Isi</p>
+        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);" data-i18n="legal.toc">Table of Contents</p>
+        <div class="lang-id">
         <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Komitmen</a>
         <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Definisi</a>
         <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Alur Respons</a>
@@ -77,10 +88,22 @@
         <a href="#s6" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. Info ke Pengguna</a>
         <a href="#s7" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. Pasca-Insiden</a>
         <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Pengecualian</a>
+        </div>
+        <div class="lang-en">
+        <a href="#s1e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Commitment</a>
+        <a href="#s2e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Definition</a>
+        <a href="#s3e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Incident Response</a>
+        <a href="#s4e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">4. Notification Timeline</a>
+        <a href="#s5e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">5. Reporting</a>
+        <a href="#s6e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. User Notification</a>
+        <a href="#s7e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. Post-Incident</a>
+        <a href="#s8e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Exclusions</a>
+        </div>
       </nav>
     </aside>
 
     <article class="col-span-12 lg:col-span-9 prose-legal max-w-none">
+      <div class="lang-id">
       <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
         Dokumen ini mengatur bagaimana CipherVault mendeteksi, merespons, dan mengomunikasikan insiden keamanan yang berpotensi membahayakan data pribadi, sesuai <strong>UU PDP No. 27/2022 Pasal 46</strong> yang mewajibkan notifikasi pemegang data paling lambat <strong>3 x 24 jam</strong> sejak diketahui.
       </p>
@@ -156,25 +179,111 @@
         <li>Gangguan layanan tanpa kebocoran data (lihat <a href="sla.html" class="underline" style="color: var(--primary);">SLA</a>).</li>
         <li>Perilaku yang diakibatkan kesalahan konfigurasi pengguna sendiri.</li>
       </ul>
+      </div>
+
+      <div class="lang-en">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
+        This document governs how CipherVault detects, responds to, and communicates security incidents that may compromise personal data, in compliance with <strong>UU PDP No. 27/2022 Article 46</strong> which requires data controllers to notify no later than <strong>72 hours</strong> from discovery.
+      </p>
+
+      <h2 id="s1e" class="text-2xl font-bold mt-12 mb-3 text-primary">1. Security Commitment</h2>
+      <p class="text-[14px]">We designed CipherVault with the assumption that every piece of data is a target. All files are encrypted (UHC + AES cascade) before storage, so a storage breach does not automatically expose plaintext. Nonetheless, we are prepared to respond when a breach occurs.</p>
+
+      <h2 id="s2e" class="text-2xl font-bold mt-10 mb-3 text-primary">2. Data Breach Definition</h2>
+      <p class="text-[14px]">A personal data breach is an incident that leads to data being disclosed, accessed without authorization, lost, or altered, whether due to technical error or malicious action. Examples include:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Unauthorized access to databases or storage (e.g., vulnerability exploitation).</li>
+        <li>Leakage of admin credentials or global encryption keys.</li>
+        <li>Loss of devices or backup media.</li>
+        <li>Denial-of-service attacks that result in information leakage as a side effect.</li>
+      </ul>
+
+      <h2 id="s3e" class="text-2xl font-bold mt-10 mb-3 text-primary">3. Incident Response Flow</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">
+        <div class="p-4 border-2 bg-surface-card" style="border-color: var(--border);">
+          <p class="font-heading font-bold text-primary mb-1">1. Detection</p>
+          <p class="text-[13px]">Monitoring of activity logs, traffic anomalies, and user/internal reports.</p>
+        </div>
+        <div class="p-4 border-2 bg-surface-card" style="border-color: var(--border);">
+          <p class="font-heading font-bold text-primary mb-1">2. Assessment</p>
+          <p class="text-[13px]">Severity classification: data scope, likelihood of exploitation.</p>
+        </div>
+        <div class="p-4 border-2 bg-surface-card" style="border-color: var(--border);">
+          <p class="font-heading font-bold text-primary mb-1">3. Containment</p>
+          <p class="text-[13px]">Isolate affected systems, rotate keys, revoke suspected tokens &amp; API keys.</p>
+        </div>
+        <div class="p-4 border-2 bg-surface-card" style="border-color: var(--border);">
+          <p class="font-heading font-bold text-primary mb-1">4. Notification</p>
+          <p class="text-[13px]">Communicate to affected users and authorities when required.</p>
+        </div>
+      </div>
+
+      <h2 id="s4e" class="text-2xl font-bold mt-10 mb-3 text-primary">4. Notification Timeline</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Day+0 — Discovered:</strong> team begins investigation and containment.</li>
+        <li><strong>Within 72 hours (3 × 24 hours):</strong> initial notification to affected users detailing the nature of the breach and data involved, per UU PDP.</li>
+        <li><strong>Ongoing:</strong> information updates as the investigation progresses.</li>
+      </ul>
+
+      <h2 id="s5e" class="text-2xl font-bold mt-10 mb-3 text-primary">5. How to Report an Incident</h2>
+      <p class="text-[14px]">If you suspect a security incident (e.g., your account was accessed without authorization), report it immediately:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Email: <span class="font-mono" style="color: var(--primary);">security@ciphervault.io</span></li>
+        <li>Subject: <span class="font-mono">[INCIDENT]</span> + brief summary.</li>
+        <li>Include: time of occurrence, evidence (screenshot/log), and affected account.</li>
+      </ul>
+      <p class="text-[14px] mt-3">We also encourage responsible disclosure of any vulnerabilities you discover before they are published.</p>
+
+      <h2 id="s6e" class="text-2xl font-bold mt-10 mb-3 text-primary">6. Information for Affected Users</h2>
+      <p class="text-[14px]">Notifications to you will include, as much as we can without exacerbating the situation:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Nature of the breach and categories of data affected.</li>
+        <li>Estimated impact and steps we are taking.</li>
+        <li>Recommended actions (e.g., change password, revoke API Key).</li>
+        <li>Contact point for further inquiries.</li>
+      </ul>
+
+      <h2 id="s7e" class="text-2xl font-bold mt-10 mb-3 text-primary">7. Post-Incident Actions</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Post-mortem:</strong> root cause analysis.</li>
+        <li><strong>Remediation:</strong> patching vulnerabilities, tightening access controls.</li>
+        <li><strong>Audit:</strong> verifying integrity of remaining data via SHA-256.</li>
+        <li><strong>Documentation:</strong> recording lessons learned to improve procedures.</li>
+      </ul>
+
+      <h2 id="s8e" class="text-2xl font-bold mt-10 mb-3 text-primary">8. Exclusions (Not a Breach)</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Legitimate admin access during operational duties (does not expose plaintext).</li>
+        <li>Service disruptions without data leakage (see <a href="sla.html" class="underline" style="color: var(--primary);">SLA</a>).</li>
+        <li>Issues caused by user misconfiguration.</li>
+      </ul>
+      </div>
 
       <div class="mt-14 pt-6 border-t flex flex-wrap items-center justify-between gap-3" style="border-color: var(--border);">
-        <p class="text-[11px]" style="color: var(--muted);">© 2026 CipherVault. Semua hak dilindungi.</p>
+        <p class="text-[11px]" style="color: var(--muted);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
         <nav class="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
-          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Syarat &amp; Ketentuan</a>
-          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Kebijakan Privasi</a>
-          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);">SLA</a>
+          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.privacy_title">Privacy Policy</a>
+          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.sla_title">SLA</a>
         </nav>
       </div>
     </article>
   </main>
 
-  <button class="fixed top-3 right-5 z-[9999] p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+  <div class="fixed top-3 right-5 z-[9999] flex items-center gap-2">
+    <div class="lang-switcher flex items-center bg-surface-card border border-border rounded-md overflow-hidden"></div>
+    <button class="p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
+  </div>
 
   <script src="js/theme.js?v=20260805"></script>
+  <script src="js/i18n.js?v=20260805"></script>
+  <script src="js/i18n-legal.js?v=20260805"></script>
   <script>
+    I18n.init();
+    I18nLegal.init();
     (function(){
       var links = document.querySelectorAll('.toc-link');
       var sections = Array.from(links).map(function(l){ return document.querySelector(l.getAttribute('href')); });

@@ -4,12 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CipherVault — Kebijakan Privasi</title>
+  <!-- Prevent theme flash -->
   <script>
     (function(){
       var saved = localStorage.getItem('cv_theme');
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       var isDark = saved !== null ? saved === 'dark' : prefersDark;
       document.documentElement.classList.toggle('dark', isDark);
+
+      var savedLang = localStorage.getItem('cv_lang');
+      var lang = savedLang || (navigator.language.startsWith('id') ? 'id' : 'en');
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute('data-lang', lang);
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,16 +25,28 @@
   <script>
       tailwind.config = {
         darkMode: 'class',
-        theme: { extend: {
+        theme: {
+          extend: {
             colors: {
               surface: { DEFAULT: 'var(--surface)', card: 'var(--surface-card)', hover: 'var(--surface-hover)', input: 'var(--surface-input)' },
               border: { DEFAULT: 'var(--border)', focus: '#2d6a4f' },
-              muted: 'var(--muted)', body: 'var(--bg-body)', primary: 'var(--text-primary)', secondary: 'var(--text-secondary)',
+              muted: 'var(--muted)',
+              body: 'var(--bg-body)',
+              primary: 'var(--text-primary)',
+              secondary: 'var(--text-secondary)',
             },
-            fontFamily: { heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
-            boxShadow: { sharp: '4px 4px 0px 0px rgba(0,0,0,0.15)', 'sharp-hover': '6px 6px 0px 0px rgba(0,0,0,0.2)', soft: '0 2px 8px rgba(0,0,0,0.06)' },
+            fontFamily: {
+              heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+            boxShadow: {
+              sharp: '4px 4px 0px 0px rgba(0,0,0,0.15)',
+              'sharp-hover': '6px 6px 0px 0px rgba(0,0,0,0.2)',
+              soft: '0 2px 8px rgba(0,0,0,0.06)',
+            },
             borderRadius: { sharp: '0', pill: '9999px' },
-        }}
+          }
+        }
       }
   </script>
   <link rel="stylesheet" href="css/style.css?v=20260805">
@@ -44,23 +62,30 @@
   <header class="border-b sticky top-0 z-40 backdrop-blur" style="background: color-mix(in srgb, var(--surface-card) 88%, transparent); border-color: var(--border);">
     <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
       <a href="login.html" class="flex items-center gap-2 group">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);">
+          <rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
         <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
       </a>
-      <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);"><span>←</span> Kembali</a>
+      <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);">
+        <span>←</span> <span data-i18n="legal.back">Back</span>
+      </a>
     </div>
   </header>
 
   <section class="border-b" style="border-color: var(--border); background: var(--surface);">
     <div class="max-w-6xl mx-auto px-5 py-10 grid grid-cols-12 gap-6 items-end">
       <div class="col-span-12 md:col-span-8">
-        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);">Dokumen Hukum · v1.0</p>
-        <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">Kebijakan<br>Privasi</h1>
+        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);" data-i18n="legal.doc_label">Legal Document · v1.0</p>
+        <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">
+          <span class="lang-id">Kebijakan<br>Privasi</span>
+          <span class="lang-en">Privacy<br>Policy</span>
+        </h1>
       </div>
       <div class="col-span-12 md:col-span-4 md:text-right space-y-1">
-        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);">Terakhir diperbarui</p>
-        <p class="font-heading font-bold text-primary text-lg">5 Agustus 2026</p>
-        <p class="text-[12px]" style="color: var(--text-secondary);">Sesuai UU PDP No. 27/2022</p>
+        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);" data-i18n="legal.updated">Last updated</p>
+        <p class="font-heading font-bold text-primary text-lg">5 August 2026</p>
+        <p class="text-[12px]" style="color: var(--text-secondary);" data-i18n="legal.effective">Effective from that date</p>
       </div>
     </div>
   </section>
@@ -68,7 +93,8 @@
   <main class="max-w-6xl mx-auto px-5 py-12 grid grid-cols-12 gap-10">
     <aside class="hidden lg:block lg:col-span-3">
       <nav class="sticky top-24 space-y-1 text-[13px]" id="toc">
-        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);">Daftar Isi</p>
+        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);" data-i18n="legal.toc">Table of Contents</p>
+        <div class="lang-id">
         <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Data Dikumpulkan</a>
         <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Penyimpanan</a>
         <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Penggunaan Data</a>
@@ -78,10 +104,23 @@
         <a href="#s7" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. Hak Pengguna</a>
         <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Cookie &amp; Token</a>
         <a href="#s9" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">9. Kontak</a>
+        </div>
+        <div class="lang-en">
+        <a href="#s1e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Data Collection</a>
+        <a href="#s2e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Storage</a>
+        <a href="#s3e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Data Usage</a>
+        <a href="#s4e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">4. Data Sharing</a>
+        <a href="#s5e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">5. Retention</a>
+        <a href="#s6e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. Security</a>
+        <a href="#s7e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. User Rights</a>
+        <a href="#s8e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Cookies &amp; Tokens</a>
+        <a href="#s9e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">9. Contact</a>
+        </div>
       </nav>
     </aside>
 
     <article class="col-span-12 lg:col-span-9 prose-legal max-w-none">
+      <div class="lang-id">
       <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
         Privasi Anda adalah fondasi desain CipherVault. Dokumen ini menjelaskan data apa yang kami kumpulkan, bagaimana kami melindunginya, dan hak Anda atas data tersebut, sejalan dengan <strong>Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)</strong>.
       </p>
@@ -152,25 +191,106 @@
 
       <h2 id="s9" class="text-2xl font-bold mt-10 mb-3 text-primary">9. Kontak</h2>
       <p class="text-[14px]">Pertanyaan terkait privasi: <span class="font-mono" style="color: var(--primary);">privacy@ciphervault.io</span></p>
+      </div>
+
+      <div class="lang-en">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
+        Your privacy is a foundational design principle of CipherVault. This document explains what data we collect, how we protect it, and your rights over that data, in accordance with <strong>Law No. 27 of 2022 on Personal Data Protection (UU PDP)</strong>.
+      </p>
+
+      <h2 id="s1e" class="text-2xl font-bold mt-12 mb-3 text-primary">1. Data We Collect</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Account data:</strong> username and email address you provide during registration.</li>
+        <li><strong>Credentials (protected):</strong> passwords are hashed using bcrypt; salt and derived key hashes are stored using PBKDF2 (100,000 iterations). Plaintext passwords are never stored.</li>
+        <li><strong>File metadata:</strong> original filename, size, MIME type, and encryption metadata (matrix size, split ratio, AI Selector decision trace).</li>
+        <li><strong>Activity logs:</strong> actions such as login, upload, download, share, and revoke for security auditing.</li>
+        <li><strong>Technical tokens:</strong> session JWT and API Key (hash) for authentication.</li>
+      </ul>
+      <p class="text-[14px] mt-3"><strong>What we do NOT collect:</strong> we do not track your web browsing, do not serve third-party ads, and do not sell your data.</p>
+
+      <h2 id="s2e" class="text-2xl font-bold mt-10 mb-3 text-primary">2. How Your Files Are Stored</h2>
+      <p class="text-[14px]">Every file you upload is encrypted before leaving the application process, using a layered hybrid architecture:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Layer 1 — UHC (Unimodular Hill Cipher):</strong> plaintext is encrypted with a key matrix generated from a logistic map.</li>
+        <li><strong>Layer 2 — AES-256-CBC:</strong> UHC output is fully wrapped (cascade) with AES, using a random IV per file.</li>
+        <li><strong>Session key wrapping:</strong> session key is wrapped with user key (PBKDF2-derived) and global RSA-OAEP.</li>
+      </ul>
+      <p class="text-[14px] mt-3"><strong>Only ciphertext is stored on the server.</strong> Your file plaintext is never written to disk. Without your password, files cannot be decrypted — including by us.</p>
+
+      <h2 id="s3e" class="text-2xl font-bold mt-10 mb-3 text-primary">3. Data Usage</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Operational:</strong> providing, maintaining, and improving the Service.</li>
+        <li><strong>Security:</strong> detecting suspicious activity, enforcing access controls (RBAC), and investigating incidents.</li>
+        <li><strong>Audit:</strong> activity logs are used for accountability and, where required by law, investigations.</li>
+        <li><strong>Communication:</strong> sending important notifications regarding your account and service changes.</li>
+      </ul>
+
+      <h2 id="s4e" class="text-2xl font-bold mt-10 mb-3 text-primary">4. Data Sharing &amp; Disclosure</h2>
+      <p class="text-[14px]">You maintain full control over data sharing:</p>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Peer sharing:</strong> occurs only at your initiative through the share feature. Session keys are re-wrapped for the recipient.</li>
+        <li><strong>Public links:</strong> you create and revoke them yourself; they can be protected with a password and expiration.</li>
+        <li><strong>Legal requests:</strong> we will only disclose data when required by applicable law, and will endeavor to notify you unless prohibited.</li>
+      </ul>
+
+      <h2 id="s5e" class="text-2xl font-bold mt-10 mb-3 text-primary">5. Data Retention &amp; Deletion</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>Account data is retained while the account is active.</li>
+        <li>Activity logs are retained for audit purposes per internal policy (see retention documentation).</li>
+        <li>When you delete your account, files and related data are permanently deleted from storage and the database.</li>
+        <li>Encrypted backups may retain data temporarily until the rotation cycle completes.</li>
+      </ul>
+
+      <h2 id="s6e" class="text-2xl font-bold mt-10 mb-3 text-primary">6. Security</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li>At-rest encryption for all files (UHC + AES cascade) as described above.</li>
+        <li>RBAC (Role-Based Access Control): <span class="font-mono">admin</span> and <span class="font-mono">user</span> roles restrict access to technical features.</li>
+        <li>SHA-256 integrity verification on download to detect ciphertext tampering.</li>
+        <li>Production database uses PostgreSQL with isolated inter-container connections.</li>
+      </ul>
+      <p class="text-[14px] mt-3">Incident procedure details are available at <a href="breach.html" class="underline" style="color: var(--primary);">Data Breach Procedure</a>.</p>
+
+      <h2 id="s7e" class="text-2xl font-bold mt-10 mb-3 text-primary">7. User Rights (UU PDP)</h2>
+      <ul class="text-[14px] space-y-2 list-disc pl-5">
+        <li><strong>Access:</strong> request a copy of the personal data we hold.</li>
+        <li><strong>Correction:</strong> correct inaccurate data.</li>
+        <li><strong>Deletion:</strong> delete your account along with all associated data.</li>
+        <li><strong>Withdrawal of consent:</strong> stop certain processing (may affect Service availability).</li>
+        <li>Submit requests via <span class="font-mono" style="color: var(--primary);">privacy@ciphervault.io</span>. We respond within a reasonable timeframe as required by UU PDP.</li>
+      </ul>
+
+      <h2 id="s8e" class="text-2xl font-bold mt-10 mb-3 text-primary">8. Cookies &amp; Session Tokens</h2>
+      <p class="text-[14px]">CipherVault does not use third-party tracking cookies. We store theme preferences in <span class="font-mono">localStorage</span> and session JWT on the client side. API Keys are stored only as hashes on the server.</p>
+
+      <h2 id="s9e" class="text-2xl font-bold mt-10 mb-3 text-primary">9. Contact</h2>
+      <p class="text-[14px]">Privacy inquiries: <span class="font-mono" style="color: var(--primary);">privacy@ciphervault.io</span></p>
+      </div>
 
       <div class="mt-14 pt-6 border-t flex flex-wrap items-center justify-between gap-3" style="border-color: var(--border);">
-        <p class="text-[11px]" style="color: var(--muted);">© 2026 CipherVault. Semua hak dilindungi.</p>
+        <p class="text-[11px]" style="color: var(--muted);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
         <nav class="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
-          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Syarat &amp; Ketentuan</a>
-          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);">Prosedur Data Breach</a>
-          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);">SLA</a>
+          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.breach_title">Data Breach Procedure</a>
+          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.sla_title">SLA</a>
         </nav>
       </div>
     </article>
   </main>
 
-  <button class="fixed top-3 right-5 z-[9999] p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+  <div class="fixed top-3 right-5 z-[9999] flex items-center gap-2">
+    <div class="lang-switcher flex items-center bg-surface-card border border-border rounded-md overflow-hidden"></div>
+    <button class="p-2.5 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
+  </div>
 
   <script src="js/theme.js?v=20260805"></script>
+  <script src="js/i18n.js?v=20260805"></script>
+  <script src="js/i18n-legal.js?v=20260805"></script>
   <script>
+    I18n.init();
+    I18nLegal.init();
     (function(){
       var links = document.querySelectorAll('.toc-link');
       var sections = Array.from(links).map(function(l){ return document.querySelector(l.getAttribute('href')); });
