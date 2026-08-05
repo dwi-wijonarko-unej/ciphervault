@@ -74,6 +74,9 @@ const App = (() => {
     window.addEventListener("hashchange", () => {
       navigate(window.location.hash.replace("#", "") || "dashboard");
     });
+    window.addEventListener("cv:i18n-changed", () => {
+      navigate(currentView);
+    });
   }
 
   function navigate(view) {
