@@ -1,6 +1,6 @@
 # CipherVault
 
-Aplikasi demo FastAPI untuk autentikasi dan enkripsi, dengan frontend statis yang disajikan dari server yang sama.
+Aplikasi untuk autentikasi dan enkripsi, dengan frontend statis yang disajikan dari server yang sama.
 
 ## Prasyarat
 
@@ -32,6 +32,61 @@ Hentikan service:
 ```bash
 docker compose down
 ```
+
+> **Host port:** `docker-compose.yml` memetakan **`3000:8000`** (host 3000 → container 8000). Jadi aplikasi diakses via `http://<host>:3000`. Port internal container tetap `8000`.
+
+## Deployment Produksi (VPS / Server Remote)
+
+Proyek ini sudah siap di-deploy ke server VPS via **remote git + Docker Compose** (tanpa GitHub). Ganti placeholder `YOUR_USER` dan `YOUR_SERVER_IP` dengan kredensial server kamu.
+
+### 1. Buat bare repo di server
+
+```bash
+ssh YOUR_USER@YOUR_SERVER_IP
+mkdir -p /opt/ciphervault.git
+cd /opt/ciphervault.git
+git init --bare
+git symbolic-ref HEAD refs/heads/master
+exit
+```
+
+### 2. Tambah remote dari lokal
+
+```bash
+git remote add origin YOUR_USER@YOUR_SERVER_IP:/opt/ciphervault.git
+git push -u origin master
+```
+
+### 3. Auto-deploy via post-receive hook
+
+```bash
+ssh YOUR_USER@YOUR_SERVER_IP
+cd /opt/ciphervault.git/hooks
+cat > post-receive <<'EOF'
+#!/bin/sh
+GIT_WORK_TREE=/opt/ciphervault GIT_DIR=/opt/ciphervault.git git checkout -f
+cd /opt/ciphervault && docker compose up --build -d
+EOF
+chmod +x post-receive
+exit
+```
+
+Setiap `git push` lokal otomatis checkout kode → rebuild → restart container di port `3000`.
+
+### 4. Salin `.env` dan `data/` ke server (WAJIB)
+
+Keduanya di-ignore git, jadi tidak ikut terkirim:
+
+```bash
+scp .env YOUR_USER@YOUR_SERVER_IP:/opt/ciphervault/.env
+rsync -av data/ YOUR_USER@YOUR_SERVER_IP:/opt/ciphervault/data/
+```
+
+> `data/` berisi RSA keys + database + storage ciphertext. Jika tidak disalin, file terenkripsi lama tidak bisa didekripsi (key mismatch → download `500`).
+
+### 5. Buka firewall
+
+Buka **port `3000`** di security group / firewall cloud provider, lalu akses `http://YOUR_SERVER_IP:3000`.
 
 ## Menjalankan secara lokal (tanpa Docker)
 
