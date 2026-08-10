@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, Depends
@@ -56,11 +57,19 @@ def system_status(
 
     encrypted_count = db.query(func.count(StoredFile.id)).scalar() or 0
 
+    rsa_key_path = Path(settings.rsa_private_key_path)
+    rsa_generated_at = None
+    if rsa_key_path.exists():
+        mtime = rsa_key_path.stat().st_mtime
+        rsa_generated_at = datetime.fromtimestamp(
+            mtime, tz=timezone.utc
+        ).isoformat()
+
     return {
         "rsa_status": "ready" if private_key and public_key else "not_ready",
         "rsa_key_size": settings.rsa_key_size,
         "rsa_fingerprint": hashlib.sha256(public_key).hexdigest()[:16],
-        "rsa_generated_at": "available",
+        "rsa_generated_at": rsa_generated_at,
         "storage_files": encrypted_count,
         "storage_used": _format_bytes(used),
         "storage_limit": "100 MB",

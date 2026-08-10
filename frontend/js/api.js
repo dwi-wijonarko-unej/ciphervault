@@ -4,7 +4,7 @@ const API = (() => {
     storedBaseUrl && /^https?:\/\//.test(storedBaseUrl)
       ? storedBaseUrl
       : window.location.origin;
-  const REQUEST_TIMEOUT_MS = 15000;
+  const REQUEST_TIMEOUT_MS = 60000;
   let useMock = localStorage.getItem("cv_use_mock") === "1";
 
   function getToken() {

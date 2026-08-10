@@ -68,7 +68,7 @@ const SystemPage = (() => {
                   ${renderConfigRow(I18n.t("system.status"), status.rsa_status === "ready" ? I18n.t("system.generated") : I18n.t("system.not_generated"), "")}
                   ${renderConfigRow(I18n.t("system.key_size"), status.rsa_key_size + "-bit", "")}
                   ${renderConfigRow(I18n.t("system.fingerprint"), status.rsa_fingerprint || "—", I18n.t("system.rsa_hint"))}
-                  ${renderConfigRow(I18n.t("system.generated_at"), status.rsa_generated_at || "—", "")}
+                  ${renderConfigRow(I18n.t("system.generated_at"), status.rsa_generated_at ? new Date(status.rsa_generated_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—", "")}
                 </div>
               </div>
 

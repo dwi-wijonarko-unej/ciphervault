@@ -157,18 +157,17 @@ const FileList = (() => {
       });
 
       files.forEach((file) => {
-        const icon = getFileIcon(file.filename_original);
-        const ext = (
-          file.filename_original?.split(".").pop() || "FILE"
-        ).toUpperCase();
-        const safeName = escapeAttr(file.filename_original);
+        const fileName = file.filename_original || file.name || "unnamed";
+        const icon = getFileIcon(fileName);
+        const ext = (fileName.split(".").pop() || "FILE").toUpperCase();
+        const safeName = escapeAttr(fileName);
         html += `
           <tr class="border-b border-border last:border-0 hover:bg-surface-hover transition-colors duration-150 file-list-enter">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2.5 cursor-pointer" onclick="FileList.showDetail(${file.id})">
                   <span class="file-icon ${icon.cls}">${icon.svg}</span>
                   <div class="min-w-0">
-                    <div class="text-sm font-medium truncate max-w-[200px] sm:max-w-[300px]">${file.filename_original}</div>
+                    <div class="text-sm font-medium truncate max-w-[200px] sm:max-w-[300px]">${fileName}</div>
                     <div class="text-xs text-muted flex items-center gap-2">
                       <span>ID: ${file.id}</span>
                       <span class="inline-flex items-center gap-0.5 text-[10px]" style="color: var(--success);">
