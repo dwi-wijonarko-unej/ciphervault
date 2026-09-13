@@ -2704,4 +2704,55 @@ DOMContentLoaded
 
 ---
 
+## 17. Perkembangan Menuju Produk Layak Operasi di Lingkungan Nyata (TKT 7/8)
+
+CipherVault telah berkembang dari prototipe penelitian menjadi aplikasi pengamanan dan berbagi berkas yang memiliki fungsi utama, antarmuka pengguna, pengelolaan sistem, serta dokumentasi operasional. Sistem saat ini telah siap memasuki tahap validasi bersama pengguna nyata melalui uji penerimaan pengguna (UAT) dan penerapan terbatas pada lingkungan mitra.
+
+Secara teknis, CipherVault menggunakan arsitektur aplikasi web berbasis API, basis data PostgreSQL, kontainer Docker, autentikasi berbasis JWT atau API key, serta enkripsi berlapis UHC dan AES. Kesiapan tersebut tercermin pada kode sumber, dokumentasi, dan panduan implementasi.
+
+### 17.1 Apa yang Sudah Dilakukan?
+
+**Produk utama telah berfungsi.** CipherVault menyediakan seluruh alur utama pengelolaan berkas dalam satu aplikasi: registrasi, login, unggah berkas, folder, pencarian, pemindahan, unduh, serta berbagi ke pengguna lain atau via tautan publik (dengan kata sandi, masa berlaku, batas unduhan). Antarmuka dwibahasa Indonesia–Inggris mencakup autentikasi, dasbor, admin, pesan sistem, dan dokumen kebijakan (lihat Section 16).
+
+**Perlindungan data diterapkan.** Berkas dienkripsi berlapis (UHC + AES) dengan pembungkusan kunci sesi; integritas diverifikasi via SHA-256; parameter enkripsi dipilih adaptif berbasis karakteristik berkas (ukuran, entropi, distribusi byte, ekstensi). Mekanisme adaptif ini adalah **heuristic berbasis aturan, bukan model ML terlatih** (lihat Section 7.6).
+
+> **Catatan redaksional:** hindari klaim "zero-knowledge penuh" sebelum audit independen — dekripsi dan pembungkusan kunci saat ini masih berjalan melalui layanan server.
+
+**Pengelolaan tersedia.** RBAC admin/user, API key yang dapat dibuat/dicabut, liveness/readiness probe untuk pemantauan operasional.
+
+**Dokumentasi disiapkan.** Panduan Docker, konfigurasi, endpoint API, alur kripto, troubleshooting; halaman Kebijakan Privasi, Syarat & Ketentuan, Prosedur Insiden, SLA, Cara Kerja, dan dokumentasi API. Dokumen hukum masih perlu review kompetensi hukum sebelum berlaku ke mitra eksternal.
+
+### 17.2 Hasil yang Diperoleh
+
+- Alur registrasi → unduh terintegrasi penuh termasuk folder, revoke share, API key, admin panel.
+- 90 skenario pengujian internal lolos (kripto, AI selector, integritas, auth, upload/download, direktori, admin, API key, sharing). Untuk laporan resmi, lengkapi dengan: tanggal, commit ID, lingkungan uji, output pytest, daftar skenario, dan penanggung jawab.
+- Analisis statistik ciphertext tersedia (entropi, korelasi, avalanche, NPCR, UACI, chi-square) — sebagai bukti pendukung kualitas ciphertext, bukan bukti keamanan tunggal. Klaim akhir memerlukan pentest, code review, threat modeling, dan audit independen.
+- Akun + data demo, screenshot UI, dan perbaikan dasbor tersedia untuk demonstrasi.
+- PostgreSQL + Docker Compose dengan health check siap untuk server uji/produksi.
+- Draf Deskripsi & Gambar Paten selaras dengan implementasi; perlu pemeriksaan prior art via sentra KI sebelum pengajuan.
+
+**Posisi kesiapan:** prototipe operasional yang siap memasuki validasi lingkungan nyata. Setelah pilot berhasil dan terdokumentasi → TKT 7. TKT 8 memerlukan bukti sistem lengkap, andal, terdokumentasi, dan stabil di lingkungan sebenarnya.
+
+| Aspek | Kondisi | Implikasi TKT |
+| :---- | :------ | :------------ |
+| Fungsi inti | Tersedia & terintegrasi | Menuju demonstrasi |
+| Infrastruktur | Docker + PostgreSQL | Siap server uji |
+| Pengujian otomatis | Internal lolos | Bukti awal keandalan |
+| Dokumentasi | Teknis + kebijakan awal | Mendukung alih pengetahuan |
+| Demonstrasi | Data demo tersedia | Siap UAT |
+| Uji pengguna nyata | Belum selesai | Gap menuju TKT 7 |
+| Operasi lingkungan nyata | Belum berjalan terukur | Belum cukup untuk TKT 8 |
+| Audit keamanan independen | Belum ada | Diperlukan untuk klaim keamanan |
+| Model biaya & layanan | Akan dikembangkan | Diperlukan untuk komersialisasi |
+
+### 17.3 Rencana Satu Bulan (Minggu 1–4)
+
+Dirinci pada Section 15 (Fase 5): produksi terbatas + HTTPS + backup/restore (M1), monitoring & simulasi insiden (M2), pilot 10+ pengguna / 30+ transaksi / UAT ≥90% (M3), evaluasi + matriks bukti TKT (M4). Integrasi lanjutan: payment gateway sandbox (Midtrans/Xendit), SSO mengikuti identitas mitra pilot, review kepatuhan (UU PDP), threat modeling + pentest.
+
+### 17.4 Indikator Keberhasilan
+
+HTTPS pilot aktif; backup/restore teruji; monitoring + notifikasi berjalan; tanpa kredensial bawaan; UAT ≥90% dengan ≥1 mitra; tanpa kerentanan kritis terbuka; panduan disahkan; laporan pilot + matriks TKT 7 tersusun; gap TKT 8 terdefinisi; prototipe payment/SSO teruji di sandbox.
+
+---
+
 _Dokumen ini berfungsi sebagai panduan tunggal (single source of truth) untuk pengembangan CipherVault. Setiap perubahan desain atau arsitektur harus didokumentasikan di sini._
