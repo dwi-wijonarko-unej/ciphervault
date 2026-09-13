@@ -34,6 +34,19 @@ class Settings(BaseSettings):
 
     max_upload_bytes: int = 1_048_576  # 1 MB
 
+    rate_limit_enabled: bool = True
+    login_rate_limit: int = 5
+    login_rate_window_seconds: int = 60
+    upload_rate_limit: int = 10
+    upload_rate_window_seconds: int = 3600
+
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_tls: bool = True
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:

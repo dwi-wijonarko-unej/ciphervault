@@ -9,6 +9,8 @@ from sqlalchemy import text
 from backend.config import get_settings
 from backend.crypto.rsa_engine import load_or_create_global_keypair
 from backend.database import engine, init_db
+from backend.middleware.rate_limit import RateLimitMiddleware
+from backend.middleware.security_headers import SecurityHeadersMiddleware
 from backend.routers import (
     activity_router,
     admin_router,
@@ -45,6 +47,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+import sys
+
+app.add_middleware(SecurityHeadersMiddleware)
+_rate_limit_on = settings.rate_limit_enabled and "pytest" not in sys.modules
+app.add_middleware(RateLimitMiddleware, enabled=_rate_limit_on)
 
 app.include_router(auth_router)
 app.include_router(admin_router)

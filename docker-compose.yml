@@ -60,5 +60,33 @@ services:
       start_period: 20s
     restart: unless-stopped
 
+  caddy:
+    container_name: ciphervault-caddy
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      CIPHERVAULT_DOMAIN: ${CIPHERVAULT_DOMAIN:-ciphervault.local}
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  uptime-kuma:
+    container_name: ciphervault-uptime
+    image: louislam/uptime-kuma:1
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime_data:/app/data
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  caddy_data:
+  caddy_config:
+  uptime_data:

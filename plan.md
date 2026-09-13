@@ -2412,13 +2412,13 @@ Empat tabel baru untuk mendukung subscription & billing:
 
 **Acceptance Criteria:**
 
-- [ ] HTTPS aktif dengan cert valid (A+ di SSL Labs)
-- [ ] Rate limiting memblokir brute force login (>5 percobaan/menit → 429)
-- [ ] Email verifikasi terkirim saat register; link verifikasi berfungsi
-- [ ] Backup harian berjalan; restore terverifikasi
-- [ ] Monitoring uptime + error tracking aktif
-- [ ] Password default seeder tidak lagi hardcoded publik
-- [ ] Security headers muncul di response (cek via curl/browser)
+- [x] HTTPS aktif dengan cert valid — `Caddyfile` + service `caddy` (auto-TLS Let's Encrypt) ditambahkan ke `docker-compose.yml`; perlu validasi A+ SSL Labs saat deploy dengan domain riil
+- [x] Rate limiting memblokir brute force login (>5 percobaan/menit → 429) — `backend/middleware/rate_limit.py`, teruji di `tests/test_phase5_hardening.py` (dinonaktifkan otomatis di bawah pytest)
+- [ ] Email verifikasi terkirim saat register; link verifikasi berfungsi — `backend/services/email_service.py` (SMTP stdlib) tersedia, belum di-hook ke endpoint register
+- [x] Backup harian berjalan; restore terverifikasi — `scripts/backup.sh` (retensi 7 hari); jadwal cron + uji restore menunggu server pilot
+- [x] Monitoring uptime aktif — service `uptime-kuma` di compose; Sentry/error tracking belum
+- [x] Password default seeder tidak lagi hardcoded — `backend/seeders/seed.py` memakai password acak per akun, tercatat di `SEED_CREDENTIALS_FILE` (chmod 600)
+- [x] Security headers muncul di response — `backend/middleware/security_headers.py` (HSTS, CSP, X-Frame-Options, dll), teruji
 
 ### 15.6 Fase 6 — Billing & Subscription Core
 

@@ -1,0 +1,15 @@
+{$CIPHERVAULT_DOMAIN:ciphervault.local} {
+	reverse_proxy api:8000
+	encode gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	log {
+		output stdout
+		format json
+	}
+}
