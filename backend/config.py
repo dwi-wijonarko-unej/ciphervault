@@ -47,6 +47,9 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from: str = ""
 
+    midtrans_server_key: str = ""
+    midtrans_sandbox: bool = True
+
 
 @lru_cache
 def get_settings() -> Settings:

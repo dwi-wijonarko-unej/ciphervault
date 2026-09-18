@@ -2443,14 +2443,14 @@ Empat tabel baru untuk mendukung subscription & billing:
 
 **Acceptance Criteria:**
 
-- [ ] GET /billing/plans mengembalikan 3 tier dengan harga IDR
-- [ ] POST /billing/checkout menghasilkan Snap token / redirect URL
-- [ ] Webhook menandai invoice paid → aktifkan subscription
-- [ ] Quota upload ditolak (402/429) saat storage melebihi plan
-- [ ] Invoice PDF berisi PPN 11%, nomor, dan detail plan
-- [ ] Email receipt terkirim setelah pembayaran sukses
-- [ ] Admin dapat melihat MRR & daftar subscriber aktif
-- [ ] Trial period (14 hari) aktif untuk plan berbayar
+- [x] GET /billing/plans mengembalikan 3 tier dengan harga IDR
+- [x] POST /billing/checkout menghasilkan invoice + Snap token bila `MIDTRANS_SERVER_KEY` diisi (sandbox); tanpa key, checkout tetap membuat invoice (mode manual)
+- [x] Webhook menandai invoice paid → aktifkan subscription (verifikasi signature SHA-512, idempotent per invoice)
+- [x] Quota upload ditolak (402/429) saat melebihi plan (`quota_guard`, ter-wire ke `/files/upload`)
+- [x] Invoice PDF berisi PPN 11%, nomor, dan detail plan (generator PDF stdlib, tanpa dependensi baru)
+- [x] Email receipt terkirim setelah pembayaran sukses (via `email_service`; butuh SMTP asli/MailHog)
+- [x] Admin dapat melihat MRR & daftar subscriber aktif (`/admin/revenue`, `/admin/subscriptions`)
+- [x] Trial period (14 hari) aktif untuk plan berbayar
 
 ### 15.7 Fase 7 — SaaS Completeness
 

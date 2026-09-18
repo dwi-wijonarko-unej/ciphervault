@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Langganan & Tagihan — CipherVault</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="brand">CipherVault</a>
+    <nav><a href="index.html">Dasbor</a></nav>
+  </header>
+  <main class="container">
+    <h1>Langganan & Tagihan</h1>
+    <section id="current-plan" class="card">
+      <h2>Paket Saat Ini</h2>
+      <p id="plan-info">Memuat...</p>
+      <p id="usage-info"></p>
+      <button id="btn-cancel" class="btn btn-danger" style="display:none">Batalkan Langganan</button>
+    </section>
+    <section class="card">
+      <h2>Pilih Paket</h2>
+      <div id="plans" class="plans-grid"></div>
+    </section>
+    <section class="card">
+      <h2>Riwayat Tagihan</h2>
+      <table class="table"><thead><tr>
+        <th>Nomor</th><th>Jumlah</th><th>PPN</th><th>Status</th><th>Aksi</th>
+      </tr></thead><tbody id="invoices"></tbody></table>
+    </section>
+  </main>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/billing.js"></script>
+</body>
+</html>

@@ -13,9 +13,11 @@ from backend.middleware.rate_limit import RateLimitMiddleware
 from backend.middleware.security_headers import SecurityHeadersMiddleware
 from backend.routers import (
     activity_router,
+    admin_billing_router,
     admin_router,
     api_key_router,
     auth_router,
+    billing_router,
     download_router,
     files_router,
     public_link_router,
@@ -23,7 +25,7 @@ from backend.routers import (
     system_router,
     upload_router,
 )
-from backend.seeders import run_seeders
+from backend.seeders import run_billing_seeders, run_seeders
 
 settings = get_settings()
 
@@ -34,6 +36,7 @@ async def lifespan(_: FastAPI):
     Path(settings.rsa_private_key_path).parent.mkdir(parents=True, exist_ok=True)
     init_db()
     run_seeders()
+    run_billing_seeders()
     load_or_create_global_keypair()
     yield
 
@@ -55,6 +58,8 @@ app.add_middleware(RateLimitMiddleware, enabled=_rate_limit_on)
 
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(admin_billing_router)
+app.include_router(billing_router)
 app.include_router(api_key_router)
 app.include_router(public_link_router)
 app.include_router(upload_router)

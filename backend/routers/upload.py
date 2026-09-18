@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from backend.config import get_settings
 from backend.database import get_db
 from backend.middleware.auth_middleware import get_current_user
+from backend.middleware.quota_guard import ensure_upload_allowed
 from backend.models import User
 from backend.schemas.file import FileUploadResponse
 from backend.services.upload_service import UploadService
@@ -31,6 +32,7 @@ async def upload_file(
             status_code=status.HTTP_413_CONTENT_TOO_LARGE,
             detail=f"File too large. Max {settings.max_upload_bytes} bytes",
         )
+    ensure_upload_allowed(db, current_user, len(payload))
 
     return UploadService.upload(
         db,
