@@ -54,9 +54,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: vars.SSH_HOST != '' || secrets.SSH_HOST != ''
     steps:
       - name: Deploy to VPS via SSH
+        if: ${{ secrets.SSH_HOST != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
