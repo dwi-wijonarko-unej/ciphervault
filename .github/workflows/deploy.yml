@@ -71,10 +71,11 @@ jobs:
             if [ -d ".git" ]; then
               git fetch origin main
               git checkout main || git checkout -b main origin/main
-              git pull origin main
+              git reset --hard origin/main
             else
-              GIT_WORK_TREE="$PROJECT_PATH" GIT_DIR=/opt/ciphervault.git git fetch origin main || git fetch origin main
-              GIT_WORK_TREE="$PROJECT_PATH" GIT_DIR=/opt/ciphervault.git git checkout -f main || git checkout -f main
+              GIT_DIR=/opt/ciphervault.git git fetch origin main
+              GIT_DIR=/opt/ciphervault.git git branch -f main origin/main
+              GIT_WORK_TREE="$PROJECT_PATH" GIT_DIR=/opt/ciphervault.git git checkout -f main
             fi
             echo ">>> Rebuilding containers"
             docker compose up -d --build
