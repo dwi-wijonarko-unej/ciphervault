@@ -54,15 +54,15 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    if: ${{ vars.SSH_HOST != '' }}
     steps:
       - name: Deploy to VPS via SSH
-        if: ${{ secrets.SSH_HOST != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
+          host: ${{ vars.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          port: ${{ vars.SSH_PORT || 22 }}
           script: |
             set -e
             PROJECT_PATH="${{ vars.PROJECT_PATH || '/opt/ciphervault' }}"
