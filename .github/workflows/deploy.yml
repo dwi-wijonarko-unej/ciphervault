@@ -58,10 +58,10 @@ jobs:
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ vars.SSH_HOST || secrets.SSH_HOST || '43.156.234.238' }}
-          username: ${{ secrets.SSH_USER || vars.SSH_USER || 'dwijonarko' }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ vars.SSH_PORT || secrets.SSH_PORT || 22 }}
+          host: ${{ vars.SSH_HOST || secrets.SSH_HOST || vars.DEPLOY_HOST || secrets.DEPLOY_HOST || '43.156.234.238' }}
+          username: ${{ secrets.SSH_USER || vars.SSH_USER || secrets.DEPLOY_USER || vars.DEPLOY_USER || 'dwijonarko' }}
+          key: ${{ secrets.SSH_KEY || secrets.DEPLOY_SSH_KEY }}
+          port: ${{ vars.SSH_PORT || secrets.SSH_PORT || vars.DEPLOY_PORT || secrets.DEPLOY_PORT || 22 }}
           script: |
             set -e
             PROJECT_PATH="${{ vars.PROJECT_PATH || '/opt/ciphervault' }}"
