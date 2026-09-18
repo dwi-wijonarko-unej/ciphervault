@@ -11,6 +11,7 @@ from backend.utils.security import (
     hash_password,
     verify_password,
 )
+from backend.services.email_service import send_welcome_email
 from backend.utils.token import create_access_token
 
 settings = get_settings()
@@ -45,6 +46,7 @@ class AuthService:
         db.add(user)
         db.commit()
         db.refresh(user)
+        send_welcome_email(user.email, user.username)
         return user
 
     @staticmethod

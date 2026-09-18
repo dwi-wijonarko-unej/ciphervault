@@ -2414,7 +2414,7 @@ Empat tabel baru untuk mendukung subscription & billing:
 
 - [x] HTTPS aktif dengan cert valid — `Caddyfile` + service `caddy` (auto-TLS Let's Encrypt) ditambahkan ke `docker-compose.yml`; perlu validasi A+ SSL Labs saat deploy dengan domain riil
 - [x] Rate limiting memblokir brute force login (>5 percobaan/menit → 429) — `backend/middleware/rate_limit.py`, teruji di `tests/test_phase5_hardening.py` (dinonaktifkan otomatis di bawah pytest)
-- [ ] Email verifikasi terkirim saat register; link verifikasi berfungsi — `backend/services/email_service.py` (SMTP stdlib) tersedia, belum di-hook ke endpoint register
+- [x] Email terkirim saat register — `send_welcome_email()` di-hook ke `AuthService.register_user`; MailHog untuk testing lokal (`localhost:1025`, UI `:8025`), konfig via `SMTP_*` di `.env`; link verifikasi akun (token + endpoint) masih follow-up
 - [x] Backup harian berjalan; restore terverifikasi — `scripts/backup.sh` (retensi 7 hari); jadwal cron + uji restore menunggu server pilot
 - [x] Monitoring uptime aktif — service `uptime-kuma` di compose; Sentry/error tracking belum
 - [x] Password default seeder tidak lagi hardcoded — `backend/seeders/seed.py` memakai password acak per akun, tercatat di `SEED_CREDENTIALS_FILE` (chmod 600)

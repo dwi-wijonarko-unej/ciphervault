@@ -40,3 +40,33 @@ def test_login_rate_limit_blocks_after_threshold():
 def test_rate_limit_middleware_disabled():
     middleware = RateLimitMiddleware(app=None, enabled=False)
     assert middleware.enabled is False
+
+
+def test_send_email_skipped_when_smtp_unconfigured():
+    from backend.services.email_service import send_email
+
+    assert send_email("a@example.com", "subject", "body") is False
+
+
+def test_register_sends_welcome_email(monkeypatch):
+    from uuid import uuid4
+
+    from backend.services import auth_service
+
+    calls = []
+    monkeypatch.setattr(
+        auth_service,
+        "send_welcome_email",
+        lambda to, username: calls.append((to, username)) or True,
+    )
+    username = f"mail_{uuid4().hex[:8]}"
+    response = client.post(
+        "/auth/register",
+        json={
+            "username": username,
+            "email": f"{username}@example.test",
+            "password": "Passw0rd!",
+        },
+    )
+    assert response.status_code == 200
+    assert calls == [(f"{username}@example.test", username)]

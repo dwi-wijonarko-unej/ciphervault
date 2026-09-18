@@ -76,6 +76,15 @@ services:
       - api
     restart: unless-stopped
 
+  mailhog:
+    container_name: ciphervault-mailhog
+    image: mailhog/mailhog:v1.0.1
+    profiles: ["dev"]
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+    restart: unless-stopped
+
   uptime-kuma:
     container_name: ciphervault-uptime
     image: louislam/uptime-kuma:1
