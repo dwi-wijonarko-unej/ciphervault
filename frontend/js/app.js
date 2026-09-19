@@ -52,6 +52,9 @@ const App = (() => {
 
     const systemTab = document.querySelector('[data-nav="system"]');
     if (systemTab) systemTab.style.display = isAdmin ? "" : "none";
+
+    const billingTab = document.querySelector('[data-nav="billing"]');
+    if (billingTab) billingTab.style.display = isAdmin ? "none" : "";
   }
 
   function setupNavbar() {
@@ -111,6 +114,9 @@ const App = (() => {
         break;
       case "activity":
         renderActivity(container);
+        break;
+      case "billing":
+        await renderBilling(container);
         break;
       case "profile":
         renderProfile(container);
@@ -221,6 +227,14 @@ const App = (() => {
       document.getElementById("profile-content"),
       currentUser,
     );
+  }
+
+  async function renderBilling(container) {
+    if (window.Billing && typeof window.Billing.render === "function") {
+      await window.Billing.render(container);
+    } else {
+      container.innerHTML = '<div class="p-10 text-center text-muted">Billing module not loaded</div>';
+    }
   }
 
   async function renderActivity(container) {
