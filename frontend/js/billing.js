@@ -5,13 +5,13 @@ async function loadBilling() {
     grid.innerHTML = "";
     plans.forEach((plan) => {
       const card = document.createElement("div");
-      card.className = "plan-card";
+      card.className = "border border-border rounded-lg p-5 bg-surface hover:bg-surface-hover transition-colors";
       const monthly = (plan.price_monthly / 100).toLocaleString("id-ID");
       card.innerHTML =
-        `<h3>${plan.name}</h3>` +
-        `<p class="price">Rp${monthly}/bln</p>` +
-        `<p>${(plan.storage_bytes / 1073741824).toFixed(0)} GB penyimpanan</p>` +
-        `<button class="btn btn-primary" data-plan="${plan.id}">Pilih</button>`;
+        `<h3 class="font-bold text-base mb-1">${plan.name}</h3>` +
+        `<p class="text-lg font-black mb-2" style="color:var(--primary)">Rp${monthly}<span class="text-sm font-normal text-muted">/bln</span></p>` +
+        `<p class="text-sm text-secondary mb-4">${(plan.storage_bytes / 1073741824).toFixed(0)} GB penyimpanan</p>` +
+        `<button class="w-full py-2 rounded-md text-sm font-semibold text-white" style="background:var(--primary)" data-plan="${plan.id}">Pilih</button>`;
       grid.appendChild(card);
     });
     grid.querySelectorAll("button[data-plan]").forEach((btn) => {
@@ -54,10 +54,14 @@ async function loadBilling() {
     body.innerHTML = "";
     invoices.forEach((inv) => {
       const row = document.createElement("tr");
+      row.className = "border-b border-border last:border-0";
+      const total = ((inv.amount + inv.tax_amount) / 100).toLocaleString("id-ID");
+      const tax = (inv.tax_amount / 100).toLocaleString("id-ID");
+      const statusColor = inv.status === "paid" ? "text-green-600" : inv.status === "pending" ? "text-yellow-600" : "text-muted";
       row.innerHTML =
-        `<td>${inv.invoice_number}</td><td>Rp${((inv.amount + inv.tax_amount) / 100).toLocaleString("id-ID")}</td>` +
-        `<td>Rp${(inv.tax_amount / 100).toLocaleString("id-ID")}</td><td>${inv.status}</td>` +
-        `<td><a href="/billing/invoices/${inv.id}" target="_blank">PDF</a></td>`;
+        `<td class="py-2">${inv.invoice_number}</td><td class="py-2">Rp${total}</td>` +
+        `<td class="py-2">Rp${tax}</td><td class="py-2 ${statusColor}">${inv.status}</td>` +
+        `<td class="py-2"><a href="/billing/invoices/${inv.id}" target="_blank" class="text-sm hover:underline" style="color:var(--primary)">PDF</a></td>`;
       body.appendChild(row);
     });
   } catch (err) {
