@@ -78,8 +78,9 @@ jobs:
               GIT_WORK_TREE="$PROJECT_PATH" GIT_DIR=/opt/ciphervault.git git checkout -f main
             fi
             echo ">>> Rebuilding containers"
+            # caddy has profile 'caddy', so default up won't try to bind :80 (conflict with coffee-web)
             docker compose up -d --build
-            docker image prune -f
+            docker image prune -f || true
             echo ">>> Health check"
             curl -fsS http://127.0.0.1:3000/health/ready || curl -fsS http://127.0.0.1:8000/health/ready || true
             docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"

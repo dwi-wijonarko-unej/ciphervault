@@ -63,6 +63,7 @@ services:
   caddy:
     container_name: ciphervault-caddy
     image: caddy:2-alpine
+    profiles: ["caddy"]
     ports:
       - "80:80"
       - "443:443"
