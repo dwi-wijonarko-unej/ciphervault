@@ -31,7 +31,7 @@ const Billing = (() => {
         </div>
       </div>
     `;
-    I18n.updateDOM();
+    I18n.applyDynamic();
     document.getElementById("billing-btn-confirm")?.addEventListener("click", checkoutPending);
     await loadBilling();
   }

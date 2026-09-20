@@ -20,7 +20,7 @@ const I18n = (() => {
 
   async function loadDict(lang) {
     try {
-      const res = await fetch(`lang/${lang}.json?v=20260805`);
+      const res = await fetch(`lang/${lang}.json?v=20260920`);
       if (!res.ok) throw new Error(res.status);
       dict = await res.json();
     } catch {
