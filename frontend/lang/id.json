@@ -53,6 +53,8 @@
   "auth.forgot_password": "Lupa Kata Sandi?",
   "auth.demo_mode": "Mode Demo — Login Cepat",
   "auth.secured_with": "Dilindungi dengan Enkripsi Hibrida UHC + AES/RSA",
+  "auth.plans_promo": "Butuh penyimpanan lebih besar? Mulai gratis, upgrade kapan saja.",
+  "auth.view_plans": "Lihat Paket Langganan",
   "auth.welcome_back": "Selamat datang kembali, {username}!",
   "login.hero_line1": "Datamu,",
   "login.hero_line2": "ciphermu.",

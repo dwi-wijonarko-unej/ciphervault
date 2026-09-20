@@ -53,6 +53,8 @@
   "auth.forgot_password": "Forgot Password?",
   "auth.demo_mode": "Demo Mode — Quick Login",
   "auth.secured_with": "Secured with UHC + AES/RSA Hybrid Encryption",
+  "auth.plans_promo": "Need more storage? Start free, upgrade anytime.",
+  "auth.view_plans": "View Subscription Plans",
   "auth.welcome_back": "Welcome back, {username}!",
   "login.hero_line1": "Your data,",
   "login.hero_line2": "your cipher.",
