@@ -83,6 +83,10 @@ const App = (() => {
   }
 
   function navigate(view) {
+    if (!currentUser) {
+      window.location.href = "login.html";
+      return;
+    }
     currentView = view;
     window.location.hash = view;
 
@@ -116,7 +120,7 @@ const App = (() => {
         renderActivity(container);
         break;
       case "billing":
-        await renderBilling(container);
+        renderBilling(container);
         break;
       case "profile":
         renderProfile(container);

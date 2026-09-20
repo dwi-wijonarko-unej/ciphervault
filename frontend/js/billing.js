@@ -32,6 +32,7 @@ const Billing = (() => {
       </div>
     `;
     I18n.updateDOM();
+    document.getElementById("billing-btn-confirm")?.addEventListener("click", checkoutPending);
     await loadBilling();
   }
 
@@ -155,10 +156,6 @@ const Billing = (() => {
       UI.toast("Checkout gagal: " + (err.detail || err.message), "error");
     }
   }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("billing-btn-confirm")?.addEventListener("click", checkoutPending);
-  });
 
   return { render, closeModal, checkoutPending };
 })();
