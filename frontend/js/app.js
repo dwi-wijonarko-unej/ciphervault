@@ -234,8 +234,8 @@ const App = (() => {
   }
 
   async function renderBilling(container) {
-    if (window.Billing && typeof window.Billing.render === "function") {
-      await window.Billing.render(container);
+    if (typeof Billing !== "undefined" && typeof Billing.render === "function") {
+      await Billing.render(container);
     } else {
       container.innerHTML = '<div class="p-10 text-center text-muted">Billing module not loaded</div>';
     }

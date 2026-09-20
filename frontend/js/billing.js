@@ -159,3 +159,4 @@ const Billing = (() => {
 
   return { render, closeModal, checkoutPending };
 })();
+window.Billing = Billing;
