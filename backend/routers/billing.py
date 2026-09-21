@@ -87,7 +87,15 @@ def get_invoice_pdf(
         .filter(Subscription.id == invoice.subscription_id)
         .first()
     )
-    pdf = render_invoice_pdf(invoice, plan, user)
+    subscription = (
+        db.query(Subscription).filter(Subscription.id == invoice.subscription_id).first()
+    )
+    pdf = render_invoice_pdf(
+        invoice,
+        plan,
+        user,
+        payment_method=subscription.payment_gateway if subscription else None,
+    )
     return Response(
         content=pdf,
         media_type="application/pdf",
