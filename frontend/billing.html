@@ -1,12 +1,121 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="refresh" content="0; url=plans.html" />
-  <title>Redirect — CipherVault</title>
-  <script>window.location.replace("plans.html");</script>
+  <title>CipherVault — Billing</title>
+  <script>
+    window.location.replace("plans.html");
+  </script>
+  <script>
+    (function(){
+      var saved = localStorage.getItem('cv_theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = saved !== null ? saved === 'dark' : prefersDark;
+      document.documentElement.classList.toggle('dark', isDark);
+
+      var savedLang = localStorage.getItem('cv_lang');
+      var lang = savedLang || (navigator.language.startsWith('id') ? 'id' : 'en');
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute('data-lang', lang);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: {
+            colors: {
+              surface: { DEFAULT: 'var(--surface)', card: 'var(--surface-card)', hover: 'var(--surface-hover)', input: 'var(--surface-input)' },
+              border: { DEFAULT: 'var(--border)', focus: '#2d6a4f' },
+              muted: 'var(--muted)', body: 'var(--bg-body)', primary: 'var(--text-primary)', secondary: 'var(--muted-foreground)',
+              background: 'var(--background)', foreground: 'var(--foreground)',
+              card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
+              brand: { DEFAULT: 'var(--brand)', foreground: 'var(--brand-foreground)' },
+              'muted-foreground': 'var(--muted-foreground)', destructive: 'var(--destructive)',
+              input: 'var(--input)', ring: 'var(--ring)',
+              sidebar: { DEFAULT: 'var(--sidebar)', foreground: 'var(--sidebar-foreground)', primary: 'var(--sidebar-primary)', accent: 'var(--sidebar-accent)' },
+            },
+            fontFamily: { heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+            boxShadow: { sharp: '4px 4px 0px 0px rgba(0,0,0,0.15)', 'sharp-hover': '6px 6px 0px 0px rgba(0,0,0,0.2)', soft: '0 2px 8px rgba(0,0,0,0.06)' },
+            borderRadius: { sharp: '0', pill: '9999px' },
+        }}
+      }
+  </script>
+  <link rel="stylesheet" href="css/style.css?v=20260920">
+  <link rel="stylesheet" href="css/components.css?v=20260920">
+  <link rel="stylesheet" href="css/shadcn.css?v=20260920">
+  <style>
+    .billing-spin { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--primary); animation: spin 0.6s linear infinite; }
+  </style>
 </head>
-<body>
-  <p>Mengarahkan ke <a href="plans.html">Paket Langganan</a>... Jika tidak otomatis, <a href="index.html#billing">buka Langganan Saya</a>.</p>
+<body class="font-sans">
+
+  <header class="border-b sticky top-0 z-40 backdrop-blur" style="background: color-mix(in srgb, var(--surface-card) 88%, transparent); border-color: var(--border);">
+    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2 group">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <div class="lang-switcher flex items-center bg-card border border-border rounded-md overflow-hidden"></div>
+        <button class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="plans.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--muted-foreground); border-color: var(--border);"><span data-i18n="legal.back">← Back</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-5 py-12">
+    <div class="shadcn-card p-10 sm:p-12 shadow-sm max-w-[560px] mx-auto text-center">
+      <div class="billing-spin mx-auto mb-6"></div>
+      <div class="lang-id">
+        <h1 class="font-heading font-bold text-2xl text-primary mb-3">Mengalihkan ke Paket Langganan…</h1>
+        <p class="text-[14px] mb-6" style="color: var(--muted-foreground);">Anda akan diarahkan otomatis. Jika tidak terjadi, <a href="plans.html" class="underline" style="color: var(--primary);">buka halaman Paket</a> atau <a href="index.html#billing" class="underline" style="color: var(--primary);">buka Langganan Saya</a>.</p>
+      </div>
+      <div class="lang-en">
+        <h1 class="font-heading font-bold text-2xl text-primary mb-3">Redirecting to Subscription Plans…</h1>
+        <p class="text-[14px] mb-6" style="color: var(--muted-foreground);">You will be redirected automatically. If not, <a href="plans.html" class="underline" style="color: var(--primary);">open the Plans page</a> or <a href="index.html#billing" class="underline" style="color: var(--primary);">open My Subscription</a>.</p>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <a href="plans.html" class="shadcn-btn shadcn-btn-default px-5 py-2.5" data-i18n="nav.plans">Paket</a>
+        <a href="index.html#billing" class="shadcn-btn shadcn-btn-outline px-5 py-2.5" data-i18n="nav.my_subscription">Langganan Saya</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t" style="border-color: var(--border);">
+    <div class="max-w-6xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p class="text-[11px]" style="color: var(--muted-foreground);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
+      <nav class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px]">
+        <a href="how-it-works.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);">How it Works</a>
+        <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+        <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.privacy_title">Privacy Policy</a>
+        <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.breach_title">Data Breach Procedure</a>
+        <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.sla_title">SLA</a>
+        <a href="plans.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="nav.plans">Paket</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="js/theme.js?v=20260920"></script>
+  <script src="js/i18n.js?v=20260920"></script>
+  <script src="js/i18n-legal.js?v=20260920"></script>
+  <script>
+    (async () => {
+      await I18n.init();
+      I18nLegal.init();
+      document.title = 'CipherVault — Billing';
+      window.addEventListener('cv:i18n-changed', () => {
+        I18nLegal.init();
+      });
+    })();
+  </script>
 </body>
 </html>
