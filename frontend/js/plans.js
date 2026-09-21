@@ -10,14 +10,14 @@ async function loadPlans() {
       const isFree = plan.price_monthly === 0 && plan.price_yearly === 0;
       const monthly = (plan.price_monthly / 100).toLocaleString("id-ID");
       const yearly = (plan.price_yearly / 100).toLocaleString("id-ID");
-      card.className = "border border-border rounded-xl p-6 bg-card hover:bg-muted transition-colors flex flex-col";
+      card.className = "shadcn-card p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col";
       card.innerHTML =
         `<h3 class="font-bold text-lg mb-1">${plan.name}</h3>` +
         `<p class="text-sm text-muted-foreground mb-3">${plan.storage_bytes ? (plan.storage_bytes / 1073741824).toFixed(0) + " GB" : ""} ${plan.max_file_bytes ? "• " + (plan.max_file_bytes / 1048576).toFixed(0) + " MB/file" : ""}</p>` +
         `<div class="mb-4"><p class="text-2xl font-black" style="color:var(--primary)">Rp${monthly}<span class="text-sm font-normal text-muted-foreground">/bln</span></p>` +
         `<p class="text-xs text-muted-foreground">Rp${yearly}/thn</p></div>` +
         `<p class="text-sm text-muted-foreground mb-4 flex-1">${plan.description || ""}</p>` +
-        `<button class="w-full py-2.5 rounded-md text-sm font-semibold text-white ${isFree ? "" : ""}" style="background:var(--primary)" data-plan="${plan.id}" data-free="${isFree}">${isFree ? "Mulai Gratis" : "Pilih Paket"}</button>`;
+        `<button class="shadcn-btn shadcn-btn-default w-full py-2.5" data-plan="${plan.id}" data-free="${isFree}">${isFree ? "Mulai Gratis" : "Pilih Paket"}</button>`;
       grid.appendChild(card);
     });
     grid.querySelectorAll("button[data-plan]").forEach((btn) => {

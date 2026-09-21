@@ -33,7 +33,7 @@
               muted: 'var(--muted)',
               body: 'var(--bg-body)',
               primary: 'var(--text-primary)',
-              secondary: 'var(--text-muted-foreground)',
+              secondary: 'var(--muted-foreground)',
               background: 'var(--background)',
               foreground: 'var(--foreground)',
               card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
@@ -64,7 +64,7 @@
   <link rel="stylesheet" href="css/shadcn.css?v=20260920">
   <style>
     .prose-legal h2 { font-family: "Space Grotesk", sans-serif; }
-    .prose-legal p, .prose-legal li { color: var(--text-muted-foreground); line-height: 1.75; }
+    .prose-legal p, .prose-legal li { color: var(--muted-foreground); line-height: 1.75; }
     .toc-link.active { color: var(--text-primary); border-left-color: var(--primary); }
   </style>
 </head>
@@ -85,7 +85,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
-        <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-muted-foreground); border-color: var(--border);">
+        <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--muted-foreground); border-color: var(--border);">
           <span data-i18n="legal.back">← Back</span>
         </a>
       </div>
@@ -105,7 +105,7 @@
       <div class="col-span-12 md:col-span-4 md:text-right space-y-1">
         <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted-foreground);" data-i18n="legal.updated">Last updated</p>
         <p class="font-heading font-bold text-primary text-lg">5 August 2026</p>
-        <p class="text-[12px]" style="color: var(--text-muted-foreground);" data-i18n="legal.effective">Effective from that date</p>
+        <p class="text-[12px]" style="color: var(--muted-foreground);" data-i18n="legal.effective">Effective from that date</p>
       </div>
     </div>
   </section>
@@ -118,36 +118,36 @@
       <nav class="sticky top-24 space-y-1 text-[13px]" id="toc">
         <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted-foreground);" data-i18n="legal.toc">Table of Contents</p>
         <div class="lang-id">
-        <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">1. Penerimaan</a>
-        <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">2. Akun</a>
-        <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">3. Penggunaan</a>
-        <a href="#s4" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">4. Penyimpanan</a>
-        <a href="#s5" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">5. Hak Cipta</a>
-        <a href="#s6" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">6. Tanggung Jawab</a>
-        <a href="#s7" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">7. Penangguhan</a>
-        <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">8. Perubahan</a>
-        <a href="#s9" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">9. Hukum</a>
-        <a href="#s10" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">10. Kontak</a>
+        <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">1. Penerimaan</a>
+        <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">2. Akun</a>
+        <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">3. Penggunaan</a>
+        <a href="#s4" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">4. Penyimpanan</a>
+        <a href="#s5" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">5. Hak Cipta</a>
+        <a href="#s6" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">6. Tanggung Jawab</a>
+        <a href="#s7" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">7. Penangguhan</a>
+        <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">8. Perubahan</a>
+        <a href="#s9" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">9. Hukum</a>
+        <a href="#s10" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">10. Kontak</a>
         </div>
         <div class="lang-en">
-        <a href="#s1e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">1. Acceptance</a>
-        <a href="#s2e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">2. Account</a>
-        <a href="#s3e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">3. Usage</a>
-        <a href="#s4e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">4. Storage</a>
-        <a href="#s5e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">5. IP Rights</a>
-        <a href="#s6e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">6. Liability</a>
-        <a href="#s7e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">7. Suspension</a>
-        <a href="#s8e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">8. Changes</a>
-        <a href="#s9e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">9. Governing Law</a>
-        <a href="#s10e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">10. Contact</a>
+        <a href="#s1e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">1. Acceptance</a>
+        <a href="#s2e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">2. Account</a>
+        <a href="#s3e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">3. Usage</a>
+        <a href="#s4e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">4. Storage</a>
+        <a href="#s5e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">5. IP Rights</a>
+        <a href="#s6e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">6. Liability</a>
+        <a href="#s7e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">7. Suspension</a>
+        <a href="#s8e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">8. Changes</a>
+        <a href="#s9e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">9. Governing Law</a>
+        <a href="#s10e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--muted-foreground); border-color: transparent;">10. Contact</a>
         </div>
       </nav>
     </aside>
 
     <!-- Body -->
-    <article class="col-span-12 lg:col-span-9 prose-legal max-w-none">
+    <article class="col-span-12 lg:col-span-9 prose-legal max-w-none shadcn-card p-6 sm:p-8 shadow-sm">
       <div class="lang-id">
-      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-muted-foreground);">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--muted-foreground);">
         Selamat datang di CipherVault ("Layanan"). Layanan ini disediakan oleh CipherVault ("kami"). Dengan membuat akun, mengunggah file, atau mengakses API, Anda ("Pengguna") dianggap telah membaca, memahami, dan menyetujui seluruh ketentuan di bawah ini.
       </p>
 
@@ -204,7 +204,7 @@
       </div>
 
       <div class="lang-en">
-      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-muted-foreground);">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--muted-foreground);">
         Welcome to CipherVault ("Service"). This Service is provided by CipherVault ("we"). By creating an account, uploading files, or accessing the API, you ("User") are deemed to have read, understood, and agreed to all terms below.
       </p>
 
