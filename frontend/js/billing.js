@@ -112,7 +112,7 @@ const Billing = (() => {
       row.innerHTML =
         `<td class="py-2">${inv.invoice_number}</td><td class="py-2">Rp${total}</td>` +
         `<td class="py-2">Rp${tax}</td><td class="py-2 ${statusColor}">${inv.status}</td>` +
-        `<td class="py-2"><a href="invoice.html?id=${inv.id}" class="text-sm hover:underline" style="color:var(--primary)">Preview</a></td>`;
+        `<td class="py-2"><a href="invoice.html?id=${inv.id}" class="inline-flex p-2 rounded-md transition-all hover:bg-muted" style="color:var(--primary)" title="Preview"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a></td>`;
       body.appendChild(row);
     });
   } catch {}
