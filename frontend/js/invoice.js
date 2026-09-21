@@ -47,6 +47,12 @@ async function loadInvoicePreview() {
     loading.classList.add("hidden");
     box.classList.remove("hidden");
 
+    if (inv.status !== "paid" && inv.plan_id) {
+      const payBtn = document.getElementById("btn-pay-now");
+      payBtn.href = `checkout.html?plan=${inv.plan_id}`;
+      payBtn.classList.remove("hidden");
+    }
+
     document.getElementById("btn-download-pdf").addEventListener("click", async () => {
       try {
         const token = API.getToken();

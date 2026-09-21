@@ -21,7 +21,14 @@ async function loadPlans() {
       grid.appendChild(card);
     });
     grid.querySelectorAll("button[data-plan]").forEach((btn) => {
-      btn.addEventListener("click", () => openCheckoutModal(Number(btn.dataset.plan)));
+      btn.addEventListener("click", () => {
+        if (!API.getToken || !API.getToken()) {
+          UI.toast(I18n.t("plans.login_required") || "Login diperlukan", "info");
+          window.location.href = "login.html?next=plans.html";
+          return;
+        }
+        window.location.href = `checkout.html?plan=${btn.dataset.plan}`;
+      });
     });
     const loginBtn = document.getElementById("nav-login");
     const subLink = document.getElementById("nav-my-subscription");
@@ -34,43 +41,6 @@ async function loadPlans() {
     UI.toast("Gagal memuat paket: " + (err.detail || err.message), "error");
   }
 }
-
-let pendingPlanId = null;
-
-function openCheckoutModal(planId) {
-  pendingPlanId = planId;
-  const modal = document.getElementById("checkout-modal");
-  modal.classList.remove("hidden");
-}
-
-function closeCheckoutModal() {
-  document.getElementById("checkout-modal").classList.add("hidden");
-  pendingPlanId = null;
-}
-
-document.getElementById("btn-confirm-checkout")?.addEventListener("click", async () => {
-  if (pendingPlanId == null) return;
-  if (!API.getToken || !API.getToken()) {
-    UI.toast(I18n.t("plans.login_required") || "Login diperlukan", "info");
-    window.location.href = "login.html?next=plans.html";
-    return;
-  }
-  try {
-    const result = await API.request("POST", "/billing/checkout", { plan_id: pendingPlanId, cycle: "monthly" });
-    if (result.free) {
-      UI.toast("Paket gratis diaktifkan.", "success");
-      setTimeout(() => (window.location.href = "index.html#billing"), 800);
-    } else if (result.snap_token) {
-      UI.toast("Checkout dibuat. Snap token: " + result.snap_token, "success");
-    } else {
-      UI.toast("Invoice dibuat: " + result.invoice_number, "success");
-      window.location.href = "index.html#billing";
-    }
-    closeCheckoutModal();
-  } catch (err) {
-    UI.toast("Checkout gagal: " + (err.detail || err.message), "error");
-  }
-});
 
 document.addEventListener("DOMContentLoaded", async () => {
   await I18n.init();

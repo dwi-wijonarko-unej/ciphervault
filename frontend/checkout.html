@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherVault — Checkout</title>
+  <script>
+    (function(){
+      var saved = localStorage.getItem('cv_theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = saved !== null ? saved === 'dark' : prefersDark;
+      document.documentElement.classList.toggle('dark', isDark);
+
+      var savedLang = localStorage.getItem('cv_lang');
+      var lang = savedLang || (navigator.language.startsWith('id') ? 'id' : 'en');
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute('data-lang', lang);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: {
+            colors: {
+              surface: { DEFAULT: 'var(--surface)', card: 'var(--surface-card)', hover: 'var(--surface-hover)', input: 'var(--surface-input)' },
+              border: { DEFAULT: 'var(--border)', focus: '#2d6a4f' },
+              muted: 'var(--muted)', body: 'var(--bg-body)', primary: 'var(--text-primary)', secondary: 'var(--muted-foreground)',
+              background: 'var(--background)', foreground: 'var(--foreground)',
+              card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
+              brand: { DEFAULT: 'var(--brand)', foreground: 'var(--brand-foreground)' },
+              'muted-foreground': 'var(--muted-foreground)', destructive: 'var(--destructive)',
+              input: 'var(--input)', ring: 'var(--ring)',
+              sidebar: { DEFAULT: 'var(--sidebar)', foreground: 'var(--sidebar-foreground)', primary: 'var(--sidebar-primary)', accent: 'var(--sidebar-accent)' },
+            },
+            fontFamily: { heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+            boxShadow: { sharp: '4px 4px 0px 0px rgba(0,0,0,0.15)', 'sharp-hover': '6px 6px 0px 0px rgba(0,0,0,0.2)', soft: '0 2px 8px rgba(0,0,0,0.06)' },
+            borderRadius: { sharp: '0', pill: '9999px' },
+        }}
+      }
+  </script>
+  <link rel="stylesheet" href="css/style.css?v=20260920">
+  <link rel="stylesheet" href="css/components.css?v=20260920">
+  <link rel="stylesheet" href="css/shadcn.css?v=20260920">
+</head>
+<body class="font-sans">
+
+  <header class="border-b sticky top-0 z-40 backdrop-blur" style="background: color-mix(in srgb, var(--surface-card) 88%, transparent); border-color: var(--border);">
+    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2 group">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <div class="lang-switcher flex items-center bg-card border border-border rounded-md overflow-hidden"></div>
+        <button class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="plans.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--muted-foreground); border-color: var(--border);"><span data-i18n="legal.back">← Back</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-5 py-12">
+    <h1 class="font-heading font-bold text-2xl text-primary mb-6" data-i18n="checkout.title">Checkout</h1>
+
+    <div id="checkout-loading" class="text-center text-sm py-16" style="color: var(--muted-foreground);" data-i18n="common.loading">Memuat...</div>
+
+    <div id="checkout-error" class="shadcn-card p-10 text-center hidden">
+      <p class="text-sm" style="color: var(--destructive);" id="checkout-error-text"></p>
+      <a href="plans.html" class="shadcn-btn shadcn-btn-outline px-5 py-2.5 mt-4 inline-flex" data-i18n="nav.plans">Paket</a>
+    </div>
+
+    <div id="checkout-content" class="hidden grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <section class="shadcn-card p-6 shadow-sm lg:col-span-2 h-fit">
+        <h2 class="text-lg font-bold mb-4" data-i18n="checkout.summary">Ringkasan Pesanan</h2>
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-11 h-11 rounded-lg flex items-center justify-center font-heading font-black text-lg" style="background: var(--brand); color: var(--brand-foreground);" id="co-plan-initial">C</span>
+          <div>
+            <p class="font-bold" id="co-plan-name">—</p>
+            <p class="text-xs" style="color: var(--muted-foreground);" id="co-plan-storage">—</p>
+          </div>
+        </div>
+        <div class="space-y-2 text-sm border-t pt-4" style="border-color: var(--border);">
+          <div class="flex justify-between"><span style="color: var(--muted-foreground);" data-i18n="checkout.cycle">Siklus</span><span class="font-medium" id="co-cycle-label">—</span></div>
+          <div class="flex justify-between"><span style="color: var(--muted-foreground);" data-i18n="checkout.subtotal">Subtotal</span><span class="font-medium" id="co-subtotal">—</span></div>
+          <div class="flex justify-between"><span style="color: var(--muted-foreground);">PPN 11%</span><span class="font-medium" id="co-tax">—</span></div>
+          <div class="flex justify-between text-base font-black pt-2 border-t" style="border-color: var(--border);"><span data-i18n="invoice.total">Total</span><span style="color: var(--brand);" id="co-total">—</span></div>
+        </div>
+      </section>
+
+      <section class="lg:col-span-3 space-y-6">
+        <div class="shadcn-card p-6 shadow-sm">
+          <h2 class="text-lg font-bold mb-1" data-i18n="checkout.cycle_title">Siklus Tagihan</h2>
+          <p class="text-sm mb-4" style="color: var(--muted-foreground);" data-i18n="checkout.cycle_desc">Tahunan lebih hemat dibanding bulanan.</p>
+          <div class="grid grid-cols-2 gap-3" id="co-cycle-options">
+            <button data-cycle="monthly" class="co-cycle-btn text-left border rounded-lg p-4 transition-all" style="border-color: var(--border);">
+              <p class="font-bold text-sm" data-i18n="checkout.monthly">Bulanan</p>
+              <p class="text-sm font-black mt-1" style="color: var(--brand);" id="co-price-monthly">—</p>
+            </button>
+            <button data-cycle="yearly" class="co-cycle-btn text-left border rounded-lg p-4 transition-all" style="border-color: var(--border);">
+              <p class="font-bold text-sm" data-i18n="checkout.yearly">Tahunan</p>
+              <p class="text-sm font-black mt-1" style="color: var(--brand);" id="co-price-yearly">—</p>
+            </button>
+          </div>
+        </div>
+
+        <div class="shadcn-card p-6 shadow-sm" id="co-method-card">
+          <h2 class="text-lg font-bold mb-1" data-i18n="checkout.method_title">Metode Pembayaran</h2>
+          <p class="text-sm mb-4" style="color: var(--muted-foreground);" data-i18n="checkout.method_desc">Pilih grup metode. Daftar lengkap tampil di halaman bayar.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="co-method-options">
+            <button data-method="all" class="co-method-btn text-left border rounded-lg p-4 transition-all" style="border-color: var(--border);">
+              <p class="font-bold text-sm" data-i18n="checkout.method_all">Semua Metode</p>
+              <p class="text-xs mt-1" style="color: var(--muted-foreground);">VA · QRIS · E-wallet · Kartu</p>
+            </button>
+            <button data-method="transfer" class="co-method-btn text-left border rounded-lg p-4 transition-all" style="border-color: var(--border);">
+              <p class="font-bold text-sm" data-i18n="checkout.method_transfer">Transfer Bank / VA</p>
+              <p class="text-xs mt-1" style="color: var(--muted-foreground);">BCA · BRI · Mandiri · BNI</p>
+            </button>
+            <button data-method="qris" class="co-method-btn text-left border rounded-lg p-4 transition-all" style="border-color: var(--border);">
+              <p class="font-bold text-sm">QRIS</p>
+              <p class="text-xs mt-1" style="color: var(--muted-foreground);">QR semua e-wallet &amp; m-banking</p>
+            </button>
+            <button data-method="ewallet" class="co-method-btn text-left border rounded-lg p-4 transition-all" style="border-color: var(--border);">
+              <p class="font-bold text-sm">E-wallet</p>
+              <p class="text-xs mt-1" style="color: var(--muted-foreground);">GoPay · ShopeePay · DANA · OVO</p>
+            </button>
+            <button data-method="card" class="co-method-btn text-left border rounded-lg p-4 transition-all col-span-1 sm:col-span-2" style="border-color: var(--border);">
+              <p class="font-bold text-sm" data-i18n="checkout.method_card">Kartu Kredit / Debit</p>
+              <p class="text-xs mt-1" style="color: var(--muted-foreground);">Visa · Mastercard · JCB</p>
+            </button>
+          </div>
+        </div>
+
+        <button id="btn-pay" class="shadcn-btn shadcn-btn-default w-full py-3 text-base">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span data-i18n="checkout.pay_now">Bayar Sekarang</span>
+        </button>
+      </section>
+    </div>
+  </main>
+
+  <footer class="border-t" style="border-color: var(--border);">
+    <div class="max-w-6xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p class="text-[11px]" style="color: var(--muted-foreground);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
+      <nav class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px]">
+        <a href="how-it-works.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);">How it Works</a>
+        <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+        <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.privacy_title">Privacy Policy</a>
+        <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.breach_title">Data Breach Procedure</a>
+        <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.sla_title">SLA</a>
+        <a href="plans.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="nav.plans">Paket</a>
+      </nav>
+    </div>
+  </footer>
+
+  <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2"></div>
+
+  <script src="js/theme.js?v=20260920"></script>
+  <script src="js/i18n.js?v=20260920"></script>
+  <script src="js/api.js?v=20260920"></script>
+  <script src="js/ui.js?v=20260920"></script>
+  <script src="js/auth.js?v=20260920"></script>
+  <script src="js/checkout.js?v=20260920"></script>
+</body>
+</html>

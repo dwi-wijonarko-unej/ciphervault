@@ -21,6 +21,7 @@ class PlanResponse(BaseModel):
 class CheckoutRequest(BaseModel):
     plan_id: int
     cycle: str = "monthly"
+    payment_method: str | None = None
 
 
 class CheckoutResponse(BaseModel):
@@ -30,6 +31,7 @@ class CheckoutResponse(BaseModel):
     amount: int | None = None
     tax_amount: int | None = None
     snap_token: str | None = None
+    redirect_url: str | None = None
     sandbox: bool = True
     free: bool = False
 
@@ -65,6 +67,7 @@ class InvoiceResponse(BaseModel):
 
 
 class InvoiceDetailResponse(InvoiceResponse):
+    plan_id: int | None = None
     plan_name: str = "-"
     payment_gateway: str = "manual"
 

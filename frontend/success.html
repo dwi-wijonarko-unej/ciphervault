@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CipherVault — Invoice</title>
+  <title>CipherVault — Pembayaran Berhasil</title>
   <script>
     (function(){
       var saved = localStorage.getItem('cv_theme');
@@ -45,52 +45,6 @@
   <link rel="stylesheet" href="css/style.css?v=20260920">
   <link rel="stylesheet" href="css/components.css?v=20260920">
   <link rel="stylesheet" href="css/shadcn.css?v=20260920">
-  <style>
-    .invoice-box {
-      max-width: 800px;
-      margin: auto;
-      padding: 30px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--card-foreground);
-      border-radius: var(--radius);
-      font-size: 16px;
-      line-height: 24px;
-      font-family: 'Inter', system-ui, sans-serif;
-    }
-    .invoice-box table { width: 100%; line-height: inherit; text-align: left; }
-    .invoice-box table td { padding: 5px; vertical-align: top; }
-    .invoice-box table tr td:nth-child(2) { text-align: right; }
-    .invoice-box table tr.top table td { padding-bottom: 20px; }
-    .invoice-box table tr.top table td.title {
-      font-size: 32px;
-      line-height: 36px;
-      font-weight: 900;
-      font-family: "Space Grotesk", sans-serif;
-      color: var(--brand);
-    }
-    .invoice-box table tr.information table td { padding-bottom: 40px; }
-    .invoice-box table tr.heading td {
-      background: var(--muted);
-      border-bottom: 1px solid var(--border);
-      font-weight: bold;
-    }
-    .invoice-box table tr.details td { padding-bottom: 20px; }
-    .invoice-box table tr.item td { border-bottom: 1px solid var(--border); }
-    .invoice-box table tr.item.last td { border-bottom: none; }
-    .invoice-box table tr.total td:nth-child(2) {
-      border-top: 2px solid var(--border);
-      font-weight: bold;
-    }
-    @media only screen and (max-width: 600px) {
-      .invoice-box table tr.top table td,
-      .invoice-box table tr.information table td {
-        width: 100%;
-        display: block;
-        text-align: center;
-      }
-    }
-  </style>
 </head>
 <body class="font-sans">
 
@@ -112,91 +66,35 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-5 py-12">
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-      <h1 class="font-heading font-bold text-2xl text-primary" data-i18n="invoice.title">Pratinjau Invoice</h1>
-      <div class="flex flex-wrap gap-2">
-        <a href="#" id="btn-pay-now" class="shadcn-btn shadcn-btn-default px-5 py-2.5 hidden">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          <span data-i18n="invoice.pay_now">Bayar Sekarang</span>
-        </a>
-        <button id="btn-download-pdf" class="shadcn-btn shadcn-btn-outline px-5 py-2.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span data-i18n="invoice.download">Unduh PDF</span>
-        </button>
+    <div class="shadcn-card p-10 sm:p-12 shadow-sm max-w-[560px] mx-auto text-center">
+      <div id="success-waiting">
+        <div class="w-10 h-10 rounded-full border-2 border-border animate-spin mx-auto mb-6" style="border-top-color: var(--brand);"></div>
+        <h1 class="font-heading font-bold text-2xl text-primary mb-3" data-i18n="success.waiting">Menunggu Pembayaran…</h1>
+        <p class="text-sm" style="color: var(--muted-foreground);" data-i18n="success.waiting_desc">Kami memantau status pembayaran Anda. Halaman ini berpindah otomatis setelah lunas.</p>
       </div>
-    </div>
 
-    <div id="invoice-loading" class="text-center text-sm py-16" style="color: var(--muted-foreground);" data-i18n="common.loading">Memuat...</div>
+      <div id="success-paid" class="hidden">
+        <span class="inline-flex w-16 h-16 rounded-full items-center justify-center mb-6" style="background: color-mix(in srgb, var(--brand) 12%, transparent); color: var(--brand);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </span>
+        <h1 class="font-heading font-bold text-2xl text-primary mb-3" data-i18n="success.title">Pembayaran Berhasil!</h1>
+        <p class="text-sm mb-6" style="color: var(--muted-foreground);" data-i18n="success.desc">Langganan Anda sudah aktif. Terima kasih.</p>
+        <div class="text-left text-sm space-y-2 rounded-lg p-4 mb-6" style="background: var(--muted);">
+          <div class="flex justify-between"><span style="color: var(--muted-foreground);" data-i18n="billing.invoice_no">Nomor</span><span class="font-mono font-bold" id="ok-number">—</span></div>
+          <div class="flex justify-between"><span style="color: var(--muted-foreground);" data-i18n="invoice.total">Total</span><span class="font-black" id="ok-total">—</span></div>
+          <div class="flex justify-between"><span style="color: var(--muted-foreground);" data-i18n="invoice.payment_method">Metode Bayar</span><span class="font-medium" id="ok-method">—</span></div>
+          <div class="flex justify-between"><span style="color: var(--muted-foreground);" data-i18n="success.paid_at">Lunas pada</span><span class="font-medium" id="ok-paid-at">—</span></div>
+        </div>
+        <div class="flex flex-wrap justify-center gap-2">
+          <a href="index.html#billing" class="shadcn-btn shadcn-btn-default px-5 py-2.5" data-i18n="nav.my_subscription">Langganan Saya</a>
+          <a href="#" id="ok-invoice-link" class="shadcn-btn shadcn-btn-outline px-5 py-2.5" data-i18n="success.view_invoice">Lihat Invoice</a>
+        </div>
+      </div>
 
-    <div id="invoice-error" class="shadcn-card p-10 text-center hidden">
-      <p class="text-sm" style="color: var(--destructive);" id="invoice-error-text"></p>
-      <a href="index.html#billing" class="shadcn-btn shadcn-btn-outline px-5 py-2.5 mt-4 inline-flex" data-i18n="invoice.back_billing">Kembali ke Langganan</a>
-    </div>
-
-    <div class="invoice-box hidden" id="invoice-box">
-      <table cellpadding="0" cellspacing="0">
-        <tr class="top">
-          <td colspan="2">
-            <table>
-              <tr>
-                <td class="title">CIPHERVAULT</td>
-                <td>
-                  <span data-i18n="billing.invoice_no">Nomor</span>: <span id="inv-number"></span><br />
-                  <span data-i18n="invoice.created">Dibuat</span>: <span id="inv-created"></span><br />
-                  <span data-i18n="invoice.due">Jatuh tempo</span>: <span id="inv-due"></span>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr class="information">
-          <td colspan="2">
-            <table>
-              <tr>
-                <td>
-                  CipherVault<br />
-                  Zero-Knowledge Cloud Storage
-                </td>
-                <td>
-                  <span id="inv-username"></span><br />
-                  <span id="inv-email"></span>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr class="heading">
-          <td data-i18n="invoice.payment_method">Metode Bayar</td>
-          <td data-i18n="billing.status">Status</td>
-        </tr>
-
-        <tr class="details">
-          <td id="inv-method"></td>
-          <td id="inv-status"></td>
-        </tr>
-
-        <tr class="heading">
-          <td data-i18n="invoice.item">Item</td>
-          <td data-i18n="invoice.price">Harga</td>
-        </tr>
-
-        <tr class="item">
-          <td id="inv-plan"></td>
-          <td id="inv-amount"></td>
-        </tr>
-
-        <tr class="item last">
-          <td>PPN 11%</td>
-          <td id="inv-tax"></td>
-        </tr>
-
-        <tr class="total">
-          <td></td>
-          <td><span data-i18n="invoice.total">Total</span>: <span id="inv-total"></span></td>
-        </tr>
-      </table>
+      <div id="success-error" class="hidden">
+        <p class="text-sm" style="color: var(--destructive);" id="success-error-text"></p>
+        <a href="index.html#billing" class="shadcn-btn shadcn-btn-outline px-5 py-2.5 mt-4 inline-flex" data-i18n="nav.my_subscription">Langganan Saya</a>
+      </div>
     </div>
   </main>
 
@@ -221,6 +119,6 @@
   <script src="js/api.js?v=20260920"></script>
   <script src="js/ui.js?v=20260920"></script>
   <script src="js/auth.js?v=20260920"></script>
-  <script src="js/invoice.js?v=20260920"></script>
+  <script src="js/success.js?v=20260920"></script>
 </body>
 </html>

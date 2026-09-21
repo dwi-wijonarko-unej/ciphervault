@@ -73,18 +73,6 @@
     <p id="plans-error" class="text-center text-sm text-muted-foreground mt-6 hidden" data-i18n="plans.load_error">Gagal memuat paket.</p>
   </main>
 
-  <div id="checkout-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[8000] hidden flex items-center justify-center p-5" onclick="if(event.target===this)closeCheckoutModal()">
-    <div class="shadcn-card shadow-2xl w-full max-w-[420px] p-6">
-      <h3 class="text-lg font-bold mb-2" id="checkout-plan-name">Paket</h3>
-      <p class="text-sm text-muted-foreground mb-4" id="checkout-plan-desc"></p>
-      <div class="flex gap-3">
-        <button class="shadcn-btn shadcn-btn-default flex-1 py-2.5" id="btn-confirm-checkout" data-i18n="plans.confirm">Konfirmasi</button>
-        <button class="shadcn-btn shadcn-btn-outline flex-1 py-2.5" onclick="closeCheckoutModal()" data-i18n="common.cancel">Batal</button>
-      </div>
-      <p class="text-xs text-muted-foreground mt-3" data-i18n="plans.login_required">Login diperlukan untuk berlangganan.</p>
-    </div>
-  </div>
-
   <footer class="border-t mt-12" style="border-color: var(--border);">
     <div class="max-w-6xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
       <p class="text-[11px]" style="color: var(--muted-foreground);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>

@@ -32,7 +32,9 @@ def checkout(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> dict:
-    return BillingService.checkout(db, user, payload.plan_id, payload.cycle)
+    return BillingService.checkout(
+        db, user, payload.plan_id, payload.cycle, payload.payment_method
+    )
 
 
 @router.post("/webhook/{gateway}")
@@ -65,6 +67,23 @@ def list_invoices(
     return BillingService.user_invoices(db, user)
 
 
+@router.post("/invoices/{invoice_id}/mock-confirm", response_model=InvoiceResponse)
+def mock_confirm_invoice(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    from backend.config import get_settings
+
+    if not get_settings().mock_gateway:
+        from fastapi import HTTPException, status
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Mock gateway disabled"
+        )
+    return BillingService.mock_mark_paid(db, user, invoice_id)
+
+
 @router.get("/invoices/{invoice_id}/detail", response_model=InvoiceDetailResponse)
 def get_invoice_detail(
     invoice_id: int,
@@ -90,6 +109,7 @@ def get_invoice_detail(
         plan = db.query(Plan).filter(Plan.id == subscription.plan_id).first()
     return {
         **InvoiceResponse.model_validate(invoice).model_dump(),
+        "plan_id": plan.id if plan else None,
         "plan_name": plan.name if plan else "-",
         "payment_gateway": subscription.payment_gateway if subscription else "manual",
     }

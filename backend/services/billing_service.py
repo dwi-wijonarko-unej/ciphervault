@@ -69,7 +69,11 @@ class BillingService:
 
     @staticmethod
     def checkout(
-        db: Session, user: User, plan_id: int, cycle: str = "monthly"
+        db: Session,
+        user: User,
+        plan_id: int,
+        cycle: str = "monthly",
+        payment_method: str | None = None,
     ) -> dict:
         plan = BillingService.get_plan(db, plan_id)
         if cycle not in ("monthly", "yearly"):
@@ -100,13 +104,28 @@ class BillingService:
         invoice.gateway_invoice_id = order_id
 
         token = None
+        redirect_url = None
         if settings.midtrans_server_key:
+            finish_url = (
+                f"{settings.public_base_url.rstrip('/')}"
+                f"/success.html?invoice={invoice.id}"
+            )
             params = gateway_midtrans.build_checkout_params(
-                order_id, amount + invoice.tax_amount, user.email, f"{plan.name}-{cycle}"
+                order_id,
+                amount + invoice.tax_amount,
+                user.email,
+                f"{plan.name}-{cycle}",
+                finish_url=finish_url,
+                expiry_hours=settings.snap_expiry_hours,
+                enabled_payments=gateway_midtrans.enabled_payments_for(payment_method),
             )
             token = gateway_midtrans.create_snap_token(
                 params, settings.midtrans_server_key, settings.midtrans_sandbox
             )
+            if token:
+                redirect_url = gateway_midtrans.get_snap_redirect_url(
+                    token, settings.midtrans_sandbox
+                )
         db.commit()
         db.refresh(subscription)
         return {
@@ -116,6 +135,7 @@ class BillingService:
             "amount": amount,
             "tax_amount": invoice.tax_amount,
             "snap_token": token,
+            "redirect_url": redirect_url,
             "sandbox": settings.midtrans_sandbox,
         }
 
@@ -174,6 +194,33 @@ class BillingService:
             invoice.status = "void"
         db.commit()
         return {"invoice_number": invoice.invoice_number, "status": invoice.status}
+
+    @staticmethod
+    def mock_mark_paid(db: Session, user: User, invoice_id: int) -> Invoice:
+        invoice = (
+            db.query(Invoice)
+            .filter(Invoice.id == invoice_id, Invoice.user_id == user.id)
+            .first()
+        )
+        if not invoice:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found"
+            )
+        if invoice.status == "paid":
+            return invoice
+        now = datetime.now(timezone.utc)
+        invoice.status = "paid"
+        invoice.paid_at = now
+        subscription = (
+            db.query(Subscription).filter(Subscription.id == invoice.subscription_id).first()
+        )
+        if subscription:
+            subscription.status = "active"
+            subscription.current_period_start = now
+            subscription.current_period_end = now + timedelta(days=30)
+        db.commit()
+        db.refresh(invoice)
+        return invoice
 
     @staticmethod
     def cancel_subscription(db: Session, user: User) -> Subscription:

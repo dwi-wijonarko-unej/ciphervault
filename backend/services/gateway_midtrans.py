@@ -17,10 +17,30 @@ def verify_signature(payload: dict, server_key: str) -> bool:
     return bool(provided) and provided.lower() == expected.lower()
 
 
+PAYMENT_GROUPS: dict[str, list[str]] = {
+    "transfer": ["bank_transfer"],
+    "qris": ["qris"],
+    "ewallet": ["gopay", "shopeepay", "dana", "ovo"],
+    "card": ["credit_card"],
+}
+
+
+def enabled_payments_for(group: str | None) -> list[str] | None:
+    if not group or group == "all":
+        return None
+    return PAYMENT_GROUPS.get(group)
+
+
 def build_checkout_params(
-    order_id: str, gross_amount: int, customer_email: str, item_name: str
+    order_id: str,
+    gross_amount: int,
+    customer_email: str,
+    item_name: str,
+    finish_url: str | None = None,
+    expiry_hours: int = 24,
+    enabled_payments: list[str] | None = None,
 ) -> dict:
-    return {
+    params: dict = {
         "transaction_details": {
             "order_id": order_id,
             "gross_amount": gross_amount,
@@ -29,7 +49,22 @@ def build_checkout_params(
         "item_details": [
             {"id": order_id, "price": gross_amount, "quantity": 1, "name": item_name}
         ],
+        "expiry": {"unit": "hour", "duration": expiry_hours},
     }
+    if finish_url:
+        params["callbacks"] = {"finish": finish_url}
+    if enabled_payments:
+        params["enabled_payments"] = enabled_payments
+    return params
+
+
+def get_snap_redirect_url(token: str, sandbox: bool = True) -> str:
+    base = (
+        "https://app.sandbox.midtrans.com/snap/v2/vtweb"
+        if sandbox
+        else "https://app.midtrans.com/snap/v2/vtweb"
+    )
+    return f"{base}/{token}"
 
 
 def create_snap_token(

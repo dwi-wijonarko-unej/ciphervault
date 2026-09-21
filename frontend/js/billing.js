@@ -20,34 +20,9 @@ const Billing = (() => {
           </div>
         </section>
       </div>
-      <div id="billing-checkout-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[8000] hidden flex items-center justify-center p-5" onclick="if(event.target===this)Billing.closeModal()">
-        <div class="shadcn-card shadow-2xl w-full max-w-[420px] p-6">
-          <h3 class="text-lg font-bold mb-2" id="billing-modal-name">Paket</h3>
-          <p class="text-sm text-muted-foreground mb-4" id="billing-modal-desc"></p>
-          <div class="flex gap-3">
-            <button class="flex-1 py-2.5 rounded-md text-sm font-semibold text-white" style="background:var(--primary)" id="billing-btn-confirm" data-i18n="common.confirm">Konfirmasi</button>
-            <button class="flex-1 py-2.5 rounded-md text-sm font-medium border border-border" onclick="Billing.closeModal()" data-i18n="common.cancel">Batal</button>
-          </div>
-        </div>
-      </div>
     `;
     I18n.applyDynamic();
-    document.getElementById("billing-btn-confirm")?.addEventListener("click", checkoutPending);
     await loadBilling();
-  }
-
-  let pendingPlanId = null;
-
-  function openModal(planId, planName) {
-    pendingPlanId = planId;
-    const nameEl = document.getElementById("billing-modal-name");
-    if (nameEl && planName) nameEl.textContent = planName;
-    document.getElementById("billing-checkout-modal")?.classList.remove("hidden");
-  }
-
-  function closeModal() {
-    document.getElementById("billing-checkout-modal")?.classList.add("hidden");
-    pendingPlanId = null;
   }
 
   async function loadBilling() {
@@ -67,7 +42,9 @@ const Billing = (() => {
         grid.appendChild(card);
       });
       grid.querySelectorAll("button[data-plan]").forEach((btn) => {
-        btn.addEventListener("click", () => openModal(Number(btn.dataset.plan), btn.dataset.name));
+        btn.addEventListener("click", () => {
+          window.location.href = `checkout.html?plan=${btn.dataset.plan}`;
+        });
       });
     } catch (err) {
       UI.toast("Gagal memuat paket: " + (err.detail || err.message), "error");
@@ -118,20 +95,6 @@ const Billing = (() => {
   } catch {}
 }
 
-  async function checkoutPending() {
-    if (pendingPlanId == null) return;
-    try {
-      const result = await API.request("POST", "/billing/checkout", { plan_id: pendingPlanId, cycle: "monthly" });
-      if (result.free) UI.toast("Paket gratis diaktifkan.", "success");
-      else if (result.snap_token) UI.toast("Checkout dibuat. Snap token: " + result.snap_token, "success");
-      else UI.toast("Invoice dibuat: " + result.invoice_number, "success");
-      closeModal();
-      loadBilling();
-    } catch (err) {
-      UI.toast("Checkout gagal: " + (err.detail || err.message), "error");
-    }
-  }
-
-  return { render, closeModal, checkoutPending };
+  return { render };
 })();
 window.Billing = Billing;

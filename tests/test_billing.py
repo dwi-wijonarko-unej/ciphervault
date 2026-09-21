@@ -197,6 +197,59 @@ def test_invoice_detail_other_user_forbidden():
     assert r.status_code == 404
 
 
+def test_checkout_without_key_returns_no_redirect():
+    token, _ = _register_and_login()
+    r = client.post(
+        "/billing/checkout",
+        json={"plan_id": _plan_id("pro"), "cycle": "monthly", "payment_method": "qris"},
+        headers=_auth(token),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["snap_token"] is None
+    assert body["redirect_url"] is None
+    assert body["invoice_id"] is not None
+
+
+def test_mock_confirm_disabled_by_default():
+    token, _ = _register_and_login()
+    r = client.post(
+        "/billing/checkout",
+        json={"plan_id": _plan_id("pro"), "cycle": "monthly"},
+        headers=_auth(token),
+    )
+    invoice_id = r.json()["invoice_id"]
+    r = client.post(
+        f"/billing/invoices/{invoice_id}/mock-confirm", headers=_auth(token)
+    )
+    assert r.status_code == 403
+
+
+def test_mock_confirm_marks_paid_when_enabled():
+    from backend.config import get_settings
+
+    settings = get_settings()
+    old = settings.mock_gateway
+    settings.mock_gateway = True
+    try:
+        token, _ = _register_and_login()
+        r = client.post(
+            "/billing/checkout",
+            json={"plan_id": _plan_id("pro"), "cycle": "monthly"},
+            headers=_auth(token),
+        )
+        invoice_id = r.json()["invoice_id"]
+        r = client.post(
+            f"/billing/invoices/{invoice_id}/mock-confirm", headers=_auth(token)
+        )
+        assert r.status_code == 200
+        assert r.json()["status"] == "paid"
+        r = client.get("/billing/subscription", headers=_auth(token))
+        assert r.json()["status"] == "active"
+    finally:
+        settings.mock_gateway = old
+
+
 def test_admin_revenue_and_subscriptions():
     token, user = _register_and_login()
     _make_admin(user["id"])

@@ -49,6 +49,9 @@ class Settings(BaseSettings):
 
     midtrans_server_key: str = ""
     midtrans_sandbox: bool = True
+    snap_expiry_hours: int = 24
+    public_base_url: str = "http://43.156.234.238:3000"
+    mock_gateway: bool = False
 
 
 @lru_cache
