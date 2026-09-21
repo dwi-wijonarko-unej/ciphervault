@@ -232,3 +232,36 @@
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+
+/* Sidebar shell (AdminCN-style, vanilla) */
+#sidebar {
+  width: 16rem;
+  transition: width 0.2s ease, transform 0.2s ease;
+}
+#sidebar .nav-tab {
+  color: var(--sidebar-foreground);
+}
+#sidebar .nav-tab:hover {
+  background-color: var(--sidebar-accent);
+}
+@media (min-width: 1024px) {
+  body.sidebar-collapsed #sidebar {
+    width: 4.5rem;
+  }
+  body.sidebar-collapsed #sidebar .nav-label,
+  body.sidebar-collapsed #sidebar .nav-group-label,
+  body.sidebar-collapsed #sidebar .sidebar-brand-text,
+  body.sidebar-collapsed #sidebar .sidebar-foot {
+    display: none;
+  }
+  body.sidebar-collapsed #sidebar .nav-tab {
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+@media (max-width: 1023.98px) {
+  body.sidebar-open #sidebar {
+    transform: none;
+  }
+}

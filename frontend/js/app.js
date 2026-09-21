@@ -20,6 +20,7 @@ const App = (() => {
 
     hydrateUserUI(currentUser);
     setupNavbar();
+    setupSidebar();
     applyRoleBasedUI(currentUser);
     setupRouter();
     navigate(window.location.hash.replace("#", "") || "dashboard");
@@ -55,6 +56,30 @@ const App = (() => {
 
     const billingTab = document.querySelector('[data-nav="billing"]');
     if (billingTab) billingTab.style.display = isAdmin ? "none" : "";
+  }
+
+  function setupSidebar() {
+    const toggleBtn = document.getElementById("btn-sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    const sidebar = document.getElementById("sidebar");
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener("click", () => {
+        if (window.innerWidth < 1024) {
+          document.body.classList.toggle("sidebar-open");
+          overlay?.classList.toggle("hidden");
+          sidebar.classList.toggle("-translate-x-full");
+        } else {
+          document.body.classList.toggle("sidebar-collapsed");
+        }
+      });
+    }
+    if (overlay && sidebar) {
+      overlay.addEventListener("click", () => {
+        document.body.classList.remove("sidebar-open");
+        overlay.classList.add("hidden");
+        sidebar.classList.add("-translate-x-full");
+      });
+    }
   }
 
   function setupNavbar() {
@@ -93,6 +118,7 @@ const App = (() => {
     document.querySelectorAll(".nav-tab").forEach((el) => {
       const isActive = el.dataset.nav === view;
       el.classList.toggle("active", isActive);
+      el.classList.toggle("shadcn-navitem-active", isActive);
       el.classList.toggle("text-primary", isActive);
       el.classList.toggle("text-secondary", !isActive);
 
@@ -102,6 +128,20 @@ const App = (() => {
         bar.classList.toggle("scale-x-0", !isActive);
       }
     });
+
+    const crumb = document.getElementById("breadcrumb-current");
+    if (crumb) {
+      const crumbKeys = {
+        dashboard: "nav.my_files",
+        shared: "nav.shared_with_me",
+        system: "nav.system",
+        activity: "nav.activity",
+        billing: "nav.my_subscription",
+        profile: "nav.profile",
+        admin: "nav.admin",
+      };
+      crumb.textContent = I18n.t(crumbKeys[view] || "nav.my_files");
+    }
 
     const container = document.getElementById("view-container");
     if (!container) return;
