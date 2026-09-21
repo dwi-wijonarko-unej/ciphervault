@@ -34,6 +34,16 @@
               body: 'var(--bg-body)',
               primary: 'var(--text-primary)',
               secondary: 'var(--text-secondary)',
+              background: 'var(--background)',
+              foreground: 'var(--foreground)',
+              card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
+              popover: { DEFAULT: 'var(--popover)', foreground: 'var(--popover-foreground)' },
+              brand: { DEFAULT: 'var(--brand)', foreground: 'var(--brand-foreground)' },
+              'muted-foreground': 'var(--muted-foreground)',
+              destructive: 'var(--destructive)',
+              input: 'var(--input)',
+              ring: 'var(--ring)',
+              sidebar: { DEFAULT: 'var(--sidebar)', foreground: 'var(--sidebar-foreground)', primary: 'var(--sidebar-primary)', accent: 'var(--sidebar-accent)' },
             },
             fontFamily: {
               heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
@@ -51,6 +61,7 @@
   </script>
   <link rel="stylesheet" href="css/style.css?v=20260920">
   <link rel="stylesheet" href="css/components.css?v=20260920">
+  <link rel="stylesheet" href="css/shadcn.css?v=20260920">
   <style>
     .prose-legal h2 { font-family: "Space Grotesk", sans-serif; }
     .prose-legal p, .prose-legal li { color: var(--text-secondary); line-height: 1.75; }

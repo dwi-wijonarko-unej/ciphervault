@@ -28,6 +28,12 @@
               surface: { DEFAULT: 'var(--surface)', card: 'var(--surface-card)', hover: 'var(--surface-hover)', input: 'var(--surface-input)' },
               border: { DEFAULT: 'var(--border)', focus: '#2d6a4f' },
               muted: 'var(--muted)', body: 'var(--bg-body)', primary: 'var(--text-primary)', secondary: 'var(--text-secondary)',
+              background: 'var(--background)', foreground: 'var(--foreground)',
+              card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
+              brand: { DEFAULT: 'var(--brand)', foreground: 'var(--brand-foreground)' },
+              'muted-foreground': 'var(--muted-foreground)', destructive: 'var(--destructive)',
+              input: 'var(--input)', ring: 'var(--ring)',
+              sidebar: { DEFAULT: 'var(--sidebar)', foreground: 'var(--sidebar-foreground)', primary: 'var(--sidebar-primary)', accent: 'var(--sidebar-accent)' },
             },
             fontFamily: { heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
             boxShadow: { sharp: '4px 4px 0px 0px rgba(0,0,0,0.15)', 'sharp-hover': '6px 6px 0px 0px rgba(0,0,0,0.2)', soft: '0 2px 8px rgba(0,0,0,0.06)' },
@@ -37,6 +43,7 @@
   </script>
   <link rel="stylesheet" href="css/style.css?v=20260920">
   <link rel="stylesheet" href="css/components.css?v=20260920">
+  <link rel="stylesheet" href="css/shadcn.css?v=20260920">
   <style>
     .flow-step { position: relative; }
     .flow-step:not(:last-child)::after {

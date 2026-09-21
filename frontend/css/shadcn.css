@@ -1,0 +1,234 @@
+/* ============================================
+   CipherVault — shadcn/AdminCN Design Tokens
+   Ported from shadcn-nextjs-admincn-admin-template-free
+   (src/app/globals.css, Tailwind v4 oklch palette)
+   Brand overrides: --brand forest green, Space Grotesk + Inter
+   Loaded AFTER style.css / components.css / animations.css
+   ============================================ */
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --brand: #2d6a4f;
+  --brand-foreground: #ffffff;
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent-soft: oklch(0.97 0 0);
+  --accent-soft-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #2d6a4f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --brand: #40916c;
+  --brand-foreground: #ffffff;
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent-soft: oklch(0.269 0 0);
+  --accent-soft-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: #40916c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* shadcn base: app background + foreground */
+.shadcn-body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* shadcn Card */
+.shadcn-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* shadcn Button variants */
+.shadcn-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.shadcn-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.shadcn-btn-default {
+  background-color: var(--brand);
+  color: var(--brand-foreground);
+}
+.shadcn-btn-default:hover {
+  filter: brightness(0.92);
+}
+.shadcn-btn-outline {
+  background-color: transparent;
+  border-color: var(--input);
+  color: var(--foreground);
+}
+.shadcn-btn-outline:hover {
+  background-color: var(--accent-soft);
+}
+.shadcn-btn-ghost {
+  background-color: transparent;
+  color: var(--muted-foreground);
+}
+.shadcn-btn-ghost:hover {
+  background-color: var(--accent-soft);
+  color: var(--foreground);
+}
+.shadcn-btn-destructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+/* shadcn Input */
+.shadcn-input {
+  display: flex;
+  width: 100%;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--input);
+  background-color: transparent;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.shadcn-input::placeholder {
+  color: var(--muted-foreground);
+}
+.shadcn-input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring);
+}
+.shadcn-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+/* shadcn Badge */
+.shadcn-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: calc(var(--radius) - 4px);
+  border: 1px solid transparent;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.shadcn-badge-default {
+  background-color: var(--brand);
+  color: var(--brand-foreground);
+}
+.shadcn-badge-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+.shadcn-badge-outline {
+  border-color: var(--border);
+  color: var(--foreground);
+}
+.shadcn-badge-destructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+/* shadcn Table */
+.shadcn-table {
+  width: 100%;
+  font-size: 0.875rem;
+}
+.shadcn-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+.shadcn-table th {
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  text-align: left;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+.shadcn-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.15s ease;
+}
+.shadcn-table tbody tr:last-child {
+  border-bottom: none;
+}
+.shadcn-table tbody tr:hover {
+  background-color: var(--muted);
+}
+.shadcn-table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+/* Sidebar active item */
+.shadcn-navitem-active {
+  background-color: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+  font-weight: 500;
+}
+
+/* Focus ring */
+.shadcn-focus:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}

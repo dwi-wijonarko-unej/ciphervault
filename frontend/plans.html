@@ -28,8 +28,16 @@
             surface: { DEFAULT: "var(--surface)", card: "var(--surface-card)", hover: "var(--surface-hover)", input: "var(--surface-input)" },
             border: { DEFAULT: "var(--border)", focus: "#2d6a4f" },
             muted: "var(--muted)", body: "var(--bg-body)", primary: "var(--text-primary)", secondary: "var(--text-secondary)",
+            background: "var(--background)", foreground: "var(--foreground)",
+            card: { DEFAULT: "var(--card)", foreground: "var(--card-foreground)" },
+            popover: { DEFAULT: "var(--popover)", foreground: "var(--popover-foreground)" },
+            brand: { DEFAULT: "var(--brand)", foreground: "var(--brand-foreground)" },
+            "muted-foreground": "var(--muted-foreground)", destructive: "var(--destructive)",
+            input: "var(--input)", ring: "var(--ring)",
+            sidebar: { DEFAULT: "var(--sidebar)", foreground: "var(--sidebar-foreground)", primary: "var(--sidebar-primary)", accent: "var(--sidebar-accent)" },
           },
           fontFamily: { heading: ['"Space Grotesk"', "system-ui", "sans-serif"], sans: ["Inter", "system-ui", "sans-serif"] },
+          borderRadius: { lg: "var(--radius)", md: "calc(var(--radius) - 2px)", sm: "calc(var(--radius) - 4px)" },
         },
       },
     };
@@ -37,6 +45,7 @@
   <link rel="stylesheet" href="css/style.css?v=20260804" />
   <link rel="stylesheet" href="css/components.css?v=20260804" />
   <link rel="stylesheet" href="css/animations.css?v=20260804" />
+  <link rel="stylesheet" href="css/shadcn.css?v=20260920" />
 </head>
 <body class="bg-body text-primary min-h-screen">
   <nav class="bg-surface border-b border-border h-16 flex items-center justify-between px-6 sticky top-0 z-50">
