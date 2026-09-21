@@ -167,6 +167,36 @@ def test_invoice_pdf_contains_ppn():
     assert b"PPN 11%" in r.content
 
 
+def test_invoice_detail_returns_plan_info():
+    token, _ = _register_and_login()
+    r = client.post(
+        "/billing/checkout",
+        json={"plan_id": _plan_id("pro"), "cycle": "monthly"},
+        headers=_auth(token),
+    )
+    invoice_id = r.json()["invoice_id"]
+    r = client.get(f"/billing/invoices/{invoice_id}/detail", headers=_auth(token))
+    assert r.status_code == 200
+    body = r.json()
+    assert body["invoice_number"].startswith("CV-")
+    assert body["plan_name"] == "pro"
+    assert body["payment_gateway"] == "midtrans"
+    assert body["amount"] == 29000_00
+
+
+def test_invoice_detail_other_user_forbidden():
+    token, _ = _register_and_login()
+    r = client.post(
+        "/billing/checkout",
+        json={"plan_id": _plan_id("pro"), "cycle": "monthly"},
+        headers=_auth(token),
+    )
+    invoice_id = r.json()["invoice_id"]
+    other_token, _ = _register_and_login()
+    r = client.get(f"/billing/invoices/{invoice_id}/detail", headers=_auth(other_token))
+    assert r.status_code == 404
+
+
 def test_admin_revenue_and_subscriptions():
     token, user = _register_and_login()
     _make_admin(user["id"])

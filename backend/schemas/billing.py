@@ -64,6 +64,11 @@ class InvoiceResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class InvoiceDetailResponse(InvoiceResponse):
+    plan_name: str = "-"
+    payment_gateway: str = "manual"
+
+
 class UsageResponse(BaseModel):
     plan_name: str
     storage_used_bytes: int

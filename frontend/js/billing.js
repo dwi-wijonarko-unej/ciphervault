@@ -109,39 +109,14 @@ const Billing = (() => {
         const total = ((inv.amount + inv.tax_amount) / 100).toLocaleString("id-ID");
         const tax = (inv.tax_amount / 100).toLocaleString("id-ID");
         const statusColor = inv.status === "paid" ? "text-green-600" : inv.status === "pending" ? "text-yellow-600" : "text-muted-foreground";
-        row.innerHTML =
-          `<td class="py-2">${inv.invoice_number}</td><td class="py-2">Rp${total}</td>` +
-          `<td class="py-2">Rp${tax}</td><td class="py-2 ${statusColor}">${inv.status}</td>` +
-          `<td class="py-2"><button class="text-sm hover:underline" style="color:var(--primary)" data-invoice="${inv.id}">PDF</button></td>`;
-        body.appendChild(row);
-      });
-      body.querySelectorAll("button[data-invoice]").forEach((btn) => {
-        btn.addEventListener("click", () => downloadInvoice(Number(btn.dataset.invoice)));
-      });
-    } catch {}
-  }
-
-  async function downloadInvoice(invoiceId) {
-    try {
-      const token = API.getToken();
-      const res = await fetch(`/billing/invoices/${invoiceId}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
-      if (!res.ok) throw new Error("Gagal mengunduh invoice");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `invoice-${invoiceId}.pdf`;
-      const cd = res.headers.get("Content-Disposition");
-      if (cd) {
-        const m = cd.match(/filename="?([^"]+)"?/);
-        if (m) a.download = m[1];
-      }
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      UI.toast("Gagal mengunduh PDF: " + (err.detail || err.message), "error");
-    }
-  }
+      row.innerHTML =
+        `<td class="py-2">${inv.invoice_number}</td><td class="py-2">Rp${total}</td>` +
+        `<td class="py-2">Rp${tax}</td><td class="py-2 ${statusColor}">${inv.status}</td>` +
+        `<td class="py-2"><a href="invoice.html?id=${inv.id}" class="text-sm hover:underline" style="color:var(--primary)">Preview</a></td>`;
+      body.appendChild(row);
+    });
+  } catch {}
+}
 
   async function checkoutPending() {
     if (pendingPlanId == null) return;

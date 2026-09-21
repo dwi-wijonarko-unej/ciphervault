@@ -373,6 +373,18 @@
   "plans.confirm": "Confirm",
   "plans.login_required": "Login required to subscribe.",
 
+  "invoice.title": "Invoice Preview",
+  "invoice.download": "Download PDF",
+  "invoice.back_billing": "Back to Subscription",
+  "invoice.payment_method": "Payment Method",
+  "invoice.item": "Item",
+  "invoice.price": "Price",
+  "invoice.created": "Created",
+  "invoice.due": "Due",
+  "invoice.total": "Total",
+  "invoice.not_found": "Invoice not found.",
+  "invoice.download_failed": "Failed to download PDF",
+
   "lang switcher.id": "ID",
   "lang switcher.en": "EN"
 }

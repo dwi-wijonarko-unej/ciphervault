@@ -9,6 +9,7 @@ from backend.models import Invoice, Plan, StoredFile, Subscription, User
 from backend.schemas.billing import (
     CheckoutRequest,
     CheckoutResponse,
+    InvoiceDetailResponse,
     InvoiceResponse,
     PlanResponse,
     SubscriptionResponse,
@@ -62,6 +63,36 @@ def list_invoices(
     user: User = Depends(get_current_user),
 ) -> list[Invoice]:
     return BillingService.user_invoices(db, user)
+
+
+@router.get("/invoices/{invoice_id}/detail", response_model=InvoiceDetailResponse)
+def get_invoice_detail(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    invoice = (
+        db.query(Invoice)
+        .filter(Invoice.id == invoice_id, Invoice.user_id == user.id)
+        .first()
+    )
+    if not invoice:
+        from fastapi import HTTPException, status
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found"
+        )
+    subscription = (
+        db.query(Subscription).filter(Subscription.id == invoice.subscription_id).first()
+    )
+    plan = None
+    if subscription:
+        plan = db.query(Plan).filter(Plan.id == subscription.plan_id).first()
+    return {
+        **InvoiceResponse.model_validate(invoice).model_dump(),
+        "plan_name": plan.name if plan else "-",
+        "payment_gateway": subscription.payment_gateway if subscription else "manual",
+    }
 
 
 @router.get("/invoices/{invoice_id}")

@@ -369,6 +369,18 @@
   "plans.confirm": "Konfirmasi",
   "plans.login_required": "Login diperlukan untuk berlangganan.",
 
+  "invoice.title": "Pratinjau Invoice",
+  "invoice.download": "Unduh PDF",
+  "invoice.back_billing": "Kembali ke Langganan",
+  "invoice.payment_method": "Metode Bayar",
+  "invoice.item": "Item",
+  "invoice.price": "Harga",
+  "invoice.created": "Dibuat",
+  "invoice.due": "Jatuh tempo",
+  "invoice.total": "Total",
+  "invoice.not_found": "Invoice tidak ditemukan.",
+  "invoice.download_failed": "Gagal mengunduh PDF",
+
   "lang switcher.id": "ID",
   "lang switcher.en": "EN"
 }
