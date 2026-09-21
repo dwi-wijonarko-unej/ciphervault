@@ -41,7 +41,7 @@ const AdminPanel = (() => {
   function updateTabState() {
     document.querySelectorAll(".admin-tab").forEach((el) => {
       const isActive = el.dataset.adminSection === activeSection;
-      el.style.color = isActive ? "var(--primary)" : "var(--text-muted-foreground)";
+      el.style.color = isActive ? "var(--primary)" : "var(--muted-foreground)";
       const bar = el.querySelector(".admin-bar");
       if (bar) {
         bar.style.background = isActive ? "var(--primary)" : "transparent";
@@ -101,7 +101,7 @@ const AdminPanel = (() => {
             </div>
           </td>
           <td class="px-4 py-3">
-            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold uppercase" style="background: ${user.role === "admin" ? "color-mix(in srgb, var(--primary) 15%, transparent)" : "var(--surface)"}; color: ${user.role === "admin" ? "var(--primary)" : "var(--text-muted-foreground)"};">${user.role}</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold uppercase" style="background: ${user.role === "admin" ? "color-mix(in srgb, var(--primary) 15%, transparent)" : "var(--surface)"}; color: ${user.role === "admin" ? "var(--primary)" : "var(--muted-foreground)"};">${user.role}</span>
           </td>
           <td class="px-4 py-3 hidden sm:table-cell">
             <span class="text-xs font-medium" style="color: ${user.is_active ? "var(--success)" : "var(--error)"};">${user.is_active ? I18n.t("common.active") : I18n.t("common.inactive")}</span>
