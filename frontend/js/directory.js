@@ -24,18 +24,18 @@ const DirectoryUI = (() => {
     if (!area) return;
 
     let html = `<nav class="flex items-center gap-1 text-sm flex-wrap">`;
-    html += `<button class="flex items-center gap-1.5 px-2 py-1 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none font-medium" onclick="DirectoryUI.navigate(null)">
+    html += `<button class="flex items-center gap-1.5 px-2 py-1 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none font-medium" onclick="DirectoryUI.navigate(null)">
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       ${I18n.t("directory.home")}
     </button>`;
 
     path.forEach((crumb, idx) => {
       const isLast = idx === path.length - 1;
-      html += `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><polyline points="9 18 15 12 9 6"/></svg>`;
+      html += `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted-foreground"><polyline points="9 18 15 12 9 6"/></svg>`;
       if (isLast) {
         html += `<span class="px-2 py-1 font-semibold" style="color: var(--primary);">${escapeHtml(crumb.name)}</span>`;
       } else {
-        html += `<button class="px-2 py-1 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="DirectoryUI.navigate(${crumb.id})">${escapeHtml(crumb.name)}</button>`;
+        html += `<button class="px-2 py-1 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="DirectoryUI.navigate(${crumb.id})">${escapeHtml(crumb.name)}</button>`;
       }
     });
     html += `</nav>`;
@@ -54,12 +54,12 @@ const DirectoryUI = (() => {
     UI.modal(
       I18n.t("directory.new_title"),
       `
-        <p class="text-secondary mb-4">${currentDir ? I18n.t("directory.create_desc_current") : I18n.t("directory.create_desc_root")}.</p>
-        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("directory.name_label")}</label>
-        <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="folder-name-input" placeholder="${I18n.t("directory.name_placeholder")}" autocomplete="off">
+        <p class="text-muted-foreground mb-4">${currentDir ? I18n.t("directory.create_desc_current") : I18n.t("directory.create_desc_root")}.</p>
+        <label class="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">${I18n.t("directory.name_label")}</label>
+        <input class="shadcn-input" id="folder-name-input" placeholder="${I18n.t("directory.name_placeholder")}" autocomplete="off">
         <div id="folder-result" class="mt-3"></div>
       `,
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.cancel")}</button>
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.cancel")}</button>
        <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-create-folder" style="background: var(--primary);">${I18n.t("directory.create_button")}</button>`,
     );
 
@@ -120,14 +120,14 @@ const DirectoryUI = (() => {
     UI.modal(
       I18n.t("directory.move_title"),
       `
-        <p class="text-secondary mb-4">${I18n.t("directory.move_desc")} <strong>"${escapeHtml(itemName)}"</strong></p>
-        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("directory.target_folder")}</label>
-        <select class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary outline-none transition-all focus:border-[#2d6a4f]" id="move-target-select">
+        <p class="text-muted-foreground mb-4">${I18n.t("directory.move_desc")} <strong>"${escapeHtml(itemName)}"</strong></p>
+        <label class="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">${I18n.t("directory.target_folder")}</label>
+        <select class="shadcn-input" id="move-target-select">
           <option value="">${I18n.t("directory.root_option")}</option>
         </select>
         <div id="move-result" class="mt-3"></div>
       `,
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.cancel")}</button>
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.cancel")}</button>
        <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-move-item" style="background: var(--primary);">${I18n.t("directory.move_button")}</button>`,
     );
 

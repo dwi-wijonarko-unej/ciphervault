@@ -5,26 +5,26 @@ const Profile = (() => {
       <div class="page-enter">
         <div class="mb-6">
           <h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("profile.title")}</h1>
-          <p class="text-sm text-muted mt-1">${I18n.t("profile.subtitle")}</p>
+          <p class="text-sm text-muted-foreground mt-1">${I18n.t("profile.subtitle")}</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6">
           <div class="space-y-6">
-            <div class="bg-surface-card border border-border rounded-lg p-5">
+            <div class="shadcn-card p-5 shadow-sm">
               <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                  ${I18n.t("profile.account")}
               </h3>
               <div class="space-y-2.5">
-                <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("profile.username")}</span><span class="text-sm font-medium">${escapeHtml(user.username)}</span></div>
-                <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("profile.email")}</span><span class="text-sm font-medium truncate ml-2">${escapeHtml(user.email || "—")}</span></div>
-                <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("profile.role")}</span><span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold uppercase ${user.role === "admin" ? "" : ""}" style="background: color-mix(in srgb, var(--primary) 15%, transparent); color: var(--primary);">${user.role}</span></div>
-                <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("profile.status")}</span><span class="text-sm font-medium" style="color: var(--success);">${user.is_active ? I18n.t("common.active") : I18n.t("common.inactive")}</span></div>
-                <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("profile.member_since")}</span><span class="text-sm font-medium">${formatDate(user.created_at)}</span></div>
+                <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("profile.username")}</span><span class="text-sm font-medium">${escapeHtml(user.username)}</span></div>
+                <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("profile.email")}</span><span class="text-sm font-medium truncate ml-2">${escapeHtml(user.email || "—")}</span></div>
+                <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("profile.role")}</span><span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold uppercase ${user.role === "admin" ? "" : ""}" style="background: color-mix(in srgb, var(--primary) 15%, transparent); color: var(--primary);">${user.role}</span></div>
+                <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("profile.status")}</span><span class="text-sm font-medium" style="color: var(--success);">${user.is_active ? I18n.t("common.active") : I18n.t("common.inactive")}</span></div>
+                <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("profile.member_since")}</span><span class="text-sm font-medium">${formatDate(user.created_at)}</span></div>
               </div>
             </div>
 
-            <div class="bg-surface-card border border-border rounded-lg p-5">
+            <div class="shadcn-card p-5 shadow-sm">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-semibold flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
@@ -40,14 +40,14 @@ const Profile = (() => {
           </div>
 
           <div class="space-y-6">
-            <div class="bg-surface-card border border-border rounded-lg p-5">
+            <div class="shadcn-card p-5 shadow-sm">
               <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                  ${I18n.t("profile.api_guide")}
               </h3>
-              <p class="text-sm text-secondary mb-3">${I18n.t("profile.api_guide_desc")} <code class="px-1.5 py-0.5 rounded text-xs font-mono" style="background: var(--surface); color: var(--primary);">X-API-Key</code> ${I18n.t("profile.api_guide_header")}</p>
-              <div class="bg-surface border border-border rounded-lg p-4 mb-3">
-                <div class="text-xs font-semibold text-muted uppercase tracking-wider mb-2">${I18n.t("profile.upload_python")}</div>
+              <p class="text-sm text-muted-foreground mb-3">${I18n.t("profile.api_guide_desc")} <code class="px-1.5 py-0.5 rounded text-xs font-mono" style="background: var(--surface); color: var(--primary);">X-API-Key</code> ${I18n.t("profile.api_guide_header")}</p>
+              <div class="bg-muted border border-border rounded-lg p-4 mb-3">
+                <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">${I18n.t("profile.upload_python")}</div>
                 <pre class="text-xs overflow-x-auto whitespace-pre-wrap font-mono" style="color: var(--text-primary);">import requests
 
 resp = requests.post(
@@ -57,25 +57,25 @@ resp = requests.post(
 )
 print(resp.json())</pre>
               </div>
-              <div class="bg-surface border border-border rounded-lg p-4 mb-3">
-                <div class="text-xs font-semibold text-muted uppercase tracking-wider mb-2">${I18n.t("profile.list_curl")}</div>
+              <div class="bg-muted border border-border rounded-lg p-4 mb-3">
+                <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">${I18n.t("profile.list_curl")}</div>
                 <pre class="text-xs overflow-x-auto whitespace-pre-wrap font-mono" style="color: var(--text-primary);">curl -H "X-API-Key: cv_your_key_here" \\
   http://localhost:8000/files</pre>
               </div>
-              <div class="bg-surface border border-border rounded-lg p-4">
-                <div class="text-xs font-semibold text-muted uppercase tracking-wider mb-2">${I18n.t("profile.download_curl")}</div>
+              <div class="bg-muted border border-border rounded-lg p-4">
+                <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">${I18n.t("profile.download_curl")}</div>
                 <pre class="text-xs overflow-x-auto whitespace-pre-wrap font-mono" style="color: var(--text-primary);">curl -H "X-API-Key: cv_your_key_here" \\
   -o decrypted_file.pdf \\
   http://localhost:8000/files/1/download</pre>
               </div>
             </div>
 
-            <div class="bg-surface-card border border-border rounded-lg p-5">
+            <div class="shadcn-card p-5 shadow-sm">
               <h3 class="text-base font-semibold mb-3 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                  ${I18n.t("profile.public_links")}
               </h3>
-              <p class="text-sm text-secondary">${I18n.t("profile.public_links_desc")}</p>
+              <p class="text-sm text-muted-foreground">${I18n.t("profile.public_links_desc")}</p>
             </div>
           </div>
         </div>
@@ -88,11 +88,11 @@ print(resp.json())</pre>
     const list = document.getElementById("api-keys-list");
     if (!list) return;
     list.innerHTML =
-      `<div class="text-xs text-muted text-center py-3">${I18n.t("common.loading")}</div>`;
+      `<div class="text-xs text-muted-foreground text-center py-3">${I18n.t("common.loading")}</div>`;
     try {
       const res = await API.request("GET", "/api-keys");
       if (!res.keys || res.keys.length === 0) {
-        list.innerHTML = `<p class="text-xs text-muted text-center py-4">${I18n.t("profile.no_keys")}</p>`;
+        list.innerHTML = `<p class="text-xs text-muted-foreground text-center py-4">${I18n.t("profile.no_keys")}</p>`;
         return;
       }
       list.innerHTML = res.keys
@@ -100,19 +100,19 @@ print(resp.json())</pre>
           const expired =
             key.expires_at && new Date(key.expires_at) < new Date();
           return `
-          <div class="flex items-center justify-between p-3 bg-surface border border-border rounded-md">
+          <div class="flex items-center justify-between p-3 bg-muted border border-border rounded-md">
             <div class="min-w-0">
               <div class="flex items-center gap-2">
                 <span class="text-sm font-medium">${escapeHtml(key.label)}</span>
                 ${key.is_active && !expired ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full" style="background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success);">${I18n.t("common.active")}</span>` : `<span class="text-[10px] px-1.5 py-0.5 rounded-full" style="background: color-mix(in srgb, var(--error) 15%, transparent); color: var(--error);">${I18n.t("common.expired")}</span>`}
               </div>
-              <div class="text-xs text-muted font-mono mt-0.5">${key.key_prefix}••••••••</div>
-              <div class="text-[10px] text-muted mt-0.5">
+              <div class="text-xs text-muted-foreground font-mono mt-0.5">${key.key_prefix}••••••••</div>
+              <div class="text-[10px] text-muted-foreground mt-0.5">
                 ${key.last_used ? `${I18n.t("profile.last_used")} ${formatDate(key.last_used)}` : I18n.t("common.never")}
                 ${key.expires_at ? ` · ${I18n.t("profile.expires_label")} ${formatDate(key.expires_at)}` : ` · ${I18n.t("common.no_expiry")}`}
               </div>
             </div>
-            <button class="p-2 rounded-md text-muted hover:text-error hover:bg-[rgba(196,69,69,0.08)] transition-all cursor-pointer bg-transparent border-none flex-shrink-0" onclick="Profile.revokeKey(${key.id})" title="${I18n.t("profile.revoke")}">
+            <button class="p-2 rounded-md text-muted-foreground hover:text-error hover:bg-[rgba(196,69,69,0.08)] transition-all cursor-pointer bg-transparent border-none flex-shrink-0" onclick="Profile.revokeKey(${key.id})" title="${I18n.t("profile.revoke")}">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </button>
           </div>`;
@@ -127,14 +127,14 @@ print(resp.json())</pre>
     UI.modal(
       I18n.t("profile.generate_title"),
       `
-        <p class="text-secondary mb-4">${I18n.t("profile.generate_desc")}</p>
-        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("profile.label")}</label>
-        <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="key-label" placeholder="${I18n.t("profile.label_placeholder")}" value="default" autocomplete="off">
-        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5 mt-4">${I18n.t("profile.expires_days")}</label>
-        <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="key-expires" type="number" placeholder="${I18n.t("profile.expires_days_placeholder")}" min="1" max="3650">
+        <p class="text-muted-foreground mb-4">${I18n.t("profile.generate_desc")}</p>
+        <label class="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">${I18n.t("profile.label")}</label>
+        <input class="shadcn-input" id="key-label" placeholder="${I18n.t("profile.label_placeholder")}" value="default" autocomplete="off">
+        <label class="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 mt-4">${I18n.t("profile.expires_days")}</label>
+        <input class="shadcn-input" id="key-expires" type="number" placeholder="${I18n.t("profile.expires_days_placeholder")}" min="1" max="3650">
         <div id="key-result" class="mt-4"></div>
       `,
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>
        <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-generate-key" style="background: var(--primary);">${I18n.t("profile.generate_button")}</button>`,
     );
 
@@ -158,8 +158,8 @@ print(resp.json())</pre>
               <div class="p-4 rounded-md border-2" style="border-color: var(--success); background: color-mix(in srgb, var(--success) 5%, transparent);">
                 <div class="text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--success);">${I18n.t("profile.key_warning")}</div>
                 <div class="flex items-center gap-2">
-                  <code class="flex-1 text-xs font-mono break-all bg-surface px-3 py-2 rounded border border-border" style="color: var(--primary);">${escapeHtml(res.key)}</code>
-                  <button class="px-3 py-2 rounded-md text-xs font-medium hover:bg-surface-hover transition-all cursor-pointer bg-transparent border border-border" onclick="navigator.clipboard.writeText('${res.key}'); UI.toast('${I18n.t("profile.link_copied")}', 'success', 2000)">${I18n.t("common.copy")}</button>
+                  <code class="flex-1 text-xs font-mono break-all bg-muted px-3 py-2 rounded border border-border" style="color: var(--primary);">${escapeHtml(res.key)}</code>
+                  <button class="px-3 py-2 rounded-md text-xs font-medium hover:bg-muted transition-all cursor-pointer bg-transparent border border-border" onclick="navigator.clipboard.writeText('${res.key}'); UI.toast('${I18n.t("profile.link_copied")}', 'success', 2000)">${I18n.t("common.copy")}</button>
                 </div>
               </div>`;
             btn.style.display = "none";
@@ -217,26 +217,26 @@ const PublicLinkUI = (() => {
     UI.modal(
       I18n.t("profile.public_link_title"),
       `
-        <p class="text-secondary mb-4">${I18n.t("profile.public_link_desc")} <strong>"${escapeHtml(fileName)}"</strong>. ${I18n.t("profile.public_link_no_login")}</p>
+        <p class="text-muted-foreground mb-4">${I18n.t("profile.public_link_desc")} <strong>"${escapeHtml(fileName)}"</strong>. ${I18n.t("profile.public_link_no_login")}</p>
         <div class="grid grid-cols-2 gap-3 mb-3">
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("profile.pwd_optional")}</label>
-            <input class="w-full px-3 py-2 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f]" id="pl-password" type="text" placeholder="${I18n.t("common.no_password")}">
+            <label class="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">${I18n.t("profile.pwd_optional")}</label>
+            <input class="w-full px-3 py-2 bg-muted border border-border rounded-md text-sm text-primary placeholder-muted-foreground outline-none transition-all focus:border-[#2d6a4f]" id="pl-password" type="text" placeholder="${I18n.t("common.no_password")}">
           </div>
           <div>
-            <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("profile.max_downloads")}</label>
-            <input class="w-full px-3 py-2 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f]" id="pl-max" type="number" placeholder="${I18n.t("common.unlimited_short")}" min="1">
+            <label class="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">${I18n.t("profile.max_downloads")}</label>
+            <input class="w-full px-3 py-2 bg-muted border border-border rounded-md text-sm text-primary placeholder-muted-foreground outline-none transition-all focus:border-[#2d6a4f]" id="pl-max" type="number" placeholder="${I18n.t("common.unlimited_short")}" min="1">
           </div>
         </div>
         <div>
-          <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("profile.expires_hours")}</label>
-          <input class="w-full px-3 py-2 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f]" id="pl-expires" type="number" placeholder="${I18n.t("common.no_expiry")}" min="1">
+          <label class="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">${I18n.t("profile.expires_hours")}</label>
+          <input class="w-full px-3 py-2 bg-muted border border-border rounded-md text-sm text-primary placeholder-muted-foreground outline-none transition-all focus:border-[#2d6a4f]" id="pl-expires" type="number" placeholder="${I18n.t("common.no_expiry")}" min="1">
         </div>
         <button class="mt-4 w-full px-4 py-2.5 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-create-pl" style="background: var(--primary);">${I18n.t("profile.create_link_button")}</button>
         <div id="pl-result" class="mt-3"></div>
         <div id="pl-existing" class="mt-4"></div>
       `,
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>`,
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>`,
     );
 
     setTimeout(() => {
@@ -275,11 +275,11 @@ const PublicLinkUI = (() => {
         <div class="p-4 rounded-md border-2" style="border-color: var(--success); background: color-mix(in srgb, var(--success) 5%, transparent);">
           <div class="text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--success);">${I18n.t("profile.link_created")}</div>
           <div class="flex items-center gap-2">
-            <code class="flex-1 text-xs font-mono break-all bg-surface px-3 py-2 rounded border border-border" style="color: var(--primary);">${fullUrl}</code>
-            <button class="px-3 py-2 rounded-md text-xs font-medium hover:bg-surface-hover transition-all cursor-pointer bg-transparent border border-border" onclick="navigator.clipboard.writeText('${fullUrl}'); UI.toast('${I18n.t("common.copied")}', 'success', 2000)">${I18n.t("common.copy")}</button>
+            <code class="flex-1 text-xs font-mono break-all bg-muted px-3 py-2 rounded border border-border" style="color: var(--primary);">${fullUrl}</code>
+            <button class="px-3 py-2 rounded-md text-xs font-medium hover:bg-muted transition-all cursor-pointer bg-transparent border border-border" onclick="navigator.clipboard.writeText('${fullUrl}'); UI.toast('${I18n.t("common.copied")}', 'success', 2000)">${I18n.t("common.copy")}</button>
           </div>
-          ${res.has_password ? `<div class="text-xs text-muted mt-2">${I18n.t("profile.link_password_protected")}</div>` : ""}
-          ${res.max_access ? `<div class="text-xs text-muted mt-1">${I18n.t("profile.max_downloads_label")} ${res.max_access}</div>` : ""}
+          ${res.has_password ? `<div class="text-xs text-muted-foreground mt-2">${I18n.t("profile.link_password_protected")}</div>` : ""}
+          ${res.max_access ? `<div class="text-xs text-muted-foreground mt-1">${I18n.t("profile.max_downloads_label")} ${res.max_access}</div>` : ""}
         </div>`;
       btn.style.display = "none";
       UI.toast(I18n.t("profile.link_created_ok"), "success");
@@ -302,21 +302,21 @@ const PublicLinkUI = (() => {
       }
       const baseUrl = API.getBaseUrl();
       area.innerHTML = `
-        <div class="text-xs font-semibold text-muted uppercase tracking-wider mb-2">${I18n.t("profile.existing_links")}</div>
+        <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">${I18n.t("profile.existing_links")}</div>
         ${res.links
           .map((link) => {
             const url = `${baseUrl}${link.url}`;
             return `
-            <div class="flex items-center justify-between p-2.5 bg-surface border border-border rounded-md mb-1.5">
+            <div class="flex items-center justify-between p-2.5 bg-muted border border-border rounded-md mb-1.5">
               <div class="min-w-0 flex-1">
                 <code class="text-xs font-mono break-all">${url.substring(0, 60)}...</code>
-                <div class="text-[10px] text-muted mt-0.5">
+                <div class="text-[10px] text-muted-foreground mt-0.5">
                   ${link.access_count} ${I18n.t("profile.downloads_label")}
                   ${link.has_password ? ` · ${I18n.t("profile.link_password")}` : ""}
                   ${link.expires_at ? ` · ${I18n.t("profile.expires_label")} ${formatDate(link.expires_at)}` : ""}
                 </div>
               </div>
-              <button class="p-1.5 rounded-md text-muted hover:text-error hover:bg-[rgba(196,69,69,0.08)] transition-all cursor-pointer bg-transparent border-none flex-shrink-0" onclick="PublicLinkUI.revoke(${link.id}, ${fileId})" title="${I18n.t("profile.revoke")}">
+              <button class="p-1.5 rounded-md text-muted-foreground hover:text-error hover:bg-[rgba(196,69,69,0.08)] transition-all cursor-pointer bg-transparent border-none flex-shrink-0" onclick="PublicLinkUI.revoke(${link.id}, ${fileId})" title="${I18n.t("profile.revoke")}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
               </button>
             </div>`;

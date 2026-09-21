@@ -7,7 +7,7 @@ const AdminPanel = (() => {
       <div class="page-enter">
         <div class="mb-6">
           <h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("admin.title")}</h1>
-          <p class="text-sm text-muted mt-1">${I18n.t("admin.subtitle")}</p>
+          <p class="text-sm text-muted-foreground mt-1">${I18n.t("admin.subtitle")}</p>
         </div>
 
         <div class="flex items-center gap-1 mb-6 border-b border-border">
@@ -41,7 +41,7 @@ const AdminPanel = (() => {
   function updateTabState() {
     document.querySelectorAll(".admin-tab").forEach((el) => {
       const isActive = el.dataset.adminSection === activeSection;
-      el.style.color = isActive ? "var(--primary)" : "var(--text-secondary)";
+      el.style.color = isActive ? "var(--primary)" : "var(--text-muted-foreground)";
       const bar = el.querySelector(".admin-bar");
       if (bar) {
         bar.style.background = isActive ? "var(--primary)" : "transparent";
@@ -61,7 +61,7 @@ const AdminPanel = (() => {
       else if (section === "stats") await renderStats(content);
       else if (section === "security") await renderSecurity(content);
     } catch (e) {
-      content.innerHTML = `<div class="bg-surface-card border border-border rounded-lg p-10 text-center"><p class="text-error">${e.detail || I18n.t("admin.load_error")}</p></div>`;
+      content.innerHTML = `<div class="shadcn-card p-10 text-center"><p class="text-error">${e.detail || I18n.t("admin.load_error")}</p></div>`;
     }
   }
 
@@ -70,59 +70,59 @@ const AdminPanel = (() => {
     usersCache = res.items;
 
     if (res.items.length === 0) {
-      container.innerHTML = `<div class="bg-surface-card border border-border rounded-lg p-10 text-center"><p class="text-muted">${I18n.t("admin.no_users")}</p></div>`;
+      container.innerHTML = `<div class="shadcn-card p-10 text-center"><p class="text-muted-foreground">${I18n.t("admin.no_users")}</p></div>`;
       return;
     }
 
-    let html = `<div class="bg-surface-card border border-border rounded-lg overflow-hidden">
+    let html = `<div class="shadcn-card overflow-hidden shadow-sm">
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead>
-            <tr class="bg-surface border-b border-border">
-              <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">${I18n.t("common.name")}</th>
-              <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">${I18n.t("profile.role")}</th>
-              <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider hidden sm:table-cell">${I18n.t("profile.status")}</th>
-              <th class="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider hidden md:table-cell">${I18n.t("common.date")}</th>
-              <th class="text-right px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wider">${I18n.t("common.actions")}</th>
+            <tr class="bg-muted border-b border-border">
+              <th class="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("common.name")}</th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("profile.role")}</th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">${I18n.t("profile.status")}</th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">${I18n.t("common.date")}</th>
+              <th class="text-right px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("common.actions")}</th>
             </tr>
           </thead>
           <tbody>`;
 
     res.items.forEach((user) => {
       html += `
-        <tr class="border-b border-border last:border-0 hover:bg-surface-hover transition-colors duration-150">
+        <tr class="border-b border-border last:border-0 hover:bg-muted transition-colors duration-150">
           <td class="px-4 py-3">
             <div class="flex items-center gap-2.5">
               <span class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style="background: var(--primary);">${user.username[0].toUpperCase()}</span>
               <div class="min-w-0">
                 <div class="text-sm font-medium">${user.username}</div>
-                <div class="text-xs text-muted truncate max-w-[200px]">${user.email}</div>
+                <div class="text-xs text-muted-foreground truncate max-w-[200px]">${user.email}</div>
               </div>
             </div>
           </td>
           <td class="px-4 py-3">
-            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold uppercase" style="background: ${user.role === "admin" ? "color-mix(in srgb, var(--primary) 15%, transparent)" : "var(--surface)"}; color: ${user.role === "admin" ? "var(--primary)" : "var(--text-secondary)"};">${user.role}</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold uppercase" style="background: ${user.role === "admin" ? "color-mix(in srgb, var(--primary) 15%, transparent)" : "var(--surface)"}; color: ${user.role === "admin" ? "var(--primary)" : "var(--text-muted-foreground)"};">${user.role}</span>
           </td>
           <td class="px-4 py-3 hidden sm:table-cell">
             <span class="text-xs font-medium" style="color: ${user.is_active ? "var(--success)" : "var(--error)"};">${user.is_active ? I18n.t("common.active") : I18n.t("common.inactive")}</span>
           </td>
-          <td class="px-4 py-3 text-sm text-muted whitespace-nowrap hidden md:table-cell">${formatDate(user.created_at)}</td>
+          <td class="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap hidden md:table-cell">${formatDate(user.created_at)}</td>
           <td class="px-4 py-3 text-right">
             <div class="flex items-center justify-end gap-1">
-              <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="AdminPanel.toggleRole(${user.id}, '${user.role}')" title="${user.role === "admin" ? I18n.t("admin.role_toggle_demote") : I18n.t("admin.role_toggle_promote")}">
+              <button class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="AdminPanel.toggleRole(${user.id}, '${user.role}')" title="${user.role === "admin" ? I18n.t("admin.role_toggle_demote") : I18n.t("admin.role_toggle_promote")}">
                 ${user.role === "admin"
         ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>'
         : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>'}
               </button>
-              <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="AdminPanel.toggleActive(${user.id}, ${user.is_active})" title="${user.is_active ? I18n.t("admin.deactivate") : I18n.t("admin.activate")}">
+              <button class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="AdminPanel.toggleActive(${user.id}, ${user.is_active})" title="${user.is_active ? I18n.t("admin.deactivate") : I18n.t("admin.activate")}">
                 ${user.is_active
         ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>'
         : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'}
               </button>
-              <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="AdminPanel.resetPassword(${user.id}, '${user.username}')" title="${I18n.t("admin.reset_password_title")}">
+              <button class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="AdminPanel.resetPassword(${user.id}, '${user.username}')" title="${I18n.t("admin.reset_password_title")}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
               </button>
-              <button class="p-2 rounded-md text-muted hover:text-error hover:bg-[rgba(196,69,69,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="AdminPanel.deleteUser(${user.id}, '${user.username}')" title="${I18n.t("admin.delete_user_title")}">
+              <button class="p-2 rounded-md text-muted-foreground hover:text-error hover:bg-[rgba(196,69,69,0.08)] transition-all cursor-pointer bg-transparent border-none" onclick="AdminPanel.deleteUser(${user.id}, '${user.username}')" title="${I18n.t("admin.delete_user_title")}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
@@ -175,12 +175,12 @@ const AdminPanel = (() => {
     UI.modal(
       I18n.t("admin.reset_title", {username}),
       `
-        <p class="text-secondary mb-4">${I18n.t("admin.reset_desc")}</p>
-        <label class="block text-xs font-medium text-secondary uppercase tracking-wider mb-1.5">${I18n.t("admin.reset_new_pwd")}</label>
-        <input class="w-full px-3.5 py-2.5 bg-surface-input border border-border rounded-md text-sm text-primary placeholder-muted outline-none transition-all focus:border-[#2d6a4f] focus:ring-[3px] focus:ring-[rgba(45,106,79,0.1)]" id="reset-pw-input" type="password" placeholder="${I18n.t("admin.reset_placeholder")}" autocomplete="new-password">
+        <p class="text-muted-foreground mb-4">${I18n.t("admin.reset_desc")}</p>
+        <label class="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">${I18n.t("admin.reset_new_pwd")}</label>
+        <input class="shadcn-input" id="reset-pw-input" type="password" placeholder="${I18n.t("admin.reset_placeholder")}" autocomplete="new-password">
         <div id="reset-pw-result" class="mt-3"></div>
       `,
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.cancel")}</button>
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.cancel")}</button>
        <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" id="btn-reset-pw" style="background: var(--primary);">${I18n.t("admin.reset_button")}</button>`,
     );
 
@@ -240,41 +240,41 @@ const AdminPanel = (() => {
 
     container.innerHTML = `
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <div class="bg-surface-card border border-border rounded-lg p-4">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider">${I18n.t("admin.stats_total_users")}</div>
+        <div class="shadcn-card p-4 shadow-sm">
+          <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.stats_total_users")}</div>
           <div style="font-size: 1.75rem; font-weight: 900; color: var(--primary);">${res.users.total}</div>
-          <div class="text-xs text-muted mt-1">${res.users.active} ${I18n.t("admin.stats_active")} · ${res.users.admins} ${I18n.t("admin.stats_admins")}</div>
+          <div class="text-xs text-muted-foreground mt-1">${res.users.active} ${I18n.t("admin.stats_active")} · ${res.users.admins} ${I18n.t("admin.stats_admins")}</div>
         </div>
-        <div class="bg-surface-card border border-border rounded-lg p-4">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider">${I18n.t("admin.stats_total_files")}</div>
+        <div class="shadcn-card p-4 shadow-sm">
+          <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.stats_total_files")}</div>
           <div style="font-size: 1.75rem; font-weight: 900; color: var(--primary);">${res.files.total}</div>
-          <div class="text-xs text-muted mt-1">${storageMB} MB ${I18n.t("admin.stats_stored")}</div>
+          <div class="text-xs text-muted-foreground mt-1">${storageMB} MB ${I18n.t("admin.stats_stored")}</div>
         </div>
-        <div class="bg-surface-card border border-border rounded-lg p-4">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider">${I18n.t("admin.stats_shares")}</div>
+        <div class="shadcn-card p-4 shadow-sm">
+          <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.stats_shares")}</div>
           <div style="font-size: 1.75rem; font-weight: 900; color: var(--primary);">${res.shares.total}</div>
-          <div class="text-xs text-muted mt-1">${res.shares.active} ${I18n.t("admin.stats_active")}</div>
+          <div class="text-xs text-muted-foreground mt-1">${res.shares.active} ${I18n.t("admin.stats_active")}</div>
         </div>
-        <div class="bg-surface-card border border-border rounded-lg p-4">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider">${I18n.t("admin.stats_public_links")}</div>
+        <div class="shadcn-card p-4 shadow-sm">
+          <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.stats_public_links")}</div>
           <div style="font-size: 1.75rem; font-weight: 900; color: var(--primary);">${res.public_links.total}</div>
-          <div class="text-xs text-muted mt-1">${res.public_links.active} ${I18n.t("admin.stats_active")} · ${res.api_keys} ${I18n.t("admin.stats_api_keys")}</div>
+          <div class="text-xs text-muted-foreground mt-1">${res.public_links.active} ${I18n.t("admin.stats_active")} · ${res.api_keys} ${I18n.t("admin.stats_api_keys")}</div>
         </div>
       </div>
 
-      <div class="bg-surface-card border border-border rounded-lg p-5">
+      <div class="shadcn-card p-5 shadow-sm">
         <h3 class="text-base font-semibold mb-4">${I18n.t("admin.stats_recent")}</h3>
         <div class="space-y-1">
           ${res.recent_activities.length === 0
-        ? `<p class="text-sm text-muted text-center py-4">${I18n.t("admin.stats_no_recent")}</p>`
+        ? `<p class="text-sm text-muted-foreground text-center py-4">${I18n.t("admin.stats_no_recent")}</p>`
         : res.recent_activities
             .map((a) => {
-              return `<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-hover transition-colors">
+              return `<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors">
                   <span class="w-2 h-2 rounded-full flex-shrink-0" style="background: var(--primary);"></span>
                   <div class="flex-1 min-w-0">
                     <div class="text-sm truncate">${a.details}</div>
                   </div>
-                  <span class="text-xs text-muted whitespace-nowrap flex-shrink-0">${formatDate(a.timestamp)}</span>
+                  <span class="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">${formatDate(a.timestamp)}</span>
                 </div>`;
             })
             .join("")}
@@ -285,47 +285,47 @@ const AdminPanel = (() => {
 
   async function renderSecurity(container) {
     container.innerHTML =
-      `<div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border animate-spin mx-auto" style="border-top-color: var(--primary); border-radius: 50%;"></div><p class="text-xs text-muted mt-3">${I18n.t("admin.security_analyzing")}</p></div>`;
+      `<div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border animate-spin mx-auto" style="border-top-color: var(--primary); border-radius: 50%;"></div><p class="text-xs text-muted-foreground mt-3">${I18n.t("admin.security_analyzing")}</p></div>`;
 
     const res = await API.request("GET", "/admin/security/stats");
 
     if (res.files_analyzed === 0) {
-      container.innerHTML = `<div class="bg-surface-card border border-border rounded-lg p-10 text-center"><p class="text-muted">${I18n.t("admin.security_no_files")}</p></div>`;
+      container.innerHTML = `<div class="shadcn-card p-10 text-center"><p class="text-muted-foreground">${I18n.t("admin.security_no_files")}</p></div>`;
       return;
     }
 
     container.innerHTML = `
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <div class="bg-surface-card border border-border rounded-lg p-4">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider">${I18n.t("admin.security_files_analyzed")}</div>
+        <div class="shadcn-card p-4 shadow-sm">
+          <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.security_files_analyzed")}</div>
           <div style="font-size: 1.75rem; font-weight: 900; color: var(--primary);">${res.files_analyzed}</div>
         </div>
-        <div class="bg-surface-card border border-border rounded-lg p-4">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider">${I18n.t("admin.security_avg_score")}</div>
+        <div class="shadcn-card p-4 shadow-sm">
+          <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.security_avg_score")}</div>
           <div style="font-size: 1.75rem; font-weight: 900; color: ${res.average_score >= 70 ? "var(--success)" : "var(--warning)"};">${res.average_score}</div>
-          <div class="text-xs text-muted mt-1">${I18n.t("admin.security_range")} ${res.min_score}–${res.max_score}</div>
+          <div class="text-xs text-muted-foreground mt-1">${I18n.t("admin.security_range")} ${res.min_score}–${res.max_score}</div>
         </div>
-        <div class="bg-surface-card border border-border rounded-lg p-4">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider">${I18n.t("admin.security_avg_entropy")}</div>
+        <div class="shadcn-card p-4 shadow-sm">
+          <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.security_avg_entropy")}</div>
           <div style="font-size: 1.75rem; font-weight: 900; color: var(--primary);">${res.average_entropy}</div>
-          <div class="text-xs text-muted mt-1">${I18n.t("admin.security_entropy_hint")}</div>
+          <div class="text-xs text-muted-foreground mt-1">${I18n.t("admin.security_entropy_hint")}</div>
         </div>
-        <div class="bg-surface-card border border-border rounded-lg p-4">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider">${I18n.t("admin.security_lowest")}</div>
+        <div class="shadcn-card p-4 shadow-sm">
+          <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.security_lowest")}</div>
           <div style="font-size: 1.75rem; font-weight: 900; color: ${res.min_score < 50 ? "var(--error)" : "var(--warning)"};">${res.min_score}</div>
         </div>
       </div>
 
-      <div class="bg-surface-card border border-border rounded-lg p-5">
+      <div class="shadcn-card p-5 shadow-sm">
         <h3 class="text-base font-semibold mb-4">${I18n.t("admin.security_per_file")}</h3>
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead>
               <tr class="border-b border-border">
-                <th class="text-left px-3 py-2 text-xs font-semibold text-secondary uppercase tracking-wider">${I18n.t("common.name")}</th>
-                <th class="text-left px-3 py-2 text-xs font-semibold text-secondary uppercase tracking-wider">${I18n.t("admin.security_avg_score")}</th>
-                <th class="text-left px-3 py-2 text-xs font-semibold text-secondary uppercase tracking-wider">${I18n.t("admin.security_avg_entropy")}</th>
-                <th class="text-left px-3 py-2 text-xs font-semibold text-secondary uppercase tracking-wider hidden sm:table-cell">${I18n.t("common.size")}</th>
+                <th class="text-left px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("common.name")}</th>
+                <th class="text-left px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.security_avg_score")}</th>
+                <th class="text-left px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">${I18n.t("admin.security_avg_entropy")}</th>
+                <th class="text-left px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">${I18n.t("common.size")}</th>
               </tr>
             </thead>
             <tbody>
@@ -337,11 +337,11 @@ const AdminPanel = (() => {
                 : f.score >= 50
                   ? "var(--warning)"
                   : "var(--error)";
-          return `<tr class="border-b border-border last:border-0 hover:bg-surface-hover transition-colors">
+          return `<tr class="border-b border-border last:border-0 hover:bg-muted transition-colors">
                   <td class="px-3 py-2 text-sm font-medium truncate max-w-[200px]">${f.filename}</td>
                   <td class="px-3 py-2"><span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold" style="background: color-mix(in srgb, ${scoreColor} 15%, transparent); color: ${scoreColor};">${f.score}</span></td>
                   <td class="px-3 py-2 text-sm font-mono">${f.entropy.toFixed(4)}</td>
-                  <td class="px-3 py-2 text-sm text-muted hidden sm:table-cell">${f.size_encrypted} ${I18n.t("common.bytes")}</td>
+                  <td class="px-3 py-2 text-sm text-muted-foreground hidden sm:table-cell">${f.size_encrypted} ${I18n.t("common.bytes")}</td>
                 </tr>`;
         })
         .join("")}

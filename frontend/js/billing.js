@@ -3,27 +3,27 @@ const Billing = (() => {
     container.innerHTML = `
       <div class="page-enter max-w-[1100px] mx-auto">
         <h1 class="text-3xl font-black font-heading tracking-tight mb-6" data-i18n="billing.title">Langganan Saya</h1>
-        <section id="billing-current-plan" class="bg-surface-card border border-border rounded-lg p-6 mb-6">
+        <section id="billing-current-plan" class="shadcn-card p-6 mb-6 shadow-sm">
           <h2 class="text-lg font-bold mb-3" data-i18n="billing.current">Paket Saat Ini</h2>
-          <p id="billing-plan-info" class="text-sm text-secondary">Memuat...</p>
-          <p id="billing-usage-info" class="text-sm text-muted mt-2"></p>
+          <p id="billing-plan-info" class="text-sm text-muted-foreground">Memuat...</p>
+          <p id="billing-usage-info" class="text-sm text-muted-foreground mt-2"></p>
           <button id="billing-btn-cancel" class="mt-4 px-4 py-2 rounded-md text-sm font-medium bg-red-500 text-white hover:bg-red-600 hidden" data-i18n="billing.cancel">Batalkan Langganan</button>
         </section>
-        <section class="bg-surface-card border border-border rounded-lg p-6 mb-6">
+        <section class="shadcn-card p-6 mb-6 shadow-sm">
           <h2 class="text-lg font-bold mb-4" data-i18n="billing.choose">Pilih Paket</h2>
           <div id="billing-plans" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </section>
-        <section class="bg-surface-card border border-border rounded-lg p-6">
+        <section class="shadcn-card p-6 shadow-sm">
           <h2 class="text-lg font-bold mb-4" data-i18n="billing.history">Riwayat Tagihan</h2>
           <div class="overflow-x-auto">
-            <table class="w-full text-sm"><thead><tr class="text-left text-muted border-b border-border"><th class="pb-2 font-medium" data-i18n="billing.invoice_no">Nomor</th><th class="pb-2 font-medium" data-i18n="billing.amount">Jumlah</th><th class="pb-2 font-medium">PPN</th><th class="pb-2 font-medium" data-i18n="billing.status">Status</th><th class="pb-2 font-medium" data-i18n="common.actions">Aksi</th></tr></thead><tbody id="billing-invoices" class="divide-y divide-border"></tbody></table>
+            <table class="w-full text-sm"><thead><tr class="text-left text-muted-foreground border-b border-border"><th class="pb-2 font-medium" data-i18n="billing.invoice_no">Nomor</th><th class="pb-2 font-medium" data-i18n="billing.amount">Jumlah</th><th class="pb-2 font-medium">PPN</th><th class="pb-2 font-medium" data-i18n="billing.status">Status</th><th class="pb-2 font-medium" data-i18n="common.actions">Aksi</th></tr></thead><tbody id="billing-invoices" class="divide-y divide-border"></tbody></table>
           </div>
         </section>
       </div>
       <div id="billing-checkout-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[8000] hidden flex items-center justify-center p-5" onclick="if(event.target===this)Billing.closeModal()">
-        <div class="bg-surface-card border border-border rounded-xl shadow-2xl w-full max-w-[420px] p-6">
+        <div class="shadcn-card shadow-2xl w-full max-w-[420px] p-6">
           <h3 class="text-lg font-bold mb-2" id="billing-modal-name">Paket</h3>
-          <p class="text-sm text-muted mb-4" id="billing-modal-desc"></p>
+          <p class="text-sm text-muted-foreground mb-4" id="billing-modal-desc"></p>
           <div class="flex gap-3">
             <button class="flex-1 py-2.5 rounded-md text-sm font-semibold text-white" style="background:var(--primary)" id="billing-btn-confirm" data-i18n="common.confirm">Konfirmasi</button>
             <button class="flex-1 py-2.5 rounded-md text-sm font-medium border border-border" onclick="Billing.closeModal()" data-i18n="common.cancel">Batal</button>
@@ -57,12 +57,12 @@ const Billing = (() => {
       grid.innerHTML = "";
       plans.forEach((plan) => {
         const card = document.createElement("div");
-        card.className = "border border-border rounded-lg p-5 bg-surface hover:bg-surface-hover transition-colors";
+        card.className = "border border-border rounded-lg p-5 bg-muted hover:bg-muted transition-colors";
         const monthly = (plan.price_monthly / 100).toLocaleString("id-ID");
         card.innerHTML =
           `<h3 class="font-bold text-base mb-1">${plan.name}</h3>` +
-          `<p class="text-lg font-black mb-2" style="color:var(--primary)">Rp${monthly}<span class="text-sm font-normal text-muted">/bln</span></p>` +
-          `<p class="text-sm text-secondary mb-4">${(plan.storage_bytes / 1073741824).toFixed(0)} GB penyimpanan</p>` +
+          `<p class="text-lg font-black mb-2" style="color:var(--primary)">Rp${monthly}<span class="text-sm font-normal text-muted-foreground">/bln</span></p>` +
+          `<p class="text-sm text-muted-foreground mb-4">${(plan.storage_bytes / 1073741824).toFixed(0)} GB penyimpanan</p>` +
           `<button class="w-full py-2 rounded-md text-sm font-semibold text-white" style="background:var(--primary)" data-plan="${plan.id}" data-name="${plan.name}">Pilih</button>`;
         grid.appendChild(card);
       });
@@ -108,7 +108,7 @@ const Billing = (() => {
         row.className = "border-b border-border last:border-0";
         const total = ((inv.amount + inv.tax_amount) / 100).toLocaleString("id-ID");
         const tax = (inv.tax_amount / 100).toLocaleString("id-ID");
-        const statusColor = inv.status === "paid" ? "text-green-600" : inv.status === "pending" ? "text-yellow-600" : "text-muted";
+        const statusColor = inv.status === "paid" ? "text-green-600" : inv.status === "pending" ? "text-yellow-600" : "text-muted-foreground";
         row.innerHTML =
           `<td class="py-2">${inv.invoice_number}</td><td class="py-2">Rp${total}</td>` +
           `<td class="py-2">Rp${tax}</td><td class="py-2 ${statusColor}">${inv.status}</td>` +

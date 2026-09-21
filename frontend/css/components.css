@@ -39,7 +39,7 @@
 }
 .file-icon-default {
   background: rgba(140, 150, 142, 0.15);
-  color: var(--muted, #8f968e);
+  color: var(--muted-foreground, #8f968e);
 }
 
 .dark .file-icon-pdf {

@@ -47,7 +47,7 @@
               muted: "var(--muted)",
               body: "var(--bg-body)",
               primary: "var(--text-primary)",
-              secondary: "var(--text-secondary)",
+              secondary: "var(--text-muted-foreground)",
               background: "var(--background)",
               foreground: "var(--foreground)",
               card: {
@@ -175,7 +175,7 @@
         <div class="flex items-center gap-1.5">
           <div class="lang-switcher flex items-center rounded-md overflow-hidden border" style="border-color: var(--border); background-color: var(--card);"></div>
         <button
-          class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none"
+          class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none"
           id="btn-theme"
           data-i18n-title="nav.theme_toggle"
           title="Toggle theme"
@@ -221,7 +221,7 @@
           >user</span
         >
         <button
-          class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none"
+          class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none"
           id="btn-profile"
           data-i18n-title="nav.profile"
           title="Profile & API Keys"
@@ -239,7 +239,7 @@
             <circle cx="12" cy="7" r="4" />
           </svg>
         </button>
-        <span id="nav-username" class="text-muted text-sm hidden sm:inline"
+        <span id="nav-username" class="text-muted-foreground text-sm hidden sm:inline"
           >User</span
         >
         <span
@@ -250,7 +250,7 @@
           >U</span
         >
         <button
-          class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none"
+          class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none"
           id="btn-logout"
           data-i18n-title="nav.logout"
           title="Logout"
@@ -280,14 +280,14 @@
     <!-- Legal links footer — minimal, unobtrusive -->
     <footer class="border-t border-border">
       <div class="max-w-[1200px] mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <span class="text-[11px]" style="color: var(--muted);" data-i18n="legal.copyright">© 2026 CipherVault — Stored as ciphertext, always.</span>
+        <span class="text-[11px]" style="color: var(--muted-foreground);" data-i18n="legal.copyright">© 2026 CipherVault — Stored as ciphertext, always.</span>
         <nav class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
-          <a href="how-it-works.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);">How it Works</a>
-          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
-          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="legal.privacy_title">Privacy Policy</a>
-          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="legal.breach_title">Data Breach Procedure</a>
-          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="legal.sla_title">SLA</a>
-          <a href="plans.html" class="hover:text-primary transition-colors" style="color: var(--text-secondary);" data-i18n="nav.plans">Paket</a>
+          <a href="how-it-works.html" class="hover:text-primary transition-colors" style="color: var(--text-muted-foreground);">How it Works</a>
+          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--text-muted-foreground);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+          <a href="privacy.html" class="hover:text-primary transition-colors" style="color: var(--text-muted-foreground);" data-i18n="legal.privacy_title">Privacy Policy</a>
+          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--text-muted-foreground);" data-i18n="legal.breach_title">Data Breach Procedure</a>
+          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--text-muted-foreground);" data-i18n="legal.sla_title">SLA</a>
+          <a href="plans.html" class="hover:text-primary transition-colors" style="color: var(--text-muted-foreground);" data-i18n="nav.plans">Paket</a>
         </nav>
       </div>
     </footer>

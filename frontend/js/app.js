@@ -120,7 +120,7 @@ const App = (() => {
       el.classList.toggle("active", isActive);
       el.classList.toggle("shadcn-navitem-active", isActive);
       el.classList.toggle("text-primary", isActive);
-      el.classList.toggle("text-secondary", !isActive);
+      el.classList.toggle("text-muted-foreground", !isActive);
 
       const bar = el.querySelector(".tab-active-bar");
       if (bar) {
@@ -203,14 +203,14 @@ const App = (() => {
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
             <h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("dashboard.title")}</h1>
-            <p class="text-sm text-muted mt-1">${I18n.t("dashboard.encrypted_with")} <span style="color: var(--success);" class="font-medium">${encryptionSummary}</span></p>
+            <p class="text-sm text-muted-foreground mt-1">${I18n.t("dashboard.encrypted_with")} <span style="color: var(--success);" class="font-medium">${encryptionSummary}</span></p>
           </div>
           <div class="flex items-center gap-2">
-            <button class="flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium text-secondary hover:text-primary hover:bg-surface-hover transition-all duration-200 cursor-pointer bg-transparent border border-border" onclick="DirectoryUI.openCreateModal()">
+            <button class="shadcn-btn shadcn-btn-outline px-4 py-2.5" onclick="DirectoryUI.openCreateModal()">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               ${I18n.t("dashboard.new_folder")}
             </button>
-            <button class="flex items-center gap-2 px-5 py-2.5 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" style="background: var(--primary);" onclick="document.getElementById('file-input').click()">
+            <button class="shadcn-btn shadcn-btn-default px-5 py-2.5" onclick="document.getElementById('file-input').click()">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               ${I18n.t("dashboard.upload_file")}
             </button>
@@ -235,7 +235,7 @@ const App = (() => {
       <div class="page-enter">
         <div class="mb-6">
           <h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("shared.title")}</h1>
-          <p class="text-sm text-muted mt-1">${I18n.t("shared.desc")}</p>
+          <p class="text-sm text-muted-foreground mt-1">${I18n.t("shared.desc")}</p>
         </div>
         <div id="shared-list-area"></div>
       </div>
@@ -247,8 +247,8 @@ const App = (() => {
     if (currentUser?.role !== "admin") {
       container.innerHTML = `
         <div class="page-enter">
-          <div class="bg-surface-card border border-border rounded-lg p-10 text-center">
-            <p class="text-muted">${I18n.t("dashboard.admin_required")}</p>
+          <div class="shadcn-card p-10 text-center">
+            <p class="text-muted-foreground">${I18n.t("dashboard.admin_required")}</p>
           </div>
         </div>`;
       return;
@@ -277,7 +277,7 @@ const App = (() => {
     if (typeof Billing !== "undefined" && typeof Billing.render === "function") {
       await Billing.render(container);
     } else {
-      container.innerHTML = '<div class="p-10 text-center text-muted">Billing module not loaded</div>';
+      container.innerHTML = '<div class="p-10 text-center text-muted-foreground">Billing module not loaded</div>';
     }
   }
 
@@ -293,7 +293,7 @@ const App = (() => {
         delete: "text-[#c44545] bg-[rgba(196,69,69,0.1)]",
         delete_folder: "text-[#c44545] bg-[rgba(196,69,69,0.1)]",
         download: "text-[#d4a72c] bg-[rgba(212,167,44,0.1)]",
-        login: "text-muted bg-surface",
+        login: "text-muted-foreground bg-muted",
       };
       const darkActionColors = {
         upload: "text-[#40916c] bg-[rgba(64,145,108,0.1)]",
@@ -302,7 +302,7 @@ const App = (() => {
         delete: "text-[#d15151] bg-[rgba(209,81,81,0.1)]",
         delete_folder: "text-[#d15151] bg-[rgba(209,81,81,0.1)]",
         download: "text-[#e0b94a] bg-[rgba(224,185,74,0.1)]",
-        login: "text-muted bg-surface",
+        login: "text-muted-foreground bg-muted",
       };
       const actionIcons = {
         upload:
@@ -324,10 +324,10 @@ const App = (() => {
       if (res.items.length === 0) {
         container.innerHTML = `
           <div class="page-enter">
-            <div class="mb-6"><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted mt-1">${I18n.t("activity.desc")}</p></div>
-            <div class="bg-surface-card border border-border rounded-lg p-10 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mx-auto mb-2 opacity-40" style="color: var(--muted);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <p class="text-muted text-sm">${I18n.t("activity.empty")}</p>
+            <div class="mb-6"><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted-foreground mt-1">${I18n.t("activity.desc")}</p></div>
+            <div class="shadcn-card p-10 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mx-auto mb-2 opacity-40" style="color: var(--muted-foreground);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <p class="text-muted-foreground text-sm">${I18n.t("activity.empty")}</p>
             </div>
           </div>`;
         return;
@@ -339,27 +339,27 @@ const App = (() => {
       let html = `
         <div class="page-enter">
           <div class="flex items-center justify-between mb-6">
-            <div><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted mt-1">${I18n.t("activity.desc")}</p></div>
-            <span class="text-xs text-muted">${res.total} ${I18n.t("activity.events")}</span>
+            <div><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted-foreground mt-1">${I18n.t("activity.desc")}</p></div>
+            <span class="text-xs text-muted-foreground">${res.total} ${I18n.t("activity.events")}</span>
           </div>
           <div class="space-y-1">`;
       res.items.forEach((a) => {
         const ac = acMap[a.action] || acMap.login;
         const ai = actionIcons[a.action] || actionIcons.login;
         html += `
-            <div class="flex items-start gap-4 px-4 py-3 rounded-lg hover:bg-surface-hover transition-colors duration-150">
+            <div class="flex items-start gap-4 px-4 py-3 rounded-lg hover:bg-muted transition-colors duration-150">
               <span class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${ac}">${ai}</span>
               <div class="flex-1 min-w-0">
                 <div class="text-sm">${a.details}</div>
-                ${a.file_name ? `<div class="text-xs text-muted mt-0.5">${I18n.t("activity.file_prefix")} ${a.file_name}</div>` : ""}
+                ${a.file_name ? `<div class="text-xs text-muted-foreground mt-0.5">${I18n.t("activity.file_prefix")} ${a.file_name}</div>` : ""}
               </div>
-              <span class="text-xs text-muted whitespace-nowrap flex-shrink-0">${new Date(a.timestamp).toLocaleDateString("en-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+              <span class="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">${new Date(a.timestamp).toLocaleDateString("en-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
             </div>`;
       });
       html += "</div></div>";
       container.innerHTML = html;
     } catch {
-      container.innerHTML = `<div class="page-enter"><div class="mb-6"><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted mt-1">${I18n.t("activity.desc")}</p></div><div class="bg-surface-card border border-border rounded-lg p-10 text-center"><p class="text-error">${I18n.t("activity.load_error")}</p></div></div>`;
+      container.innerHTML = `<div class="page-enter"><div class="mb-6"><h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("activity.title")}</h1><p class="text-sm text-muted-foreground mt-1">${I18n.t("activity.desc")}</p></div><div class="shadcn-card p-10 text-center"><p class="text-error">${I18n.t("activity.load_error")}</p></div></div>`;
     }
   }
 

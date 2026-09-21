@@ -33,11 +33,11 @@ const UI = (() => {
     };
 
     const el = document.createElement("div");
-    el.className = `toast-enter flex items-center gap-3 px-4 py-3.5 bg-surface-card border border-border rounded-lg shadow-2xl min-w-[320px] max-w-[420px] ${colors[type]}`;
+    el.className = `toast-enter flex items-center gap-3 px-4 py-3.5 bg-card border border-border rounded-lg shadow-2xl min-w-[320px] max-w-[420px] ${colors[type]}`;
     el.innerHTML = `
       <span class="flex-shrink-0">${icons[type] || icons.info}</span>
       <span class="flex-1 text-sm">${message}</span>
-      <button class="flex-shrink-0 text-muted hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-1 rounded-md hover:bg-surface-hover" onclick="this.parentElement.remove()">
+      <button class="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-1 rounded-md hover:bg-muted" onclick="this.parentElement.remove()">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     `;
@@ -57,10 +57,10 @@ const UI = (() => {
     overlay.className =
       "fixed inset-0 bg-black/50 backdrop-blur-sm z-[8000] flex items-center justify-center p-5 modal-enter";
     overlay.innerHTML = `
-      <div class="bg-surface-card border border-border rounded-xl shadow-2xl w-full max-w-[480px] max-h-[80vh] overflow-y-auto modal-enter">
+      <div class="shadcn-card shadow-2xl w-full max-w-[480px] max-h-[80vh] overflow-y-auto modal-enter">
         <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-border">
           <h3 class="text-lg font-bold">${title}</h3>
-          <button class="p-2 rounded-md text-muted hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
+          <button class="p-2 rounded-md text-muted-foreground hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -79,9 +79,9 @@ const UI = (() => {
     return new Promise((resolve) => {
       const overlay = modal(
         I18n.t("common.confirm"),
-        `<p class="text-secondary">${message}</p>`,
-        `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(false)">${I18n.t("common.cancel")}</button>
-         <button class="px-4 py-2 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(true)" style="background: var(--error);">${I18n.t("common.delete")}</button>`,
+        `<p class="text-muted-foreground">${message}</p>`,
+        `<button class="shadcn-btn shadcn-btn-ghost px-4 py-2" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(false)">${I18n.t("common.cancel")}</button>
+         <button class="shadcn-btn shadcn-btn-destructive px-4 py-2" onclick="this.closest('.fixed.inset-0').remove(); window.__confirmResolve && window.__confirmResolve(true)">${I18n.t("common.delete")}</button>`,
       );
       window.__confirmResolve = resolve;
     });
@@ -118,7 +118,7 @@ const UI = (() => {
     sidePanel.className = "fixed inset-0 z-[7000] flex justify-end modal-enter";
     sidePanel.innerHTML = `
       <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="this.parentElement.remove()"></div>
-      <div class="relative w-full max-w-[420px] bg-surface-card border-l border-border h-full overflow-y-auto p-6 slide-in-right">
+      <div class="relative w-full max-w-[420px] bg-card border-l border-border h-full overflow-y-auto p-6 slide-in-right">
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center gap-2.5">
             <span class="file-icon" style="width:36px;height:36px;">${icon.svg}</span>
@@ -127,17 +127,17 @@ const UI = (() => {
               <span class="text-xs" style="color: var(--success);">${I18n.t("common.active")}</span>
             </div>
           </div>
-          <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
+          <button class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
         <div class="space-y-4">
-          <div class="bg-surface border border-border rounded-lg p-4">
-            <h4 class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">${I18n.t("files.stats_encryption")}</h4>
+          <div class="bg-muted border border-border rounded-lg p-4">
+            <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">${I18n.t("files.stats_encryption")}</h4>
             <div class="space-y-2.5">
-              <div class="flex justify-between"><span class="text-sm text-muted">Layer 1</span><span class="text-sm font-medium">UHC (mod ${modulus})</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Layer 2</span><span class="text-sm font-medium">${
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">Layer 1</span><span class="text-sm font-medium">UHC (mod ${modulus})</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">Layer 2</span><span class="text-sm font-medium">${
                 file.encryption_type
                   ? file.encryption_type
                       .split("+")
@@ -145,30 +145,30 @@ const UI = (() => {
                       .join(" + ")
                   : "AES-256-CBC + RSA-OAEP"
               }</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Key Wrap</span><span class="text-sm font-medium">RSA-OAEP (SHA-256)</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">AI Mode</span><span class="text-sm font-medium">${aiMode}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Matrix Size</span><span class="text-sm font-medium">${matrixSize}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Modulus</span><span class="text-sm font-medium">${modulus}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">Logistic R</span><span class="text-sm font-medium">${logisticR}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">Key Wrap</span><span class="text-sm font-medium">RSA-OAEP (SHA-256)</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">AI Mode</span><span class="text-sm font-medium">${aiMode}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">Matrix Size</span><span class="text-sm font-medium">${matrixSize}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">Modulus</span><span class="text-sm font-medium">${modulus}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">Logistic R</span><span class="text-sm font-medium">${logisticR}</span></div>
             </div>
           </div>
 
-          <div class="bg-surface border border-border rounded-lg p-4">
-            <h4 class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">${I18n.t("common.type")}</h4>
+          <div class="bg-muted border border-border rounded-lg p-4">
+            <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">${I18n.t("common.type")}</h4>
             <div class="space-y-2.5">
-              <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("common.size")}</span><span class="text-sm font-medium">${file.file_size_formatted || formatBytes(file.file_size_original)}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("files.stats_encryption")} ${I18n.t("common.size")}</span><span class="text-sm font-medium">${formatBytes(file.file_size_encrypted)}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("common.type")}</span><span class="text-sm font-medium">${file.mime_type || "—"}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">${I18n.t("common.date")}</span><span class="text-sm font-medium">${formatDate(file.created_at)}</span></div>
-              <div class="flex justify-between"><span class="text-sm text-muted">File ID</span><span class="text-sm font-mono" style="color: var(--primary);">${file.id}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("common.size")}</span><span class="text-sm font-medium">${file.file_size_formatted || formatBytes(file.file_size_original)}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("files.stats_encryption")} ${I18n.t("common.size")}</span><span class="text-sm font-medium">${formatBytes(file.file_size_encrypted)}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("common.type")}</span><span class="text-sm font-medium">${file.mime_type || "—"}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">${I18n.t("common.date")}</span><span class="text-sm font-medium">${formatDate(file.created_at)}</span></div>
+              <div class="flex justify-between"><span class="text-sm text-muted-foreground">File ID</span><span class="text-sm font-mono" style="color: var(--primary);">${file.id}</span></div>
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button class="flex-1 px-4 py-2.5 rounded-none text-sm font-semibold text-white shadow-sharp hover:shadow-sharp-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-none" style="background: var(--primary);" onclick="Download.handle(${file.id}, '${file.filename_original}');this.closest('.fixed.inset-0').remove()">
+            <button class="shadcn-btn shadcn-btn-default flex-1 px-4 py-2.5" onclick="Download.handle(${file.id}, '${file.filename_original}');this.closest('.fixed.inset-0').remove()">
               ${I18n.t("files.tooltip_download")}
             </button>
-            <button class="flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 cursor-pointer border-none hover:bg-surface-hover" style="background: var(--surface); color: var(--text-primary);" onclick="SecurityUI.renderFileAnalysis(${file.id})">
+            <button class="shadcn-btn shadcn-btn-outline flex-1 px-4 py-2.5" onclick="SecurityUI.renderFileAnalysis(${file.id})">
               ${I18n.t("files.tooltip_analyze")}
             </button>
           </div>

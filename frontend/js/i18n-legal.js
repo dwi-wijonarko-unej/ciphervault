@@ -22,7 +22,7 @@ const I18nLegal = (() => {
     const btn = document.createElement("button");
     btn.className =
       "px-2.5 py-1 text-[11px] font-semibold rounded transition-all cursor-pointer border-none " +
-      "bg-transparent text-muted hover:text-primary";
+      "bg-transparent text-muted-foreground hover:text-primary";
     btn.textContent = lang === "id" ? "EN" : "ID";
     btn.onclick = () => toggle();
     if (container) container.appendChild(btn);

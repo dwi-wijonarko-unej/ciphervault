@@ -33,7 +33,7 @@
               muted: 'var(--muted)',
               body: 'var(--bg-body)',
               primary: 'var(--text-primary)',
-              secondary: 'var(--text-secondary)',
+              secondary: 'var(--text-muted-foreground)',
               background: 'var(--background)',
               foreground: 'var(--foreground)',
               card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
@@ -64,7 +64,7 @@
   <link rel="stylesheet" href="css/shadcn.css?v=20260920">
   <style>
     .prose-legal h2 { font-family: "Space Grotesk", sans-serif; }
-    .prose-legal p, .prose-legal li { color: var(--text-secondary); line-height: 1.75; }
+    .prose-legal p, .prose-legal li { color: var(--text-muted-foreground); line-height: 1.75; }
     .toc-link.active { color: var(--text-primary); border-left-color: var(--primary); }
   </style>
 </head>
@@ -79,12 +79,12 @@
         <span class="font-heading font-bold tracking-tight text-primary text-lg">CipherVault</span>
       </a>
       <div class="flex items-center gap-2">
-        <div class="lang-switcher flex items-center bg-surface-card border border-border rounded-md overflow-hidden"></div>
-        <button class="p-2 rounded-md text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
+        <div class="lang-switcher flex items-center bg-card border border-border rounded-md overflow-hidden"></div>
+        <button class="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" id="btn-theme" title="Toggle theme">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
-        <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-secondary); border-color: var(--border);">
+        <a href="login.html" class="text-[12px] flex items-center gap-1.5 px-3 py-1.5 border transition-all hover:-translate-x-0.5" style="color: var(--text-muted-foreground); border-color: var(--border);">
           <span data-i18n="legal.back">← Back</span>
         </a>
       </div>
@@ -94,16 +94,16 @@
   <section class="border-b" style="border-color: var(--border); background: var(--surface);">
     <div class="max-w-6xl mx-auto px-5 py-10 grid grid-cols-12 gap-6 items-end">
       <div class="col-span-12 md:col-span-8">
-        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted);" data-i18n="legal.doc_label">Legal Document · v1.0</p>
+        <p class="text-[11px] uppercase tracking-[0.2em] mb-3" style="color: var(--muted-foreground);" data-i18n="legal.doc_label">Legal Document · v1.0</p>
         <h1 class="font-heading font-bold leading-[0.95] tracking-tight text-primary" style="font-size: clamp(2.2rem, 6vw, 3.8rem);">
           <span class="lang-id">Kebijakan<br>Privasi</span>
           <span class="lang-en">Privacy<br>Policy</span>
         </h1>
       </div>
       <div class="col-span-12 md:col-span-4 md:text-right space-y-1">
-        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted);" data-i18n="legal.updated">Last updated</p>
+        <p class="text-[11px] uppercase tracking-wider" style="color: var(--muted-foreground);" data-i18n="legal.updated">Last updated</p>
         <p class="font-heading font-bold text-primary text-lg">5 August 2026</p>
-        <p class="text-[12px]" style="color: var(--text-secondary);" data-i18n="legal.effective">Effective from that date</p>
+        <p class="text-[12px]" style="color: var(--text-muted-foreground);" data-i18n="legal.effective">Effective from that date</p>
       </div>
     </div>
   </section>
@@ -111,35 +111,35 @@
   <main class="max-w-6xl mx-auto px-5 py-12 grid grid-cols-12 gap-10">
     <aside class="hidden lg:block lg:col-span-3">
       <nav class="sticky top-24 space-y-1 text-[13px]" id="toc">
-        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted);" data-i18n="legal.toc">Table of Contents</p>
+        <p class="uppercase tracking-wider text-[10px] mb-3 font-bold" style="color: var(--muted-foreground);" data-i18n="legal.toc">Table of Contents</p>
         <div class="lang-id">
-        <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Data Dikumpulkan</a>
-        <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Penyimpanan</a>
-        <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Penggunaan Data</a>
-        <a href="#s4" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">4. Berbagi Data</a>
-        <a href="#s5" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">5. Retensi</a>
-        <a href="#s6" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. Keamanan</a>
-        <a href="#s7" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. Hak Pengguna</a>
-        <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Cookie &amp; Token</a>
-        <a href="#s9" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">9. Kontak</a>
+        <a href="#s1" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">1. Data Dikumpulkan</a>
+        <a href="#s2" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">2. Penyimpanan</a>
+        <a href="#s3" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">3. Penggunaan Data</a>
+        <a href="#s4" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">4. Berbagi Data</a>
+        <a href="#s5" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">5. Retensi</a>
+        <a href="#s6" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">6. Keamanan</a>
+        <a href="#s7" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">7. Hak Pengguna</a>
+        <a href="#s8" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">8. Cookie &amp; Token</a>
+        <a href="#s9" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">9. Kontak</a>
         </div>
         <div class="lang-en">
-        <a href="#s1e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">1. Data Collection</a>
-        <a href="#s2e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">2. Storage</a>
-        <a href="#s3e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">3. Data Usage</a>
-        <a href="#s4e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">4. Data Sharing</a>
-        <a href="#s5e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">5. Retention</a>
-        <a href="#s6e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">6. Security</a>
-        <a href="#s7e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">7. User Rights</a>
-        <a href="#s8e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">8. Cookies &amp; Tokens</a>
-        <a href="#s9e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-secondary); border-color: transparent;">9. Contact</a>
+        <a href="#s1e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">1. Data Collection</a>
+        <a href="#s2e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">2. Storage</a>
+        <a href="#s3e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">3. Data Usage</a>
+        <a href="#s4e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">4. Data Sharing</a>
+        <a href="#s5e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">5. Retention</a>
+        <a href="#s6e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">6. Security</a>
+        <a href="#s7e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">7. User Rights</a>
+        <a href="#s8e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">8. Cookies &amp; Tokens</a>
+        <a href="#s9e" class="toc-link block pl-3 border-l-2 transition-colors hover:text-primary" style="color: var(--text-muted-foreground); border-color: transparent;">9. Contact</a>
         </div>
       </nav>
     </aside>
 
     <article class="col-span-12 lg:col-span-9 prose-legal max-w-none">
       <div class="lang-id">
-      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-muted-foreground);">
         Privasi Anda adalah fondasi desain CipherVault. Dokumen ini menjelaskan data apa yang kami kumpulkan, bagaimana kami melindunginya, dan hak Anda atas data tersebut, sejalan dengan <strong>Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)</strong>.
       </p>
 
@@ -212,7 +212,7 @@
       </div>
 
       <div class="lang-en">
-      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-secondary);">
+      <p class="text-[13px] mb-10 leading-relaxed" style="color: var(--text-muted-foreground);">
         Your privacy is a foundational design principle of CipherVault. This document explains what data we collect, how we protect it, and your rights over that data, in accordance with <strong>Law No. 27 of 2022 on Personal Data Protection (UU PDP)</strong>.
       </p>
 
@@ -285,13 +285,13 @@
       </div>
 
       <div class="mt-14 pt-6 border-t flex flex-wrap items-center justify-between gap-3" style="border-color: var(--border);">
-        <p class="text-[11px]" style="color: var(--muted);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
+        <p class="text-[11px]" style="color: var(--muted-foreground);" data-i18n="legal.copyright">© 2026 CipherVault. All rights reserved.</p>
         <nav class="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
-          <a href="how-it-works.html" class="hover:text-primary transition-colors" style="color: var(--muted);">How it Works</a>
-          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
-          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.breach_title">Data Breach Procedure</a>
-          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="legal.sla_title">SLA</a>
-          <a href="plans.html" class="hover:text-primary transition-colors" style="color: var(--muted);" data-i18n="nav.plans">Paket</a>
+          <a href="how-it-works.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);">How it Works</a>
+          <a href="terms.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.terms_title">Terms &amp; Conditions</a>
+          <a href="breach.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.breach_title">Data Breach Procedure</a>
+          <a href="sla.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="legal.sla_title">SLA</a>
+          <a href="plans.html" class="hover:text-primary transition-colors" style="color: var(--muted-foreground);" data-i18n="nav.plans">Paket</a>
         </nav>
       </div>
     </article>

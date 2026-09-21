@@ -75,7 +75,7 @@ const SecurityUI = (() => {
         <div class="flex items-center justify-between mb-6">
           <div>
             <h2 class="text-xl font-bold font-heading">${I18n.t("security.title")}</h2>
-            <p class="text-sm text-muted mt-1">${fileName}</p>
+            <p class="text-sm text-muted-foreground mt-1">${fileName}</p>
           </div>
           <div class="text-center">
             <div class="text-4xl font-black tracking-tight" style="color: ${score >= 80 ? "var(--success)" : score >= 60 ? "var(--warning)" : "var(--error)"}">${score}</div>
@@ -91,21 +91,21 @@ const SecurityUI = (() => {
             <div class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border"
                  style="border-color: var(--border); background: var(--surface);">
               <span>${statusIcons[m.status]}</span>
-              <span class="text-xs text-muted">${m.label}</span>
+              <span class="text-xs text-muted-foreground">${m.label}</span>
               <span class="text-sm font-semibold" style="color: ${statusColors[m.status]}">${m.value}</span>
-              <span class="text-[10px] text-muted ml-0.5">(${m.good})</span>
+              <span class="text-[10px] text-muted-foreground ml-0.5">(${m.good})</span>
             </div>
           `,
             )
             .join("")}
         </div>
 
-        <div class="bg-surface border border-border rounded-lg p-4">
-          <div class="text-xs text-muted mb-2">${I18n.t("security.rating")}</div>
+        <div class="bg-muted border border-border rounded-lg p-4">
+          <div class="text-xs text-muted-foreground mb-2">${I18n.t("security.rating")}</div>
           <div class="text-lg font-bold" style="color: ${score >= 80 ? "var(--success)" : score >= 60 ? "var(--warning)" : "var(--error)"}">
             ${score >= 80 ? I18n.t("security.excellent") : score >= 60 ? I18n.t("security.good") : I18n.t("security.needs_improvement")}
           </div>
-          <p class="text-xs text-muted mt-1">
+          <p class="text-xs text-muted-foreground mt-1">
             ${score >= 80 ? I18n.t("security.desc_excellent") : score >= 60 ? I18n.t("security.desc_good") : I18n.t("security.desc_poor")}
           </p>
         </div>
@@ -117,7 +117,7 @@ const SecurityUI = (() => {
     const overlay = UI.modal(
       I18n.t("security.upload_analysis"),
       '<div id="upload-analysis-content"></div>',
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>`,
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>`,
     );
 
     const content = document.getElementById("upload-analysis-content");
@@ -131,8 +131,8 @@ const SecurityUI = (() => {
   function renderFileAnalysis(fileId) {
     const overlay = UI.modal(
       I18n.t("security.title"),
-      `<div id="analysis-content"><div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border animate-spin mx-auto" style="border-top-color: var(--primary); border-radius: 50%;"></div><p class="text-xs text-muted mt-3">${I18n.t("common.loading")}</p></div></div>`,
-      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted hover:text-primary hover:bg-surface-hover transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>`,
+      `<div id="analysis-content"><div class="py-10 text-center"><div class="w-10 h-10 border-2 border-border animate-spin mx-auto" style="border-top-color: var(--primary); border-radius: 50%;"></div><p class="text-xs text-muted-foreground mt-3">${I18n.t("common.loading")}</p></div></div>`,
+      `<button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-all cursor-pointer bg-transparent border-none" onclick="this.closest('.fixed.inset-0').remove()">${I18n.t("common.close")}</button>`,
     );
 
     setTimeout(async () => {

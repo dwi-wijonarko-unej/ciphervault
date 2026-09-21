@@ -87,7 +87,7 @@ const I18n = (() => {
           "px-2 py-1 text-[11px] font-semibold rounded transition-all cursor-pointer border-none " +
           (l === currentLang
             ? "bg-primary text-white"
-            : "bg-transparent text-muted hover:text-primary");
+            : "bg-transparent text-muted-foreground hover:text-primary");
         btn.textContent = l.toUpperCase();
         btn.onclick = () => setLang(l);
         sw.appendChild(btn);

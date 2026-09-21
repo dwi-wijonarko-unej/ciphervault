@@ -10,12 +10,12 @@ const SystemPage = (() => {
         <div class="page-enter">
           <div class="mb-6">
             <h1 class="text-3xl font-black font-heading tracking-tight">${I18n.t("system.title")}</h1>
-            <p class="text-sm text-muted mt-1">${I18n.t("system.subtitle")}</p>
+            <p class="text-sm text-muted-foreground mt-1">${I18n.t("system.subtitle")}</p>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6">
             <div class="space-y-6">
-              <div class="bg-surface-card border border-border rounded-lg p-5">
+              <div class="shadcn-card p-5 shadow-sm">
                 <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   ${I18n.t("system.encryption_engine")}
@@ -32,26 +32,26 @@ const SystemPage = (() => {
                 </div>
               </div>
 
-              <div class="bg-surface-card border border-border rounded-lg p-5">
+              <div class="shadcn-card p-5 shadow-sm">
                 <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                   ${I18n.t("system.security_summary")}
                 </h3>
                 <div class="space-y-2.5">
                   <div class="flex items-center justify-between py-2 border-b border-border">
-                    <span class="text-sm text-muted">${I18n.t("system.encryption_layers")}</span>
+                    <span class="text-sm text-muted-foreground">${I18n.t("system.encryption_layers")}</span>
                     <span class="text-sm font-medium">UHC + ${config.layer2_algorithm || "AES + RSA"}</span>
                   </div>
                   <div class="flex items-center justify-between py-2 border-b border-border">
-                    <span class="text-sm text-muted">${I18n.t("system.ai_mode")}</span>
+                    <span class="text-sm text-muted-foreground">${I18n.t("system.ai_mode")}</span>
                     <span class="text-sm font-medium">${config.ai_mode || "multi_feature_adaptive"}${config.ai_adaptive_r ? " (adaptive-r)" : ""}</span>
                   </div>
                   <div class="flex items-center justify-between py-2 border-b border-border">
-                    <span class="text-sm text-muted">${I18n.t("system.integrity")}</span>
+                    <span class="text-sm text-muted-foreground">${I18n.t("system.integrity")}</span>
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success);">SHA-256</span>
                   </div>
                   <div class="flex items-center justify-between py-2">
-                    <span class="text-sm text-muted">${I18n.t("system.key_storage")}</span>
+                    <span class="text-sm text-muted-foreground">${I18n.t("system.key_storage")}</span>
                     <span class="text-sm font-medium">${I18n.t("system.wrapped_rsa")}</span>
                   </div>
                 </div>
@@ -59,7 +59,7 @@ const SystemPage = (() => {
             </div>
 
             <div class="space-y-6">
-              <div class="bg-surface-card border border-border rounded-lg p-5">
+              <div class="shadcn-card p-5 shadow-sm">
                 <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   ${I18n.t("system.rsa_keys")}
@@ -72,7 +72,7 @@ const SystemPage = (() => {
                 </div>
               </div>
 
-              <div class="bg-surface-card border border-border rounded-lg p-5">
+              <div class="shadcn-card p-5 shadow-sm">
                 <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                   ${I18n.t("system.storage")}
@@ -90,7 +90,7 @@ const SystemPage = (() => {
       `;
     } catch {
       container.innerHTML =
-        `<div class="bg-surface-card border border-border rounded-lg p-10 text-center"><p class="text-error">${I18n.t("system.load_error")}</p></div>`;
+        `<div class="shadcn-card p-10 text-center"><p class="text-error">${I18n.t("system.load_error")}</p></div>`;
     }
   }
 
@@ -98,7 +98,7 @@ const SystemPage = (() => {
     return `
       <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
         <div>
-          <span class="text-sm text-muted">${label}</span>
+          <span class="text-sm text-muted-foreground">${label}</span>
           ${hint ? `<p class="meta mt-0.5">${hint}</p>` : ""}
         </div>
         <span class="text-sm font-medium">${value}</span>
